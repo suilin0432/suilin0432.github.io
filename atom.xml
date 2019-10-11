@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-11T01:05:15.492Z</updated>
+  <updated>2019-10-11T01:07:17.664Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -21,17 +21,15 @@
     <link href="http://suilin.top/2019/10/11/testMessage/"/>
     <id>http://suilin.top/2019/10/11/testMessage/</id>
     <published>2019-10-11T01:04:36.000Z</published>
-    <updated>2019-10-11T01:05:15.492Z</updated>
+    <updated>2019-10-11T01:07:17.664Z</updated>
     
     <summary type="html">
     
     </summary>
     
     
-      <category term="testCat" scheme="http://suilin.top/categories/testCat/"/>
+      <category term="测试标签" scheme="http://suilin.top/categories/%E6%B5%8B%E8%AF%95%E6%A0%87%E7%AD%BE/"/>
     
-    
-      <category term="testTags" scheme="http://suilin.top/tags/testTags/"/>
     
   </entry>
   
