@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2018-09-19T09:02:27.003Z</updated>
+  <updated>2019-10-11T01:05:15.492Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,55 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>testMessage</title>
+    <link href="http://suilin.top/2019/10/11/testMessage/"/>
+    <id>http://suilin.top/2019/10/11/testMessage/</id>
+    <published>2019-10-11T01:04:36.000Z</published>
+    <updated>2019-10-11T01:05:15.492Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="testCat" scheme="http://suilin.top/categories/testCat/"/>
+    
+    
+      <category term="testTags" scheme="http://suilin.top/tags/testTags/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>post</title>
+    <link href="http://suilin.top/2019/10/11/post-1/"/>
+    <id>http://suilin.top/2019/10/11/post-1/</id>
+    <published>2019-10-11T01:04:05.000Z</published>
+    <updated>2019-10-11T01:04:05.961Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>post</title>
+    <link href="http://suilin.top/2019/10/11/post/"/>
+    <id>http://suilin.top/2019/10/11/post/</id>
+    <published>2019-10-11T01:04:01.000Z</published>
+    <updated>2019-10-11T01:04:01.921Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Hello World</title>
