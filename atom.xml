@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-11T02:26:31.325Z</updated>
+  <updated>2019-10-12T14:33:22.232Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>The Marginal and Conditional distributions of multivariate normal distribution</title>
+    <link href="http://suilin.top/2019/10/12/The-Marginal-and-Conditional-distributions-of-multivariate-normal-distribution/"/>
+    <id>http://suilin.top/2019/10/12/The-Marginal-and-Conditional-distributions-of-multivariate-normal-distribution/</id>
+    <published>2019-10-12T14:31:36.000Z</published>
+    <updated>2019-10-12T14:33:22.232Z</updated>
+    
+    <content type="html"><![CDATA[<p>下面是详细描述的连接<br><a href="http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html" target="_blank" rel="noopener">prove</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;下面是详细描述的连接&lt;br&gt;&lt;a href=&quot;http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;prove&lt;/a&gt;&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Maths" scheme="http://suilin.top/tags/Maths/"/>
+    
+  </entry>
   
   <entry>
     <title>DownloadPage</title>
