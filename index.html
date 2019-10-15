@@ -236,6 +236,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/" class="post-title-link" itemprop="url">Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-15 21:13:44 / Modified: 21:14:10" itemprop="dateCreated datePublished" datetime="2019-10-15T21:13:44+08:00">2019-10-15</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》"><a href="#简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》" class="headerlink" title="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》"></a>简单总结 <strong><em>《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》</em></strong></h2><p>PS: 只看观点思路 没看细节</p>
+<ol>
+<li>提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow detector 进行结合, 适应性的决定一个图片困难还是简单去决定使用哪一个detector进行分类</li>
+<li>首先利用一个很简单的很快的detector首先生成一些instance proposals, 并基于这些内容去决定使用快的还是准的model去进行后面的步骤</li>
+<li>优点<ul>
+<li>(1). AF快的同时准确</li>
+<li>(2). 可以将两个不同架构的模型进行直接组合利用, 而不需要额外的training data</li>
+<li>(3). AF使用一个不平衡的学习框架去从hard images中辨认easy ones(???), 并且这个框架可以调整speed和accuracy之间的trade-off</li>
+</ul>
+</li>
+<li>hard 还是 easy 认为应该是由image中的instances决定影响的 -&gt; 因此在AF第一阶段放一个 instance generator去提取决定 easy vs. hard 分类的特征</li>
+<li>为了后续分类的高效以及准确这个很快的detector应该提供((1). 预测的类别 (2). 置信度分数 (3). bbox 坐标), 同时要求这个detector是高效而且比较准确的 -&gt; 文章使用 Tini Yolo.  选择top K个最高置信度分数的proposals去决定这个image是简单还是难(通过SVM分类器)</li>
+<li>对于这个 easy vs. hard SVM分类器, 认为并不简单, 因为要考虑到不平衡以及cost-sensitive 问题 -&gt; 因为大部分的images是简单的, 只需要都猜简单我们就能达到一个看上去很好的性能, 这显然是不行</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/15/Simple-Summary-for-Finding-Tiny-Faces/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -897,7 +982,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

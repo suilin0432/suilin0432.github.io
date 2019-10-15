@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结 《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》PS: MS-CNNPS: 使用数据库:  KITTI and Caltech  整个框架包含两部分: (1). proposal sub-network (2). detection sub-network proposa">
+  <meta name="description" content="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》PS: 只看观点思路 没看细节  提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow d">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection">
-<meta property="og:url" content="http://suilin.top/2019/10/15/Simple-Summary-for-A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection/index.html">
+<meta property="og:title" content="Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors">
+<meta property="og:url" content="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结 《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》PS: MS-CNNPS: 使用数据库:  KITTI and Caltech  整个框架包含两部分: (1). proposal sub-network (2). detection sub-network proposa">
+<meta property="og:description" content="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》PS: 只看观点思路 没看细节  提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow d">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-15T09:32:10.491Z">
+<meta property="og:updated_time" content="2019-10-15T13:14:10.577Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection">
-<meta name="twitter:description" content="简单总结 《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》PS: MS-CNNPS: 使用数据库:  KITTI and Caltech  整个框架包含两部分: (1). proposal sub-network (2). detection sub-network proposa">
-  <link rel="canonical" href="http://suilin.top/2019/10/15/Simple-Summary-for-A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection/">
+<meta name="twitter:title" content="Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors">
+<meta name="twitter:description" content="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》PS: 只看观点思路 没看细节  提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow d">
+  <link rel="canonical" href="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection | Suilin's Blog</title>
+  <title>Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/15/Simple-Summary-for-A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection
+            Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-15 11:33:16 / Modified: 17:32:10" itemprop="dateCreated datePublished" datetime="2019-10-15T11:33:16+08:00">2019-10-15</time>
+              <time title="Created: 2019-10-15 21:13:44 / Modified: 21:14:10" itemprop="dateCreated datePublished" datetime="2019-10-15T21:13:44+08:00">2019-10-15</time>
             </span>
           
             
@@ -291,36 +291,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结-《A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection》"><a href="#简单总结-《A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection》" class="headerlink" title="简单总结 《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》"></a>简单总结 <strong><em>《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》</em></strong></h2><p>PS: MS-CNN<br>PS: <strong><em>使用数据库:  KITTI and Caltech</em></strong></p>
+        <h2 id="简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》"><a href="#简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》" class="headerlink" title="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》"></a>简单总结 <strong><em>《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》</em></strong></h2><p>PS: 只看观点思路 没看细节</p>
 <ol>
-<li>整个框架包含两部分: (1). proposal sub-network (2). detection sub-network</li>
-<li>proposal sub-network中，对多尺度的output layer进行detection(多尺度是为了匹配不同scale的obj)</li>
-<li>针对不同尺度的detector将会结合去产生一个更强的多尺度obj detector</li>
-<li>feature upsampling 通过 deconv 进行 -&gt; 说是减少内存以及计算量的消耗(因为不是对原图像这种大的东西进行放大了)</li>
-<li><strong>改进1:</strong> 单一尺度会因为感受野的统一而不能很好的匹配各种尺度的obj -&gt; multi-scale 为了解决感受野大小和物体大小之间的不一致问题</li>
-<li><strong>改进2:</strong> 通过对 feature 进行 upsampling 而不是对 input image 进行 upsampling</li>
-<li>陈述了几种覆盖匹配多种scale物体的方式 ((1).-(4).是针对非CNN的)<ul>
-<li>(1). 对 input image 进行多尺度的scale 然后用这些尺度的input image去得到多尺度的feature map，而只需要学习一个简单的分类器 (对原图像进行尺度放缩然后每个都进行特征提取虽然精度高，但是计算量消耗太大)</li>
-<li>(2). 取而代之的训练多个分类器，每个分类器对对应的尺度的物体进行检测 (共享feature map)</li>
-<li>(3). 对input image进行几次(很少)rescale, 同时学习一些model template(也就是分类器)</li>
-<li>(4). 对input image进行几次(很少)rescale, 但是利用插值去补充哪些缺失的feature map</li>
-<li>(5). RCNN简单的 warp proposal patches为CNN正常的自然尺度与(1)类似，但是不用计算整张图片的feature map，只需要特定的 patch 进行计算即可</li>
-<li>(6). RPN: 共享了原图的feature map, 用RPN后的框利用前面共享的feature map进行操作, 类似(2)</li>
-<li>(7). 但是认为RPN对不同尺度的物体使用了同样尺度的 model template可能会导致严重的scale inconsistency</li>
-<li><strong><em>(8). 本文做法: 在不同尺度上的feature map上使用几个不同size的template 进行处理</em></strong> PS:其实就是在提取到最后一个conv的特征图之前的特征图上进行feature map的提取、匹配</li>
+<li>提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow detector 进行结合, 适应性的决定一个图片困难还是简单去决定使用哪一个detector进行分类</li>
+<li>首先利用一个很简单的很快的detector首先生成一些instance proposals, 并基于这些内容去决定使用快的还是准的model去进行后面的步骤</li>
+<li>优点<ul>
+<li>(1). AF快的同时准确</li>
+<li>(2). 可以将两个不同架构的模型进行直接组合利用, 而不需要额外的training data</li>
+<li>(3). AF使用一个不平衡的学习框架去从hard images中辨认easy ones(???), 并且这个框架可以调整speed和accuracy之间的trade-off</li>
 </ul>
 </li>
-<li>upsampling部分: <ul>
-<li>(1). 认为 input image upsampling 并不会丰富图片的细节</li>
-<li>(2). 使用deconv的 feature rescale 代替 input image rescale</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>想法</p>
-<ol>
-<li>能不能 feature upsampling + input upsampling</li>
-<li></li>
+<li>hard 还是 easy 认为应该是由image中的instances决定影响的 -&gt; 因此在AF第一阶段放一个 instance generator去提取决定 easy vs. hard 分类的特征</li>
+<li>为了后续分类的高效以及准确这个很快的detector应该提供((1). 预测的类别 (2). 置信度分数 (3). bbox 坐标), 同时要求这个detector是高效而且比较准确的 -&gt; 文章使用 Tini Yolo.  选择top K个最高置信度分数的proposals去决定这个image是简单还是难(通过SVM分类器)</li>
+<li>对于这个 easy vs. hard SVM分类器, 认为并不简单, 因为要考虑到不平衡以及cost-sensitive 问题 -&gt; 因为大部分的images是简单的, 只需要都猜简单我们就能达到一个看上去很好的性能, 这显然是不行</li>
 </ol>
 
     </div>
@@ -347,8 +330,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/14/Simple-Summary-for-Is-Faster-R-CNN-Doing-Well-for-Pedestrian-Detection/" rel="next" title="Simple Summary for Is Faster R-CNN Doing Well for Pedestrian Detection?">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Is Faster R-CNN Doing Well for Pedestrian Detection?
+                <a href="/2019/10/15/Simple-Summary-for-Finding-Tiny-Faces/" rel="next" title="Simple Summary for Finding Tiny Faces">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Finding Tiny Faces
                 </a>
               
             </div>
@@ -356,10 +339,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/15/Simple-Summary-for-Finding-Tiny-Faces/" rel="prev" title="Simple Summary for Finding Tiny Faces">
-                  Simple Summary for Finding Tiny Faces <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -405,7 +384,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结-《A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结 《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》"><span class="nav-number">1.</span> <span class="nav-text">简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
