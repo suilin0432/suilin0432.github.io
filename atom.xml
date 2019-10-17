@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-15T13:14:10.577Z</updated>
+  <updated>2019-10-17T14:47:43.312Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective</title>
+    <link href="http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor%E2%80%99s-Perspective/"/>
+    <id>http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/</id>
+    <published>2019-10-17T14:47:22.000Z</published>
+    <updated>2019-10-17T14:47:43.312Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》"><a href="#简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》" class="headerlink" title="简单总结《Seeing Small Faces from Robust Anchor’s Perspective》"></a>简单总结《Seeing Small Faces from Robust Anchor’s Perspective》</h2><hr><p>PS: 阐述了一个很有意思的观点, 用一个我觉得不算严谨的EMO Score说明了为什么, 然后用一些方法去改进anchor. 个人觉得算是a bag of tricks吧 而且好像tricks都是旧的…</p><ol><li>本文主要内容: (1). 设计了新的anchor设计想法去支持很大程度的尺度不平衡的人脸检测问题(尤其是小人脸)  (2). 提出新的Expected Max Overlapping score -&gt; 理论上解释low overlap问题(就是为什么小脸不容易被anchor overlap)并且能用一些有效的anchor design策略去达到更高的face overlaps</li><li>本文定义小脸-&gt;less than 16*16</li><li>因为发现, 当前的anchor设计不能保证小脸和anchor boxes的high overlap</li><li>1.(2). 中策略包括了<ul><li>(1). anchor stride reduction with new network architectures</li><li>(2). extra shifted anchors</li><li>(3). stochastic face shifting</li></ul></li><li>提到了anchor-based detectors在shape与appearance invariance上有好的表现, 但是在scale invariance上表现不是很好</li><li>前面提到的low overlap问题是当进行分类以及对anchor box进行bbox regression之后高confidence的box并不和tiny faceoverlap的问题<ul><li>在训练前对每个face计算overlap最高的IoU -&gt; 然后将faces分到几个不同scale的组中 -&gt; 在每个scale的组中计算平均最高IoU score</li><li>得到结果: average IoU与recall rates成正相关 -&gt; 也就是本来的box就和小脸overlap很小和大脸overlap大</li><li>认为与small faces有小的overlap的anchor难以调整到GT上所以使得小脸的难以检测</li></ul></li><li>提到了<ul><li>(1). 减小anchor stride(看上去就不是一个feature map 对应pixel对应一组anchor了)</li><li>(2). 同时对anchor进行shifted, 而不是原本的中心以使得anchor变得更加密集化</li><li>(3). stochastically shift the faces in order to increase the chance of getting higher IoU overlaps(这是啥操作…)</li><li>(4). 用多个anchor去match low-overlappedfaces</li></ul></li><li>EMO scores<ul><li>(1). 首先提及传统的anchor-based的设定: <ul><li>原先anchor被视为GT的原则: 当anchor与obj overlap超过了一定的threshold或者anchor是和该物体overlap最大的anchor</li><li>anchor stride指的就是 feature map 尺度相比于原图的stride</li></ul></li><li>(2). 计算EMO Score:<ul><li>假设一张脸可以随机的出现在图片的任意位置处, 我们去这张脸可能存在的点为(x, y) 那么这张脸在全局出现的概率就可以看做为一个概率分布函数 p(x, y)</li><li>EMO Score = maxIoU*p(x, y)对x和y的二重积分</li><li>我们一般假设脸是均匀概率出现在各个位置的, 所以积分就变成了对 maxIoU 在不同位置的积分, 这个值是与anchor set的设置等有关的</li><li>因为每个anchor都是在空间上平移的, 所以对每个位置进行积分和对一个anchor stride大小的patch中积分是等价的</li><li>同时因为anchor关于patch的中心对称, 所以我们只要关注 1/4 个patch即可</li><li>计算方便这里假设用和某一个anchor大小设置相同的face进行计算得到最后的结果作为EMO Score</li><li>可以看出Face Scale与anchor越大, stride越小EMO越大</li><li>PS: em… 设定大小和anchor一样大 em… 能概括大部分情况吗? 而且其设定的一组anchor值即使是和anchor重叠最小的时候都保证和这个anchor重合…</li></ul></li></ul></li><li>Anchor Design的策略<ul><li>(1). Stride Reduction with Enlarged Feature Maps:<ul><li>因为anchor stride和feature stride相同, 所以认为扩大feature map可以帮助, 三种upsample方式</li><li><ol><li>双线性插值upsample</li></ol></li><li><ol start="2"><li>双线性插值+skip connection </li></ol></li><li><ol start="3"><li>空洞卷积代替down Sample</li></ol></li></ul></li><li>(2). Extra Shifted Anchors<ul><li>我们不去改变feature stride的大小, 我们改变anchor stride与feature stride的关系, 使得anchor stride &lt; feature stride</li><li>很简单的多添加anchor, 只是中心位置发生变化</li></ul></li><li>(3). Face Shift Jittering<ul><li>对图像去进行shift -&gt; 使得每个脸和anchor的overlap都可能增加</li></ul></li><li>(4). Hard Face Compensation<ul><li>当一个脸和一个anchor大于一个threshold的时候会被当做positive, 当所有的anchor都小于这个阈值的时候会将几个anchor作为positive em…</li></ul></li></ul></li><li>空洞卷积效果很好</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》&quot;&gt;&lt;a href=&quot;#简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》&quot; clas
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors</title>
