@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-18T02:40:58.010Z</updated>
+  <updated>2019-10-18T11:59:54.894Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection</title>
+    <link href="http://suilin.top/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/"/>
+    <id>http://suilin.top/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/</id>
+    <published>2019-10-18T11:59:26.000Z</published>
+    <updated>2019-10-18T11:59:54.894Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》"><a href="#重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》" class="headerlink" title="重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》"></a>重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》</h2><hr><p><strong><em>一、文章思路</em></strong></p><ol><li>希望能够根据feature/context去对instances进行特定层次的指定以及分配, 而不是按照传统的启发式的认为浅层(小size)就是小物体, 深层(大size)是大物体</li></ol><p><strong><em>二、引用观点与具体细节</em></strong></p><ol><li>陈述当前传统anchor-based detector的问题<ul><li>(1). 启发式的特征选择(确实很玄学)</li><li>(2). overlap方式的anchor sampling</li></ul></li><li>提到了FSAF模块可以自己工作进行anchor-free的detection, 也可以和anchor-based method结合去达到更好的效果</li><li><a href="http://openaccess.thecvf.com/content_cvpr_2018/papers/Zhu_Seeing_Small_Faces_CVPR_2018_paper.pdf" target="_blank" rel="noopener">[Seeing Small Faces from Robust Anchor’s Perspective]</a><ul><li>(1). <a href="https://suilin0432.github.io/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor%E2%80%99s-Perspective/" target="_blank" rel="noopener">点击这里见总结</a></li><li>(2). <strong>文章引用主要观点: 改进设计了针对小物体的anchor (文章主要思想是认为小物体不容易与anchor overlap, 所以导致了regression到GT的困难, 基于这个观点进行了一系列tricks的引入, 个人觉得前两个(1. 改变feature stride 2.增加非中心的anchor)比较靠谱)</strong></li></ul></li><li><a href="http://openaccess.thecvf.com/content_CVPR_2019/papers/He_Bounding_Box_Regression_With_Uncertainty_for_Accurate_Object_Detection_CVPR_2019_paper.pdf" target="_blank" rel="noopener">[Bounding box regression with uncertainty for accurate object detection.]</a><ul><li>(1). <a href="https://suilin0432.github.io/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/" target="_blank" rel="noopener">点击这里见总结</a></li><li>(2). <strong>文章引用主要观点: 说将bounding box的分布视为高斯分布去更好的进行定位 (是利用对Loss的改进使得anchor更加准确同时在NMS中引入了一些信息的一篇文章)</strong></li></ul></li><li>Ground-truth 和 loss的设计<ul><li>(1). 对bbox划分了有效区域和忽略区域</li><li>(2). classification输出的是K个map, 每个instance根据bbox划分的有效区, 忽略区, 无效区域产生的贡献不同: 有效区域视为positive, 无效区视为negative, 忽略取则不进行梯度的回传. 同时相近尺度上的忽略区域(这个区域包含了有效区域)也不进行梯度回传</li><li>(3). regression输出是4个MAP, 分别代表四个偏移量(距离中心上、下、左、右的距离), 都是类别无关的 输出时除以一个常数, inference的时候再乘上…</li></ul></li><li>Online Feature Selection<ul><li>(1). 根据给出的loss 算最小的那个scale作为训练的scale</li></ul></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》&quot;&gt;&lt;a href=&quot;#重新总结《Feature-Selective-Anchor-Free-Module-for
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection</title>
@@ -232,25 +256,6 @@
     
     
       <category term="文件下载" scheme="http://suilin.top/tags/%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>testMessage</title>
-    <link href="http://suilin.top/2019/10/11/testMessage/"/>
-    <id>http://suilin.top/2019/10/11/testMessage/</id>
-    <published>2019-10-11T01:04:36.000Z</published>
-    <updated>2019-10-11T01:10:51.036Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-      <category term="测试分类" scheme="http://suilin.top/categories/%E6%B5%8B%E8%AF%95%E5%88%86%E7%B1%BB/"/>
-    
-    
-      <category term="测试标签" scheme="http://suilin.top/tags/%E6%B5%8B%E8%AF%95%E6%A0%87%E7%AD%BE/"/>
     
   </entry>
   
