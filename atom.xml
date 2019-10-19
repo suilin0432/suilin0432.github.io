@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-19T07:27:23.501Z</updated>
+  <updated>2019-10-19T07:35:31.226Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="http://suilin.top/2019/10/19/Simple-Summary-for-Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection/"/>
     <id>http://suilin.top/2019/10/19/Simple-Summary-for-Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection/</id>
     <published>2019-10-19T07:27:04.000Z</published>
-    <updated>2019-10-19T07:27:23.501Z</updated>
+    <updated>2019-10-19T07:35:31.226Z</updated>
     
     <content type="html"><![CDATA[<h2 id="简单总结《Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection》"><a href="#简单总结《Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection》" class="headerlink" title="简单总结《Enhancement of SSD by concatenating feature maps for object detection》"></a>简单总结《Enhancement of SSD by concatenating feature maps for object detection》</h2><hr><ol><li>提到了添加feature map可以提升效果, 但简单的仅仅添加feature map有瓶颈, 本文考虑如何高效的利用feature map去提升性能</li><li>通过改变network的结构, 改变的是classifier backbone后面的部分</li><li>本文考虑到了两点:<ul><li>(1). 将不同层的feature map进行联合考虑</li><li>(2). 增加feature pyramid中layers的channel数</li></ul></li><li>本文实现方法:<ul><li>(1). 仅仅是pooling: 除了通过卷积得到的feature map之外, 还将上一层的feature map进行一个pooling操作, 然后将二者concate到一起</li><li>(2). 仅仅是deconv: 同上面操作, 只不过后面会将低层进行反卷积操作然后到高层上进行concate</li><li>(3). pooling + deconv: 两种操作都要</li><li>PS: 细节说了, 说了pooling+deconv时候每个feature pyramid都是2816channel的, (512, 1024, 512, 256, 256, 256)concate的</li></ul></li></ol><p>PS: 吐槽一下: COCO数据集直接就不给结果了 23333…</p><hr><p>问题</p><ol><li>em… em… 我觉得pooling这个操作对各个层次信息考量有点问题… 加个SE Attention可能更好… 或者该各层channel关系</li><li>而且不觉得前面层那么厚太浪费时间了吗</li></ol>]]></content>
     
@@ -36,7 +36,7 @@
     
     
     
-      <category term="Paper Sumamry" scheme="http://suilin.top/tags/Paper-Sumamry/"/>
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
     
   </entry>
   
