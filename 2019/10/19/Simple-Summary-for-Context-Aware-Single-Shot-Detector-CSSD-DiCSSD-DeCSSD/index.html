@@ -56,14 +56,19 @@
   };
 </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Suilin&#39;s Blog">
-<meta property="og:url" content="http://suilin.top/tags/测试标签/index.html">
+  <meta name="description" content="简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD) 文章想要解决的目的是: SSD没有很好的利用proposal box之外的context 所谓的DiCSSD, DeCSSD分别指的是使用Dilated convolution和Deconvolution的CSSD 实际有效感受野实际上远远小于理论感受野, 所以提出我们需要">
+<meta name="keywords" content="Paper Summary">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD)">
+<meta property="og:url" content="http://suilin.top/2019/10/19/Simple-Summary-for-Context-Aware-Single-Shot-Detector-CSSD-DiCSSD-DeCSSD/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD) 文章想要解决的目的是: SSD没有很好的利用proposal box之外的context 所谓的DiCSSD, DeCSSD分别指的是使用Dilated convolution和Deconvolution的CSSD 实际有效感受野实际上远远小于理论感受野, 所以提出我们需要">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-10-19T02:45:56.390Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Suilin&#39;s Blog">
-  <link rel="canonical" href="http://suilin.top/tags/测试标签/">
+<meta name="twitter:title" content="Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD)">
+<meta name="twitter:description" content="简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD) 文章想要解决的目的是: SSD没有很好的利用proposal box之外的context 所谓的DiCSSD, DeCSSD分别指的是使用Dilated convolution和Deconvolution的CSSD 实际有效感受野实际上远远小于理论感受野, 所以提出我们需要">
+  <link rel="canonical" href="http://suilin.top/2019/10/19/Simple-Summary-for-Context-Aware-Single-Shot-Detector-CSSD-DiCSSD-DeCSSD/">
 
 
 <script id="page-configurations">
@@ -71,13 +76,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
+    isPost: true,
     isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>Tag: 测试标签 | Suilin's Blog</title>
+  <title>Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD) | Suilin's Blog</title>
   
 
 
@@ -214,24 +219,6 @@
 
     
 
-  
-    
-    
-  
-    
-    
-  
-    
-    
-  
-    
-    
-  
-    
-    
-  
-  
-
 </nav>
 </div>
     </header>
@@ -249,61 +236,121 @@
           <div id="content" class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">测试标签
-          <small>Tag</small>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Context-Aware-Single-Shot-Detector-CSSD-DiCSSD-DeCSSD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD)
+            
+
+          
         </h1>
-      </div>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-19 10:45:37 / Modified: 10:45:56" itemprop="dateCreated datePublished" datetime="2019-10-19T10:45:37+08:00">2019-10-19</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
+        <h2 id="简单总结《Context-Aware-Single-Shot-Detector》-CSSD-DiCSSD-DeCSSD"><a href="#简单总结《Context-Aware-Single-Shot-Detector》-CSSD-DiCSSD-DeCSSD" class="headerlink" title="简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD)"></a>简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD)</h2><ol>
+<li>文章想要解决的目的是: SSD没有很好的利用proposal box之外的context</li>
+<li>所谓的DiCSSD, DeCSSD分别指的是使用Dilated convolution和Deconvolution的CSSD</li>
+<li>实际有效感受野实际上远远小于理论感受野, 所以提出我们需要更多的context去判断</li>
+<li>两种CSSD实现方法都是先扩大ERF到一定的scale上, 然后将这些fuses到一起产生新的feature map 或者复用高层次的feature map去产生不同感受野的feature map</li>
+<li>强调了感受野对小物体检测的作用(也引用了finding tiny faces那篇文章的观点)</li>
+<li>DeCSSD就是将高层的feature通过deconv以及后续接上conv后和resolution最大的那个feature map进行fusion然后fusion到一起形成一个新的feature map, 其余的高层feature map保持不变</li>
+<li>DiCSSD就是每层通过dilated conv将各层的feature map的感受野扩大, 然后层内进行weighted-sum fusion, 产生一系列的feature map去进行predict<ul>
+<li>这个思想引用自<a href="https://arxiv.gg363.site/pdf/1511.07122.pdf" target="_blank" rel="noopener">Multi-scale context aggregation by dilated convolutions</a> </li>
+</ul>
+</li>
+<li>后面的对感受野的描述先略过了… 有时间回头看</li>
+<li>PS: 文章用DeCSSD的时候感受野(context引入)的设计不知道是否考虑到了文章所分析的内容… 看看源码应该就知道了</li>
+</ol>
 
-  
-  
+    </div>
 
-  
     
-    <div class="collection-year">
-      <h1 class="collection-header">2019</h1>
-    </div>
-  
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2019-10-11T09:04:36+08:00"
-              content="2019-10-11">
-          10-11
-        </time>
-      </div>
-
-      <h2 class="post-title">
+    
+    
         
-          <a class="post-title-link" href="/2019/10/11/testMessage/" itemprop="url">
-            <span itemprop="name">testMessage</span>
-          </a>
-        
-      </h2>
+      
 
-    </header>
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/" rel="next" title="Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
   </article>
+  
+  
+  
 
-
-
-    </div>
   </div>
-  
-  
-  
-
-  
-
 
 
           </div>
@@ -320,6 +367,11 @@
 
   <aside class="sidebar">
     <div class="sidebar-inner">
+        
+        
+        
+        
+      
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
@@ -332,6 +384,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Context-Aware-Single-Shot-Detector》-CSSD-DiCSSD-DeCSSD"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD)</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
