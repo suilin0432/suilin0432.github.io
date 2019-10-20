@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-19T14:39:23.759Z</updated>
+  <updated>2019-10-20T02:43:52.312Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving</title>
+    <link href="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/"/>
+    <id>http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/</id>
+    <published>2019-10-20T02:43:33.000Z</published>
+    <updated>2019-10-20T02:43:52.312Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》"><a href="#简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》" class="headerlink" title="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》"></a>简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》</h2><hr><ol><li>本文贡献:<ul><li>(1). 提出一个lightweight同时effective的one-stage网络</li><li>(2). 对检测小物体很好</li></ul></li><li>认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体检测的layer, 但是其深度是不够的, 没有足够的语义信息, 所以本文用CFE Module去加深网络层次以及使用FFB模块去进行feature的fusion</li><li>CFE module:<ul><li>包含了一个shortcut分支, 以及一个卷积分支</li><li>卷积分支由两条同样结构的路径组成, 先进行1<em>1conv -&gt; (k</em>1conv -&gt; 1<em>kconv)(这个是k</em>k拆出来的, 目的是加速) -&gt; 1*1conv 然后两条路径进行concate</li></ul></li><li>FFB module:<ul><li>对本层和更深的一层conv都进行conv操作去消除feature map的语义gap, 然后将深层信息进行upsample, 然后dot sum</li></ul></li><li>总的来说就是feature fusion+加深模型的思路, 很常规但是效果就是好</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》&quot;&gt;&lt;a href=&quot;#简单总结《CFENet-An-Accurate-and-Eff
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Single-Shot Refinement Neural Network for Object Detection</title>
@@ -222,30 +246,6 @@
       
       
         &lt;h2 id=&quot;简单总结-《Finding-Tiny-Faces》&quot;&gt;&lt;a href=&quot;#简单总结-《Finding-Tiny-Faces》&quot; class=&quot;headerlink&quot; title=&quot;简单总结 《Finding Tiny Faces》&quot;&gt;&lt;/a&gt;简单总结 &lt;stron
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection</title>
-    <link href="http://suilin.top/2019/10/15/Simple-Summary-for-A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection/"/>
-    <id>http://suilin.top/2019/10/15/Simple-Summary-for-A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection/</id>
-    <published>2019-10-15T03:33:16.000Z</published>
-    <updated>2019-10-15T09:32:10.491Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结-《A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection》"><a href="#简单总结-《A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection》" class="headerlink" title="简单总结 《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》"></a>简单总结 <strong><em>《A Unified Multi-scale Deep Convolutional Neural Network for Fast Object Detection》</em></strong></h2><p>PS: MS-CNN<br>PS: <strong><em>使用数据库:  KITTI and Caltech</em></strong></p><ol><li>整个框架包含两部分: (1). proposal sub-network (2). detection sub-network</li><li>proposal sub-network中，对多尺度的output layer进行detection(多尺度是为了匹配不同scale的obj)</li><li>针对不同尺度的detector将会结合去产生一个更强的多尺度obj detector</li><li>feature upsampling 通过 deconv 进行 -&gt; 说是减少内存以及计算量的消耗(因为不是对原图像这种大的东西进行放大了)</li><li><strong>改进1:</strong> 单一尺度会因为感受野的统一而不能很好的匹配各种尺度的obj -&gt; multi-scale 为了解决感受野大小和物体大小之间的不一致问题</li><li><strong>改进2:</strong> 通过对 feature 进行 upsampling 而不是对 input image 进行 upsampling</li><li>陈述了几种覆盖匹配多种scale物体的方式 ((1).-(4).是针对非CNN的)<ul><li>(1). 对 input image 进行多尺度的scale 然后用这些尺度的input image去得到多尺度的feature map，而只需要学习一个简单的分类器 (对原图像进行尺度放缩然后每个都进行特征提取虽然精度高，但是计算量消耗太大)</li><li>(2). 取而代之的训练多个分类器，每个分类器对对应的尺度的物体进行检测 (共享feature map)</li><li>(3). 对input image进行几次(很少)rescale, 同时学习一些model template(也就是分类器)</li><li>(4). 对input image进行几次(很少)rescale, 但是利用插值去补充哪些缺失的feature map</li><li>(5). RCNN简单的 warp proposal patches为CNN正常的自然尺度与(1)类似，但是不用计算整张图片的feature map，只需要特定的 patch 进行计算即可</li><li>(6). RPN: 共享了原图的feature map, 用RPN后的框利用前面共享的feature map进行操作, 类似(2)</li><li>(7). 但是认为RPN对不同尺度的物体使用了同样尺度的 model template可能会导致严重的scale inconsistency</li><li><strong><em>(8). 本文做法: 在不同尺度上的feature map上使用几个不同size的template 进行处理</em></strong> PS:其实就是在提取到最后一个conv的特征图之前的特征图上进行feature map的提取、匹配</li></ul></li><li>upsampling部分: <ul><li>(1). 认为 input image upsampling 并不会丰富图片的细节</li><li>(2). 使用deconv的 feature rescale 代替 input image rescale</li></ul></li></ol><hr><p>想法</p><ol><li>能不能 feature upsampling + input upsampling</li><li></li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结-《A-Unified-Multi-scale-Deep-Convolutional-Neural-Network-for-Fast-Object-Detection》&quot;&gt;&lt;a href=&quot;#简单总结-《A-Unified-Multi-scale-Deep
       
     
     </summary>

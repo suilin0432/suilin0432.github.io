@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="下面是详细描述的连接prove">
-<meta name="keywords" content="Maths">
+  <meta name="description" content="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》  本文贡献: (1). 提出一个lightweight同时effective的one-stage网络 (2). 对检测小物体很好   认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体">
+<meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="The Marginal and Conditional distributions of multivariate normal distribution">
-<meta property="og:url" content="http://suilin.top/2019/10/12/The-Marginal-and-Conditional-distributions-of-multivariate-normal-distribution/index.html">
+<meta property="og:title" content="Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving">
+<meta property="og:url" content="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="下面是详细描述的连接prove">
+<meta property="og:description" content="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》  本文贡献: (1). 提出一个lightweight同时effective的one-stage网络 (2). 对检测小物体很好   认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-12T14:33:22.232Z">
+<meta property="og:updated_time" content="2019-10-20T02:43:52.312Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="The Marginal and Conditional distributions of multivariate normal distribution">
-<meta name="twitter:description" content="下面是详细描述的连接prove">
-  <link rel="canonical" href="http://suilin.top/2019/10/12/The-Marginal-and-Conditional-distributions-of-multivariate-normal-distribution/">
+<meta name="twitter:title" content="Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving">
+<meta name="twitter:description" content="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》  本文贡献: (1). 提出一个lightweight同时effective的one-stage网络 (2). 对检测小物体很好   认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体">
+  <link rel="canonical" href="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>The Marginal and Conditional distributions of multivariate normal distribution | Suilin's Blog</title>
+  <title>Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/12/The-Marginal-and-Conditional-distributions-of-multivariate-normal-distribution/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            The Marginal and Conditional distributions of multivariate normal distribution
+            Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-12 22:31:36 / Modified: 22:33:22" itemprop="dateCreated datePublished" datetime="2019-10-12T22:31:36+08:00">2019-10-12</time>
+              <time title="Created: 2019-10-20 10:43:33 / Modified: 10:43:52" itemprop="dateCreated datePublished" datetime="2019-10-20T10:43:33+08:00">2019-10-20</time>
             </span>
           
             
@@ -291,7 +291,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>下面是详细描述的连接<br><a href="http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html" target="_blank" rel="noopener">prove</a></p>
+        <h2 id="简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》"><a href="#简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》" class="headerlink" title="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》"></a>简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》</h2><hr>
+<ol>
+<li>本文贡献:<ul>
+<li>(1). 提出一个lightweight同时effective的one-stage网络</li>
+<li>(2). 对检测小物体很好</li>
+</ul>
+</li>
+<li>认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体检测的layer, 但是其深度是不够的, 没有足够的语义信息, 所以本文用CFE Module去加深网络层次以及使用FFB模块去进行feature的fusion</li>
+<li>CFE module:<ul>
+<li>包含了一个shortcut分支, 以及一个卷积分支</li>
+<li>卷积分支由两条同样结构的路径组成, 先进行1<em>1conv -&gt; (k</em>1conv -&gt; 1<em>kconv)(这个是k</em>k拆出来的, 目的是加速) -&gt; 1*1conv 然后两条路径进行concate</li>
+</ul>
+</li>
+<li>FFB module:<ul>
+<li>对本层和更深的一层conv都进行conv操作去消除feature map的语义gap, 然后将深层信息进行upsample, 然后dot sum</li>
+</ul>
+</li>
+<li>总的来说就是feature fusion+加深模型的思路, 很常规但是效果就是好</li>
+</ol>
 
     </div>
 
@@ -307,7 +325,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/Maths/" rel="tag"># Maths</a>
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
             
           </div>
         
@@ -317,8 +335,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/11/DownloadPage/" rel="next" title="DownloadPage">
-                  <i class="fa fa-chevron-left"></i> DownloadPage
+                <a href="/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/" rel="next" title="Simple Summary for Single-Shot Refinement Neural Network for Object Detection">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Single-Shot Refinement Neural Network for Object Detection
                 </a>
               
             </div>
@@ -326,10 +344,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/12/为文字版ubuntu配置中文支持/" rel="prev" title="为文字版ubuntu配置中文支持">
-                  为文字版ubuntu配置中文支持 <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -375,6 +389,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
