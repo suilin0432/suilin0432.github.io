@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》  本文贡献: (1). 提出一个lightweight同时effective的one-stage网络 (2). 对检测小物体很好   认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体">
+  <meta name="description" content="简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》 ###Introduction:  本文关注与训练过程, 提到关于模型结构有很多研究, 但是对于训练过程很少有人研究 认为训练效果不好有很大一部分原因是因为training process中的不平衡造成的 (1). sample level (2). feature">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving">
-<meta property="og:url" content="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/index.html">
+<meta property="og:title" content="Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection">
+<meta property="og:url" content="http://suilin.top/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》  本文贡献: (1). 提出一个lightweight同时effective的one-stage网络 (2). 对检测小物体很好   认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体">
+<meta property="og:description" content="简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》 ###Introduction:  本文关注与训练过程, 提到关于模型结构有很多研究, 但是对于训练过程很少有人研究 认为训练效果不好有很大一部分原因是因为training process中的不平衡造成的 (1). sample level (2). feature">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-20T02:43:52.312Z">
+<meta property="og:updated_time" content="2019-10-22T13:40:24.377Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving">
-<meta name="twitter:description" content="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》  本文贡献: (1). 提出一个lightweight同时effective的one-stage网络 (2). 对检测小物体很好   认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体">
-  <link rel="canonical" href="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/">
+<meta name="twitter:title" content="Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection">
+<meta name="twitter:description" content="简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》 ###Introduction:  本文关注与训练过程, 提到关于模型结构有很多研究, 但是对于训练过程很少有人研究 认为训练效果不好有很大一部分原因是因为training process中的不平衡造成的 (1). sample level (2). feature">
+  <link rel="canonical" href="http://suilin.top/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving | Suilin's Blog</title>
+  <title>Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving
+            Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-20 10:43:33 / Modified: 10:43:52" itemprop="dateCreated datePublished" datetime="2019-10-20T10:43:33+08:00">2019-10-20</time>
+              <time title="Created: 2019-10-22 21:39:51 / Modified: 21:40:24" itemprop="dateCreated datePublished" datetime="2019-10-22T21:39:51+08:00">2019-10-22</time>
             </span>
           
             
@@ -291,24 +291,74 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》"><a href="#简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》" class="headerlink" title="简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》"></a>简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》</h2><hr>
+        <h2 id="简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》"><a href="#简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》" class="headerlink" title="简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》"></a>简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》</h2><hr>
+<p>###Introduction:</p>
 <ol>
-<li>本文贡献:<ul>
-<li>(1). 提出一个lightweight同时effective的one-stage网络</li>
-<li>(2). 对检测小物体很好</li>
+<li>本文关注与训练过程, 提到关于模型结构有很多研究, 但是对于训练过程很少有人研究</li>
+<li>认为训练效果不好有很大一部分原因是因为training process中的不平衡造成的<ul>
+<li>(1). sample level</li>
+<li>(2). feature level</li>
+<li>(3). objective level</li>
 </ul>
 </li>
-<li>认为SSD之所以对小物体的检测效果不好的原因是: 因为conv4_3是主要负责小物体检测的layer, 但是其深度是不够的, 没有足够的语义信息, 所以本文用CFE Module去加深网络层次以及使用FFB模块去进行feature的fusion</li>
-<li>CFE module:<ul>
-<li>包含了一个shortcut分支, 以及一个卷积分支</li>
-<li>卷积分支由两条同样结构的路径组成, 先进行1<em>1conv -&gt; (k</em>1conv -&gt; 1<em>kconv)(这个是k</em>k拆出来的, 目的是加速) -&gt; 1*1conv 然后两条路径进行concate</li>
+<li>本文为了解决上述的imbalance问题, 使用<ul>
+<li>(1). IoU-balanced sampling</li>
+<li>(2). balanced feature pyramid</li>
+<li>(3). balanced L1 loss</li>
 </ul>
 </li>
-<li>FFB module:<ul>
-<li>对本层和更深的一层conv都进行conv操作去消除feature map的语义gap, 然后将深层信息进行upsample, 然后dot sum</li>
+<li>提到了目前的one-stage还是two-stage两者只是模型结构的pipeline不同, 其训练方法是一致的, 而训练的关键方面包括<ul>
+<li>(1). 选择的region是否有代表性</li>
+<li>(2). 是否提取的特征被充分利用了</li>
+<li>(3). 定义的目标函数(损失函数)是否合理</li>
+<li>文章通过表明传统的训练过程在这三方面上都存在着显著的不平衡去进行训练过程的改进</li>
 </ul>
 </li>
-<li>总的来说就是feature fusion+加深模型的思路, 很常规但是效果就是好</li>
+<li>sample level imbalance<ul>
+<li>(1). 认为在训练中, hard samples更加有用, 因为其对提升detection性能有很大的作用, 但是ramdom sampling通常会导致sample的结果被easy samples所充斥</li>
+<li>(2). 提到了OHEM可以帮助关注hard examples, 但是其对noise labels比较敏感, 而且会造成存储和计算上的损失</li>
+<li>(3). 提到focal-loss确实在one-stage方法上有一定效果, 但是在two-stage模型中基本上没有效果, 认为是two-stage过程将大部分的easy negative去除掉了</li>
+</ul>
+</li>
+<li>feature level imbalance:<ul>
+<li>(1). 深层次的信息具有的是更多的语义信息, 浅层的信息描述了更多的内容信息. 认为两者是互补的</li>
+<li>(2). 本文认为从各个resolution中提取平衡的信息效果更好, 但是之前的方法通常会过度关注与当前的信息而较少关注其他的信息</li>
+<li>(3). 认为非相邻的语义信息在信息流动的过程中, 每次经过fusion之后都会被稀释一次</li>
+</ul>
+</li>
+<li>objective level imbalance<ul>
+<li>(1). 目标检测通常融合了两个任务 -&gt; classification 和 localization. 认为两种目标应该平衡, 不平衡将会导致性能的损失</li>
+<li>(2). 认为如果不平衡, easy samples的小梯度会在hard samples的大梯度中被淹没, 因此会限制进一步的优化</li>
+</ul>
+</li>
+<li>Libra RCNN: 在上述的三个方面中去尽可能的达到平衡<ul>
+<li>(1). IoU-balanced sampling: 根据与GT的IoU挖掘hard samples</li>
+<li>(2). balanced feature pyramid: strengthens the multi-level features using the same deeply integrated balanced semantic features</li>
+<li>(3). balanced L1 loss: 加强关键的梯度, 对classification, overalllocalization, accurate localization的loss 进行再平衡</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>###Details:</p>
+<ol>
+<li>IoU-balanced Sampling<ul>
+<li>(1). 作者通过实验发现, 有超过60%的hard negatives与GT的overlap超过了0.05, 但是随机sampling只能提供30%超过0.05IoU的samples, 认为这会导致hard sample被easy sample淹没造成了急剧的不平衡</li>
+<li>(2). 原本的算法中, 我们会从M个candidates anchor中选取N个negative sample, 每个anchor被选中的概率为 N/M</li>
+<li>(3). 本文选择将anchor通过IoU划分为K个bins中, N个需要的anchor均匀的分布在其中, 就是每个中放 N/K个hard negatives, 这样每个anchor被选中的概率为: p_k = N/K * (1/M_k)</li>
+<li>PS: 实际上就是按照概率去进行采样…</li>
+</ul>
+</li>
+<li>Balanced Feature Pyramid<ul>
+<li>(1). 将信息不断的向前汇集去到分辨率最高的层之后(FPN做法), 将multi-scale的feature resize到一个中间的size(比如{C2,C3,C4,C5}中将其余的feature都resize到C4上, 分别使用插值和max-pooling)</li>
+<li>(2). 然后将这几个信息进行加权求和, C2, C3, C4, C5分别加权1/2 1/3 1/4 1/5</li>
+<li>(3). 然后特征还可以进一步的refine, 通过conv或者non-local模块进行refine, 认为使用non-local更加稳定, 文章中使用了embedded Gaussian non-local attention模块进行refine处理, 然后将图像rescale到金字塔尺度和原本的金字塔相加 (后续仍然可以按照FPN进行处理)</li>
+</ul>
+</li>
+<li>Balanced L1 Loss<ul>
+<li>(1). 作者提到直接增加localization loss会使得模型对outliers更加敏感, 也就是hard examples会产生很大的梯度, 远超过inliers(easy samples)所贡献的梯度, 对训练造成不好的影响.</li>
+<li>(2). Loss增加了对inliers的权重</li>
+</ul>
+</li>
 </ol>
 
     </div>
@@ -335,8 +385,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/" rel="next" title="Simple Summary for Single-Shot Refinement Neural Network for Object Detection">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Single-Shot Refinement Neural Network for Object Detection
+                <a href="/2019/10/22/Simple-Summary-for-DSSD-Deconvolutional-Single-Shot-Detector/" rel="next" title="Simple Summary for DSSD : Deconvolutional Single Shot Detector">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for DSSD : Deconvolutional Single Shot Detector
                 </a>
               
             </div>
@@ -344,10 +394,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/" rel="prev" title="Simple Summary for CornerNet: Detecting Objects as Paired Keypoints">
-                  Simple Summary for CornerNet: Detecting Objects as Paired Keypoints <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -393,7 +439,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《CFENet: An Accurate and Efficient Single-Shot Object Detector for Autonomous Driving》</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
