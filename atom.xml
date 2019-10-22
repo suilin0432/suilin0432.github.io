@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-22T01:21:29.215Z</updated>
+  <updated>2019-10-22T01:23:16.115Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for DSSD : Deconvolutional Single Shot Detector</title>
+    <link href="http://suilin.top/2019/10/22/Simple-Summary-for-DSSD-Deconvolutional-Single-Shot-Detector/"/>
+    <id>http://suilin.top/2019/10/22/Simple-Summary-for-DSSD-Deconvolutional-Single-Shot-Detector/</id>
+    <published>2019-10-22T01:22:54.000Z</published>
+    <updated>2019-10-22T01:23:16.115Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《DSSD-Deconvolutional-Single-Shot-Detector》"><a href="#简单总结《DSSD-Deconvolutional-Single-Shot-Detector》" class="headerlink" title="简单总结《DSSD : Deconvolutional Single Shot Detector》"></a>简单总结《DSSD : Deconvolutional Single Shot Detector》</h2><hr><ol><li>本文的核心就是引入context信息, 同时使用ResNet-101作为backbone</li><li>直接使用ResNet-101作为backbone反而会降低性能, 因此作者使用了新的prediction module才能达到更好的效果</li><li>主要的反卷积fusion结构见论文吧</li><li>没啥好总结的了… 具体的见之前的手写笔记吧</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《DSSD-Deconvolutional-Single-Shot-Detector》&quot;&gt;&lt;a href=&quot;#简单总结《DSSD-Deconvolutional-Single-Shot-Detector》&quot; class=&quot;headerlink&quot; title
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for CornerNet: Detecting Objects as Paired Keypoints</title>
@@ -222,30 +246,6 @@
       
       
         &lt;h2 id=&quot;简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》&quot;&gt;&lt;a href=&quot;#简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》&quot; clas
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors</title>
-    <link href="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/"/>
-    <id>http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/</id>
-    <published>2019-10-15T13:13:44.000Z</published>
-    <updated>2019-10-15T13:14:10.577Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》"><a href="#简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》" class="headerlink" title="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》"></a>简单总结 <strong><em>《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》</em></strong></h2><p>PS: 只看观点思路 没看细节</p><ol><li>提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow detector 进行结合, 适应性的决定一个图片困难还是简单去决定使用哪一个detector进行分类</li><li>首先利用一个很简单的很快的detector首先生成一些instance proposals, 并基于这些内容去决定使用快的还是准的model去进行后面的步骤</li><li>优点<ul><li>(1). AF快的同时准确</li><li>(2). 可以将两个不同架构的模型进行直接组合利用, 而不需要额外的training data</li><li>(3). AF使用一个不平衡的学习框架去从hard images中辨认easy ones(???), 并且这个框架可以调整speed和accuracy之间的trade-off</li></ul></li><li>hard 还是 easy 认为应该是由image中的instances决定影响的 -&gt; 因此在AF第一阶段放一个 instance generator去提取决定 easy vs. hard 分类的特征</li><li>为了后续分类的高效以及准确这个很快的detector应该提供((1). 预测的类别 (2). 置信度分数 (3). bbox 坐标), 同时要求这个detector是高效而且比较准确的 -&gt; 文章使用 Tini Yolo.  选择top K个最高置信度分数的proposals去决定这个image是简单还是难(通过SVM分类器)</li><li>对于这个 easy vs. hard SVM分类器, 认为并不简单, 因为要考虑到不平衡以及cost-sensitive 问题 -&gt; 因为大部分的images是简单的, 只需要都猜简单我们就能达到一个看上去很好的性能, 这显然是不行</li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》&quot;&gt;&lt;a href=&quot;#简单总结-《Adaptive-Fe
       
     
     </summary>
