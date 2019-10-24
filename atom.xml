@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-22T13:40:24.377Z</updated>
+  <updated>2019-10-24T01:26:54.493Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for Revisiting Feature Alignment for One-stage Object Detection</title>
+    <link href="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/"/>
+    <id>http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/</id>
+    <published>2019-10-24T01:26:22.000Z</published>
+    <updated>2019-10-24T01:26:54.493Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》"><a href="#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》" class="headerlink" title="简单总结《Revisiting Feature Alignment for One-stage Object Detection》"></a>简单总结《Revisiting Feature Alignment for One-stage Object Detection》</h2><hr><p>PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&gt; 对准提高了准确率</p><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol><li>强调了one-stage方法中anchor box和convolution feature misalignment(不对准)的问题 (不对准指的是默认的anchor的中心和实际anchor中心通常差距很大, 导致了我们在进行卷积利用信息的时候只利用了物体的部分信息, 很难去将anchor回归到真实的anchor中)</li><li>本文同时表明one-stage方法和two-stage方法之间的差距没有想象的那么大(说明im2col的ROIConv和RoIAlign之间有很大的联系) -&gt; 设计了RoIConv operator去将feature与anchor对准</li><li>提到了Object detection是位置敏感的任务, 需要位置敏感的特征 -&gt; 因此认为将feature与其对应的bbox进行对准是物体检测的重要核心. 认为多个anchor box共享feature机制打破了reference box与feature一对一的关系, 打破了物体检测的位置敏感性</li><li>认为 two-stage 的RoIPooling的对准操作有助于位置敏感性的建立, 但是one-stage中并没有这种操作</li><li>认为one-stage的多尺度特征的利用通过将不同尺度的anchor指定在正确的feature map level上, 部分解决了misalign问题, 但是只解决了由于scale导致的misalignment, 而不能解决aspect ratio所导致的misalignment.(PS: 如果只是aspect ratio带来的misalignment, 那么简单的将aspect ratio拆开不就是一种解决办法吗 -&gt; 尺度提升上带来的roi范围的变化认为可以涵盖这个问题)</li><li>贡献<ul><li>(1). 本文通过对im2col和RoIAlign的深层联系, 提出了一个新型的RoIConv, 使其能够在one-stage detectors中进行准确的特征对准.</li><li>(2). 提出了一个全卷积网络AlignDet, 能够很好的利用RoIConv学习到的anchor</li><li>(3). 使用ResNeXt-101 FPN作为BackBone, 效果很好.</li></ul></li></ol><hr><h3 id="Pilot-Experiment"><a href="#Pilot-Experiment" class="headerlink" title="Pilot Experiment"></a>Pilot Experiment</h3><p>通过实验表明了multi-scale在one-stage中带来的好处远远大于two-stage中带来的好处, 认为是one-stage缺少类似于RoIPooling之类的特征对准所带来的性能的损失, 强调了虽然multi-scale虽然一定程度上通过限制feature map的尺度减轻了特征对准的问题</p><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h3><ol><li>RoIAlign与Im2Col之间的关联<ul><li>(1). 认为两者操作方式是统一的, 只不过Im2Col是对固定的位置进行, RoIAlign则是针对RoI区域进行, 认为Im2Col是RoIAlign的一个特例</li><li>(2). conv是im2col与fc的结合, 认为one-stage detectors可以隐式的在backbone feature map上进行固定boungding box size的RoIAlign操作</li></ul></li><li>文章以P4层为例认为在其上的一个3<em>3conv对应的roi是48</em>48的能够不错的将32<em>32 – 64</em>64的anchor对齐, 但是对其他尺度的anchor对齐效果并不是很好, one-stage算法利用了FPN的结构, 使得不同尺度上能有不同尺度的roi去和anchor对应, 部分解决了不对准问题, 但是仍然不能解决极端aspect ratio等问题</li><li>RoI Convolution<ul><li>(1). 严重的不对准问题是由于实际的bbox与卷积对应的隐式的RoI区域不对应所导致的, 因此希望能够像deformable convolution似的自适应的将sample location定位到合适的位置</li><li>(2). 不像deformable conv一样去学习整个map上的所有pixel的offset, 而是定义offset为预定义的box与隐含的学习到的RoI的差值</li></ul></li><li>Fully Convolutional AlignDet<ul><li>(1). 在DPM module中上层进行了一个类似refindet的Anchor box的移动, 然后计算物体实际RoI和anchor位置的差值进行RoIconv去提取对齐位置的特征</li><li>PS: 但是这个anchor box实际上是不需要我们进行学习的, 而是依靠数据学习到的, 文章中的网络仅仅每个位置使用了一个anchor(隐式学习好的)</li><li>(2). 提取到对齐位置的特征之后利用这个特征map进行dense detection</li><li>PS: 相当于每个点进行一个RoI的学习, 然后用RoIconv实现类似RoIAlign的操作, 然后每个点都对应着这个点的特征, 利用这个特征去进行dense detection</li></ul></li><li>认为 Guided Anchor 只考虑了anchor的形状没有考虑anchor boxes的位置, 认为学习到的offset只是启发式的对本文offset计算方法的近似, 认为本文方法可以数学上保证严格的feature和对应anchor之间的对准, 而他们的方法是不可能的.</li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol><li>觉得一定程度上说明了小物体预测不准确很大程度上不是因为对不准造成的, 或者是这么对准之后仍然对不到小物体上这一问题.</li><li>多尺度无论对one-stage还是two-stage来说都有助于小物体的性能的提升, 同时特征, 背景信息的不断深挖也许是对小物体有效的方法</li><li>个人理解: RoIconv对齐的时候, 默认是和当前点3*3范围的”default anchor”进行对齐, 也就是实际上还是隐含了一个默认的初始anchor的, 如果增加这个anchor的数量以及上面学习到的anchor的四个参数的数量的时候会带来什么</li><li>PS: DPM取消掉了明面上的anchor, 认为学习到的四个参数是RoI区域(也就是相当于不refine默认的初始anchor, 而是直接预测anchor位置) 总觉得这个two-stage可以结合探讨出什么东西来</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》&quot;&gt;&lt;a href=&quot;#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection</title>
@@ -222,30 +246,6 @@
       
       
         &lt;h2 id=&quot;重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》&quot;&gt;&lt;a href=&quot;#重新总结《Feature-Selective-Anchor-Free-Module-for
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection</title>
-    <link href="http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/"/>
-    <id>http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/</id>
-    <published>2019-10-18T02:40:36.000Z</published>
-    <updated>2019-10-18T02:40:58.010Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》"><a href="#简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》" class="headerlink" title="简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》"></a>简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》</h2><hr><p>PS: 大概思想明白了, 没有仔细看为什么…</p><ol><li>文章的Motivation: 大规模数据集会倾向于将GT BBox定义的尽可能的clear, 但是很多情况下bbox的label是仍然模糊不清的 -&gt; 模糊不清指的是: (1). 单纯的标注不准确 (2). 遮挡带来的模糊 -&gt; 应该是因为label定义的不清楚/不是最优 导致了网络对物体边界的学习比较模糊, 所以导致了bbox在loss中占据了不应该占据的loss</li><li>本文提出一个boundingBox regression loss去同时学习bbox transformation与localization variance</li><li>认为传统的L1 Loss等并没有考虑到这种模糊的bbox label, 导致了有时候训练得到最高confident的anchor并不是最佳的anchor</li><li>作者先将bbox prediction和GT bbox看做高斯分布与狄拉克函数, 然后loss使用预测分布和GT分布的KL divergence作为新的bbox regression loss, 认为这么做的有点有<ul><li>(1). 可以捕捉到dataset中的ambiguities, bbox regressor因此会从ambiguous bbox中获得更小的loss</li><li>(2). 学习到的variance在post-processing中也十分有用</li><li>(3). 学习到的概率分布式可解释的</li></ul></li><li>文章想要预测每个位置的置信度, 用一个简单的Gaussian函数去进行定义, 就是以GT中心的高斯分布函数, σ标准差与置信度有关, 越小越确定, 当=0时就是GT了此时是狄拉克函数</li><li>损失函数计算 GT的狄拉克函数以及高斯分布的KL散度 然后作者将这个loss换了一个形式(具体就见文章吧)</li><li>Variance Voting: 在NMS中引入了分布信息, 具体见论文吧… 前面就已经和要找的方向跑偏了… 有时间回来看  </li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》&quot;&gt;&lt;a href=&quot;#简单总结《Bounding-Box-Regression-with-Uncertaint
       
     
     </summary>

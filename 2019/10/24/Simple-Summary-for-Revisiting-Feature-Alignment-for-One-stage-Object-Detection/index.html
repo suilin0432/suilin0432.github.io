@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Seeing Small Faces from Robust Anchor’s Perspective》 PS: 阐述了一个很有意思的观点, 用一个我觉得不算严谨的EMO Score说明了为什么, 然后用一些方法去改进anchor. 个人觉得算是a bag of tricks吧 而且好像tricks都是旧的…  本文主要内容: (1). 设计了新的anchor设计想法去支持很大程度的尺度">
+  <meta name="description" content="简单总结《Revisiting Feature Alignment for One-stage Object Detection》 PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&amp;gt; 对准提高了准确率 Introduction: 强调了one-stage">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective">
-<meta property="og:url" content="http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/index.html">
+<meta property="og:title" content="Simple Summary for Revisiting Feature Alignment for One-stage Object Detection">
+<meta property="og:url" content="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Seeing Small Faces from Robust Anchor’s Perspective》 PS: 阐述了一个很有意思的观点, 用一个我觉得不算严谨的EMO Score说明了为什么, 然后用一些方法去改进anchor. 个人觉得算是a bag of tricks吧 而且好像tricks都是旧的…  本文主要内容: (1). 设计了新的anchor设计想法去支持很大程度的尺度">
+<meta property="og:description" content="简单总结《Revisiting Feature Alignment for One-stage Object Detection》 PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&amp;gt; 对准提高了准确率 Introduction: 强调了one-stage">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-17T14:47:43.312Z">
+<meta property="og:updated_time" content="2019-10-24T01:26:54.493Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective">
-<meta name="twitter:description" content="简单总结《Seeing Small Faces from Robust Anchor’s Perspective》 PS: 阐述了一个很有意思的观点, 用一个我觉得不算严谨的EMO Score说明了为什么, 然后用一些方法去改进anchor. 个人觉得算是a bag of tricks吧 而且好像tricks都是旧的…  本文主要内容: (1). 设计了新的anchor设计想法去支持很大程度的尺度">
-  <link rel="canonical" href="http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/">
+<meta name="twitter:title" content="Simple Summary for Revisiting Feature Alignment for One-stage Object Detection">
+<meta name="twitter:description" content="简单总结《Revisiting Feature Alignment for One-stage Object Detection》 PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&amp;gt; 对准提高了准确率 Introduction: 强调了one-stage">
+  <link rel="canonical" href="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective | Suilin's Blog</title>
+  <title>Simple Summary for Revisiting Feature Alignment for One-stage Object Detection | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective
+            Simple Summary for Revisiting Feature Alignment for One-stage Object Detection
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-17 22:47:22 / Modified: 22:47:43" itemprop="dateCreated datePublished" datetime="2019-10-17T22:47:22+08:00">2019-10-17</time>
+              <time title="Created: 2019-10-24 09:26:22 / Modified: 09:26:54" itemprop="dateCreated datePublished" datetime="2019-10-24T09:26:22+08:00">2019-10-24</time>
             </span>
           
             
@@ -291,84 +291,51 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》"><a href="#简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》" class="headerlink" title="简单总结《Seeing Small Faces from Robust Anchor’s Perspective》"></a>简单总结《Seeing Small Faces from Robust Anchor’s Perspective》</h2><hr>
-<p>PS: 阐述了一个很有意思的观点, 用一个我觉得不算严谨的EMO Score说明了为什么, 然后用一些方法去改进anchor. 个人觉得算是a bag of tricks吧 而且好像tricks都是旧的…</p>
-<ol>
-<li>本文主要内容: (1). 设计了新的anchor设计想法去支持很大程度的尺度不平衡的人脸检测问题(尤其是小人脸)  (2). 提出新的Expected Max Overlapping score -&gt; 理论上解释low overlap问题(就是为什么小脸不容易被anchor overlap)并且能用一些有效的anchor design策略去达到更高的face overlaps</li>
-<li>本文定义小脸-&gt;less than 16*16</li>
-<li>因为发现, 当前的anchor设计不能保证小脸和anchor boxes的high overlap</li>
-<li>1.(2). 中策略包括了<ul>
-<li>(1). anchor stride reduction with new network architectures</li>
-<li>(2). extra shifted anchors</li>
-<li>(3). stochastic face shifting</li>
+        <h2 id="简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》"><a href="#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》" class="headerlink" title="简单总结《Revisiting Feature Alignment for One-stage Object Detection》"></a>简单总结《Revisiting Feature Alignment for One-stage Object Detection》</h2><hr>
+<p>PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&gt; 对准提高了准确率</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>强调了one-stage方法中anchor box和convolution feature misalignment(不对准)的问题 (不对准指的是默认的anchor的中心和实际anchor中心通常差距很大, 导致了我们在进行卷积利用信息的时候只利用了物体的部分信息, 很难去将anchor回归到真实的anchor中)</li>
+<li>本文同时表明one-stage方法和two-stage方法之间的差距没有想象的那么大(说明im2col的ROIConv和RoIAlign之间有很大的联系) -&gt; 设计了RoIConv operator去将feature与anchor对准</li>
+<li>提到了Object detection是位置敏感的任务, 需要位置敏感的特征 -&gt; 因此认为将feature与其对应的bbox进行对准是物体检测的重要核心. 认为多个anchor box共享feature机制打破了reference box与feature一对一的关系, 打破了物体检测的位置敏感性</li>
+<li>认为 two-stage 的RoIPooling的对准操作有助于位置敏感性的建立, 但是one-stage中并没有这种操作</li>
+<li>认为one-stage的多尺度特征的利用通过将不同尺度的anchor指定在正确的feature map level上, 部分解决了misalign问题, 但是只解决了由于scale导致的misalignment, 而不能解决aspect ratio所导致的misalignment.(PS: 如果只是aspect ratio带来的misalignment, 那么简单的将aspect ratio拆开不就是一种解决办法吗 -&gt; 尺度提升上带来的roi范围的变化认为可以涵盖这个问题)</li>
+<li>贡献<ul>
+<li>(1). 本文通过对im2col和RoIAlign的深层联系, 提出了一个新型的RoIConv, 使其能够在one-stage detectors中进行准确的特征对准.</li>
+<li>(2). 提出了一个全卷积网络AlignDet, 能够很好的利用RoIConv学习到的anchor</li>
+<li>(3). 使用ResNeXt-101 FPN作为BackBone, 效果很好.</li>
 </ul>
 </li>
-<li>提到了anchor-based detectors在shape与appearance invariance上有好的表现, 但是在scale invariance上表现不是很好</li>
-<li>前面提到的low overlap问题是当进行分类以及对anchor box进行bbox regression之后高confidence的box并不和tiny faceoverlap的问题<ul>
-<li>在训练前对每个face计算overlap最高的IoU -&gt; 然后将faces分到几个不同scale的组中 -&gt; 在每个scale的组中计算平均最高IoU score</li>
-<li>得到结果: average IoU与recall rates成正相关 -&gt; 也就是本来的box就和小脸overlap很小和大脸overlap大</li>
-<li>认为与small faces有小的overlap的anchor难以调整到GT上所以使得小脸的难以检测</li>
-</ul>
-</li>
-<li>提到了<ul>
-<li>(1). 减小anchor stride(看上去就不是一个feature map 对应pixel对应一组anchor了)</li>
-<li>(2). 同时对anchor进行shifted, 而不是原本的中心以使得anchor变得更加密集化</li>
-<li>(3). stochastically shift the faces in order to increase the chance of getting higher IoU overlaps(这是啥操作…)</li>
-<li>(4). 用多个anchor去match low-overlappedfaces</li>
-</ul>
-</li>
-<li>EMO scores<ul>
-<li>(1). 首先提及传统的anchor-based的设定: <ul>
-<li>原先anchor被视为GT的原则: 当anchor与obj overlap超过了一定的threshold或者anchor是和该物体overlap最大的anchor</li>
-<li>anchor stride指的就是 feature map 尺度相比于原图的stride</li>
-</ul>
-</li>
-<li>(2). 计算EMO Score:<ul>
-<li>假设一张脸可以随机的出现在图片的任意位置处, 我们去这张脸可能存在的点为(x, y) 那么这张脸在全局出现的概率就可以看做为一个概率分布函数 p(x, y)</li>
-<li>EMO Score = maxIoU*p(x, y)对x和y的二重积分</li>
-<li>我们一般假设脸是均匀概率出现在各个位置的, 所以积分就变成了对 maxIoU 在不同位置的积分, 这个值是与anchor set的设置等有关的</li>
-<li>因为每个anchor都是在空间上平移的, 所以对每个位置进行积分和对一个anchor stride大小的patch中积分是等价的</li>
-<li>同时因为anchor关于patch的中心对称, 所以我们只要关注 1/4 个patch即可</li>
-<li>计算方便这里假设用和某一个anchor大小设置相同的face进行计算得到最后的结果作为EMO Score</li>
-<li>可以看出Face Scale与anchor越大, stride越小EMO越大</li>
-<li>PS: em… 设定大小和anchor一样大 em… 能概括大部分情况吗? 而且其设定的一组anchor值即使是和anchor重叠最小的时候都保证和这个anchor重合…</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Anchor Design的策略<ul>
-<li>(1). Stride Reduction with Enlarged Feature Maps:<ul>
-<li>因为anchor stride和feature stride相同, 所以认为扩大feature map可以帮助, 三种upsample方式</li>
-<li><ol>
-<li>双线性插值upsample</li>
 </ol>
+<hr>
+<h3 id="Pilot-Experiment"><a href="#Pilot-Experiment" class="headerlink" title="Pilot Experiment"></a>Pilot Experiment</h3><p>通过实验表明了multi-scale在one-stage中带来的好处远远大于two-stage中带来的好处, 认为是one-stage缺少类似于RoIPooling之类的特征对准所带来的性能的损失, 强调了虽然multi-scale虽然一定程度上通过限制feature map的尺度减轻了特征对准的问题</p>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h3><ol>
+<li>RoIAlign与Im2Col之间的关联<ul>
+<li>(1). 认为两者操作方式是统一的, 只不过Im2Col是对固定的位置进行, RoIAlign则是针对RoI区域进行, 认为Im2Col是RoIAlign的一个特例</li>
+<li>(2). conv是im2col与fc的结合, 认为one-stage detectors可以隐式的在backbone feature map上进行固定boungding box size的RoIAlign操作</li>
+</ul>
 </li>
-<li><ol start="2">
-<li>双线性插值+skip connection </li>
+<li>文章以P4层为例认为在其上的一个3<em>3conv对应的roi是48</em>48的能够不错的将32<em>32 – 64</em>64的anchor对齐, 但是对其他尺度的anchor对齐效果并不是很好, one-stage算法利用了FPN的结构, 使得不同尺度上能有不同尺度的roi去和anchor对应, 部分解决了不对准问题, 但是仍然不能解决极端aspect ratio等问题</li>
+<li>RoI Convolution<ul>
+<li>(1). 严重的不对准问题是由于实际的bbox与卷积对应的隐式的RoI区域不对应所导致的, 因此希望能够像deformable convolution似的自适应的将sample location定位到合适的位置</li>
+<li>(2). 不像deformable conv一样去学习整个map上的所有pixel的offset, 而是定义offset为预定义的box与隐含的学习到的RoI的差值</li>
+</ul>
+</li>
+<li>Fully Convolutional AlignDet<ul>
+<li>(1). 在DPM module中上层进行了一个类似refindet的Anchor box的移动, 然后计算物体实际RoI和anchor位置的差值进行RoIconv去提取对齐位置的特征</li>
+<li>PS: 但是这个anchor box实际上是不需要我们进行学习的, 而是依靠数据学习到的, 文章中的网络仅仅每个位置使用了一个anchor(隐式学习好的)</li>
+<li>(2). 提取到对齐位置的特征之后利用这个特征map进行dense detection</li>
+<li>PS: 相当于每个点进行一个RoI的学习, 然后用RoIconv实现类似RoIAlign的操作, 然后每个点都对应着这个点的特征, 利用这个特征去进行dense detection</li>
+</ul>
+</li>
+<li>认为 Guided Anchor 只考虑了anchor的形状没有考虑anchor boxes的位置, 认为学习到的offset只是启发式的对本文offset计算方法的近似, 认为本文方法可以数学上保证严格的feature和对应anchor之间的对准, 而他们的方法是不可能的.</li>
 </ol>
-</li>
-<li><ol start="3">
-<li>空洞卷积代替down Sample</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>(2). Extra Shifted Anchors<ul>
-<li>我们不去改变feature stride的大小, 我们改变anchor stride与feature stride的关系, 使得anchor stride &lt; feature stride</li>
-<li>很简单的多添加anchor, 只是中心位置发生变化</li>
-</ul>
-</li>
-<li>(3). Face Shift Jittering<ul>
-<li>对图像去进行shift -&gt; 使得每个脸和anchor的overlap都可能增加</li>
-</ul>
-</li>
-<li>(4). Hard Face Compensation<ul>
-<li>当一个脸和一个anchor大于一个threshold的时候会被当做positive, 当所有的anchor都小于这个阈值的时候会将几个anchor作为positive em…</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>空洞卷积效果很好</li>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>觉得一定程度上说明了小物体预测不准确很大程度上不是因为对不准造成的, 或者是这么对准之后仍然对不到小物体上这一问题.</li>
+<li>多尺度无论对one-stage还是two-stage来说都有助于小物体的性能的提升, 同时特征, 背景信息的不断深挖也许是对小物体有效的方法</li>
+<li>个人理解: RoIconv对齐的时候, 默认是和当前点3*3范围的”default anchor”进行对齐, 也就是实际上还是隐含了一个默认的初始anchor的, 如果增加这个anchor的数量以及上面学习到的anchor的四个参数的数量的时候会带来什么</li>
+<li>PS: DPM取消掉了明面上的anchor, 认为学习到的四个参数是RoI区域(也就是相当于不refine默认的初始anchor, 而是直接预测anchor位置) 总觉得这个two-stage可以结合探讨出什么东西来</li>
 </ol>
 
     </div>
@@ -395,8 +362,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/" rel="next" title="Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors
+                <a href="/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/" rel="next" title="Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection
                 </a>
               
             </div>
@@ -404,10 +371,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/" rel="prev" title="Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection">
-                  Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -453,7 +416,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Seeing Small Faces from Robust Anchor’s Perspective》</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Revisiting Feature Alignment for One-stage Object Detection》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pilot-Experiment"><span class="nav-number">1.2.</span> <span class="nav-text">Pilot Experiment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.3.</span> <span class="nav-text">Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.4.</span> <span class="nav-text">问题</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->
