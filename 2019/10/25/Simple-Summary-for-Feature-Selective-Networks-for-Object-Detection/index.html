@@ -56,15 +56,19 @@
   };
 </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="tags">
-<meta property="og:url" content="http://suilin.top/tags/index.html">
+  <meta name="description" content="PS: 其实对这篇文章的具体做法不是很理解, 没能直观的产生一个好的理解. ##简单总结《Feature Selective Networks for Object Detection》  ###Intruduction:  本文认为传统的RoI特征选取没有关注到不同sub-region和不同aspect ratio的特性, 本文提出feature selective network去通过利用su">
+<meta name="keywords" content="Paper Summary">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simple Summary for Feature Selective Networks for Object Detection">
+<meta property="og:url" content="http://suilin.top/2019/10/25/Simple-Summary-for-Feature-Selective-Networks-for-Object-Detection/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="PS: 其实对这篇文章的具体做法不是很理解, 没能直观的产生一个好的理解. ##简单总结《Feature Selective Networks for Object Detection》  ###Intruduction:  本文认为传统的RoI特征选取没有关注到不同sub-region和不同aspect ratio的特性, 本文提出feature selective network去通过利用su">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-11T01:15:41.082Z">
+<meta property="og:updated_time" content="2019-10-25T05:53:28.977Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="tags">
-  <link rel="canonical" href="http://suilin.top/tags/">
+<meta name="twitter:title" content="Simple Summary for Feature Selective Networks for Object Detection">
+<meta name="twitter:description" content="PS: 其实对这篇文章的具体做法不是很理解, 没能直观的产生一个好的理解. ##简单总结《Feature Selective Networks for Object Detection》  ###Intruduction:  本文认为传统的RoI特征选取没有关注到不同sub-region和不同aspect ratio的特性, 本文提出feature selective network去通过利用su">
+  <link rel="canonical" href="http://suilin.top/2019/10/25/Simple-Summary-for-Feature-Selective-Networks-for-Object-Detection/">
 
 
 <script id="page-configurations">
@@ -72,16 +76,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false,
-    isPage: true,
+    isPost: true,
+    isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>
-      tags | Suilin's Blog
-    
-  </title>
+  <title>Simple Summary for Feature Selective Networks for Object Detection | Suilin's Blog</title>
   
 
 
@@ -218,24 +219,6 @@
 
     
 
-  
-    
-    
-  
-    
-    
-  
-    
-    
-  
-    
-    
-  
-    
-    
-  
-  
-
 </nav>
 </div>
     </header>
@@ -254,47 +237,135 @@
             
 
   <div class="posts-expand">
-    
-    
-    
-    <div class="post-block" lang="default">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/25/Simple-Summary-for-Feature-Selective-Networks-for-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
       <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            Simple Summary for Feature Selective Networks for Object Detection
+            
 
-<h1 class="post-title" itemprop="name headline">tags
-  
+          
+        </h1>
 
-</h1>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
 
-<div class="post-meta">
-  
+              
+                
+              
 
-</div>
+              <time title="Created: 2019-10-25 13:52:36 / Modified: 13:53:28" itemprop="dateCreated datePublished" datetime="2019-10-25T13:52:36+08:00">2019-10-25</time>
+            </span>
+          
+            
 
-</header>
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
+        <p>PS: 其实对这篇文章的具体做法不是很理解, 没能直观的产生一个好的理解.</p>
+<p>##简单总结《Feature Selective Networks for Object Detection》</p>
+<hr>
+<p>###Intruduction:</p>
+<ol>
+<li>本文认为传统的RoI特征选取没有关注到不同sub-region和不同aspect ratio的特性, 本文提出feature selective network去通过利用sub-regions和aspect ratios之间的不平等去重构RoI的特征表达.</li>
+<li>本文网络提供sub-region attention bank和aspect ratio attention bank. 之后RoI-based sub-region attention map和aspect ratio attention map会选择性的从banks中pool, 用来去refine 原本的RoI features去更好的帮助RoI进行分类. </li>
+<li>强调了一下观点, 认为CNN的参数共享导致了位置不变性, 导致了提取图片特征是对于对位置敏感的detection不是很好, 认为物体通常在不同的sub-regions中因为不同的特征表达有着不同的空间特性. eg: 物体的边界通常需要更多的features去描述边界信息以更好的进行物体的定位, 中心部分则需要更多的纹理信息去取进行分类, 同样不同类别的和不同视角的物体都对应着不同的aspect ratio. 而在RoI中提取到的信息通常是独立于sub-region和aspect ratio的, 关注与conv feature map所有的channel, 而没有考虑位置和aspect ratio带来的影响</li>
+<li>本文提出了feature selective network, 引入了dimension reduction, region-wise feature attention. 在本文的network中, RoI feature的提取考虑到了sub-region variantion 以及aspect ratio. 同时因为dimension reduction, 将传统的region classifier中的multiple high-capacity conv或者fc层替换成了一个low-capacity fc层</li>
+</ol>
+<p>###Method:</p>
+<ol>
+<li>General Architecture<ul>
+<li>(1). 前面部分还是经过backbone, 然后通过RPN生成RoI, 文章关注部分是RoI特征提取部分</li>
+<li>(2). 首先进行region-wise attention generation之前, 上路会使用一个1*1卷积去进行特征空间的降维, 然后进行roi pooling. 每个RoI被划分为N_sr个sub-region去进行sub-region attention map extraction</li>
+<li>(3). 然后会针对N_sr个子区域的划分, 生成N_sr*C_s维的sub-regio attention bank(使用一组设计好的带有位移的卷积层), 同样也会根据N_ar去进行aspect-ratio attention bank的制作</li>
+<li>(4). 对两个bank进行定制的selective RoI pooling去得到最终的attention map, 然后将两个attention map进行相加, 之后有上路的roi featuremap和这个attention map进行点乘得到selected RoI feature.</li>
+<li>(5). 最后使用一个low-capacity detection subnetwork去进行分类和类别无关的box regression offsets.</li>
+</ul>
+</li>
+<li>Sub-Region Attention Bank<ul>
+<li>(1). 针对不同位置进行带偏移的卷积操作</li>
+</ul>
+</li>
+<li>Aspect Ratio Attention Bank<ul>
+<li>(1). 利用1*1 conv, 怎么处理没太看明白…</li>
+</ul>
+</li>
+<li>Selective RoI Pooling: 从对每个channel选择最大权重的block… 不知道为啥这么做</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
       
-      
-      <div class="post-body">
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-              5 tags in total
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/" rel="next" title="Simple Summary for Revisiting Feature Alignment for One-stage Object Detection">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Revisiting Feature Alignment for One-stage Object Detection
+                </a>
+              
             </div>
-            <div class="tag-cloud-tags">
-              <a href="/tags/Maths/" style="font-size: 12px; color: #ccc">Maths</a> <a href="/tags/Paper-Summary/" style="font-size: 30px; color: #111">Paper Summary</a> <a href="/tags/Ubuntu/" style="font-size: 12px; color: #ccc">Ubuntu</a> <a href="/tags/文件下载/" style="font-size: 12px; color: #ccc">文件下载</a> <a href="/tags/测试标签/" style="font-size: 12px; color: #ccc">测试标签</a>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
             </div>
           </div>
         
-      </div>
-      
-      
-      
-    </div>
+      </footer>
     
+  </article>
+  
+  
+  
 
-    
-    
-    
   </div>
 
 
