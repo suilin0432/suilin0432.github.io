@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》 PS: 大概思想明白了, 没有仔细看为什么…  文章的Motivation: 大规模数据集会倾向于将GT BBox定义的尽可能的clear, 但是很多情况下bbox的label是仍然模糊不清的 -&amp;gt; 模糊不清指的是: (1). 单纯的标注不">
+  <meta name="description" content="简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》 PS: 个人认为: 为什么都说anchor set的初始设置会影响和GT的overlap导致一定问题的存在但是还是设置anchor set -&amp;gt; 还是因为classification之后的信息仍然是位置信息不敏感的, 需要设定一个范围值去进行预先设">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection">
-<meta property="og:url" content="http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/index.html">
+<meta property="og:title" content="Simple Summary for Accurate Single Stage Detector Using Recurrent Rolling Convolution">
+<meta property="og:url" content="http://suilin.top/2019/10/27/Simple-Summary-for-Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》 PS: 大概思想明白了, 没有仔细看为什么…  文章的Motivation: 大规模数据集会倾向于将GT BBox定义的尽可能的clear, 但是很多情况下bbox的label是仍然模糊不清的 -&amp;gt; 模糊不清指的是: (1). 单纯的标注不">
+<meta property="og:description" content="简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》 PS: 个人认为: 为什么都说anchor set的初始设置会影响和GT的overlap导致一定问题的存在但是还是设置anchor set -&amp;gt; 还是因为classification之后的信息仍然是位置信息不敏感的, 需要设定一个范围值去进行预先设">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-18T02:40:58.010Z">
+<meta property="og:updated_time" content="2019-10-27T08:04:58.174Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection">
-<meta name="twitter:description" content="简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》 PS: 大概思想明白了, 没有仔细看为什么…  文章的Motivation: 大规模数据集会倾向于将GT BBox定义的尽可能的clear, 但是很多情况下bbox的label是仍然模糊不清的 -&amp;gt; 模糊不清指的是: (1). 单纯的标注不">
-  <link rel="canonical" href="http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/">
+<meta name="twitter:title" content="Simple Summary for Accurate Single Stage Detector Using Recurrent Rolling Convolution">
+<meta name="twitter:description" content="简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》 PS: 个人认为: 为什么都说anchor set的初始设置会影响和GT的overlap导致一定问题的存在但是还是设置anchor set -&amp;gt; 还是因为classification之后的信息仍然是位置信息不敏感的, 需要设定一个范围值去进行预先设">
+  <link rel="canonical" href="http://suilin.top/2019/10/27/Simple-Summary-for-Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection | Suilin's Blog</title>
+  <title>Simple Summary for Accurate Single Stage Detector Using Recurrent Rolling Convolution | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/27/Simple-Summary-for-Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection
+            Simple Summary for Accurate Single Stage Detector Using Recurrent Rolling Convolution
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-18 10:40:36 / Modified: 10:40:58" itemprop="dateCreated datePublished" datetime="2019-10-18T10:40:36+08:00">2019-10-18</time>
+              <time title="Created: 2019-10-27 16:04:39 / Modified: 16:04:58" itemprop="dateCreated datePublished" datetime="2019-10-27T16:04:39+08:00">2019-10-27</time>
             </span>
           
             
@@ -291,21 +291,32 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》"><a href="#简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》" class="headerlink" title="简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》"></a>简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》</h2><hr>
-<p>PS: 大概思想明白了, 没有仔细看为什么…</p>
-<ol>
-<li>文章的Motivation: 大规模数据集会倾向于将GT BBox定义的尽可能的clear, 但是很多情况下bbox的label是仍然模糊不清的 -&gt; 模糊不清指的是: (1). 单纯的标注不准确 (2). 遮挡带来的模糊 -&gt; 应该是因为label定义的不清楚/不是最优 导致了网络对物体边界的学习比较模糊, 所以导致了bbox在loss中占据了不应该占据的loss</li>
-<li>本文提出一个boundingBox regression loss去同时学习bbox transformation与localization variance</li>
-<li>认为传统的L1 Loss等并没有考虑到这种模糊的bbox label, 导致了有时候训练得到最高confident的anchor并不是最佳的anchor</li>
-<li>作者先将bbox prediction和GT bbox看做高斯分布与狄拉克函数, 然后loss使用预测分布和GT分布的KL divergence作为新的bbox regression loss, 认为这么做的有点有<ul>
-<li>(1). 可以捕捉到dataset中的ambiguities, bbox regressor因此会从ambiguous bbox中获得更小的loss</li>
-<li>(2). 学习到的variance在post-processing中也十分有用</li>
-<li>(3). 学习到的概率分布式可解释的</li>
+        <h2 id="简单总结《Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution》"><a href="#简单总结《Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution》" class="headerlink" title="简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》"></a>简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》</h2><hr>
+<p>PS: 个人认为: 为什么都说anchor set的初始设置会影响和GT的overlap导致一定问题的存在但是还是设置anchor set -&gt; 还是因为classification之后的信息仍然是位置信息不敏感的, 需要设定一个范围值去进行预先设置, 然后进行回归. 如果直接在原位置上进行center点的预测可能会导致效果的不好. PS: 可能这就是为什么cornerNet等选择使用Hourglass作为backbone而不是使用resnet做.</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文提出了一个Recurrent Rolling Convolution(RRC)的结构使得-&gt;deep in context</li>
+<li>强调定位精确度(localization quality), 本文通过循环的引入context到bounding box regression, 强调high IoU threshold条件下</li>
+<li>还是老观点: 绝大多数的低质量的bbox是因为小物体和overlap物体的错误定位导致的</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>首先强调了faster-rcnn等two-stage方法使用last layer feature map相比于原图像因为经过了几个pool的处理变得很小. 对小物体检测造成了很大的影响. 而使用multi-scale输入图片是一种解决办法, 但是相对来说效率会很低</li>
+<li>认为在SSD中强调的观点(low resolution-&gt;big obj, high resolution-&gt;small obj)是很有道理的</li>
+<li>但是说SSD性能是一直比不上two-stage方法的, 同时当对IoU要求越来越高的时候, 两者之间的差距越来越大. 认为原因是: 检测结果基于了一个太强的假设 -&gt; 每一层feature map都要独立的去对其scale所产生的output负责 -&gt; 每一层feature map都需要有足够的信息去支持detection以及object的精确定位. 即:<ul>
+<li>(1). feature map需要有足够的resolution去表示物体的细节信息</li>
+<li>(2). 将image转变为feature map的映射需要足够深使得信息能够在feature map上达到一个足够抽象化的语义信息</li>
+<li>(3). feature map需要包含适当的contextual信息</li>
+<li>强调可以发现, 在上一层和下一层相比, 深层次反而resolution要小, 而浅层次的深度不够, 认为相对来说难以训练</li>
+<li>认为Faster RCNN则不存在这个问题, 但是Faster RCNN仍然存在没有足够的resolution去表示物体的细节信息的这个问题</li>
 </ul>
 </li>
-<li>文章想要预测每个位置的置信度, 用一个简单的Gaussian函数去进行定义, 就是以GT中心的高斯分布函数, σ标准差与置信度有关, 越小越确定, 当=0时就是GT了此时是狄拉克函数</li>
-<li>损失函数计算 GT的狄拉克函数以及高斯分布的KL散度 然后作者将这个loss换了一个形式(具体就见文章吧)</li>
-<li>Variance Voting: 在NMS中引入了分布信息, 具体见论文吧… 前面就已经和要找的方向跑偏了… 有时间回来看  </li>
+<li>基于3中所陈述的原因, 本文提出的network本质就是尝试将各个阶段信息进行融合, 具体式子和形式见paper吧</li>
+<li>RNN for Conditional Feature Aggregation<ul>
+<li>(1). 和SSD类似, 其认为high resolution应该负责小物体的检测(对应3.(1))  对模糊物体需要有足够抽象的信息去确定(也就是模型要足够深)  等等</li>
+<li>认为中间层次要能同时追溯到浅层和深层(也就是feature fusion, 本文用concate完成的)</li>
+</ul>
+</li>
+<li>具体操作就不看了, 思路还是feature fusion, 只不过是强调的过程不太一样, 这里做的fusion真的很多…</li>
 </ol>
 
     </div>
@@ -332,8 +343,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/" rel="next" title="Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective
+                <a href="/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/" rel="next" title="Simple Summary for Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution
                 </a>
               
             </div>
@@ -341,10 +352,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/" rel="prev" title="Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection">
-                  Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -390,7 +397,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->

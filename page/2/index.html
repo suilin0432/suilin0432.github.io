@@ -236,6 +236,92 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/" class="post-title-link" itemprop="url">Simple Summary for Weaving Multi-scale Context for Single Shot Detector</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-19 17:11:01 / Modified: 17:11:18" itemprop="dateCreated datePublished" datetime="2019-10-19T17:11:01+08:00">2019-10-19</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》"><a href="#简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》" class="headerlink" title="简单总结《Weaving Multi-scale Context for Single Shot Detector》"></a>简单总结《Weaving Multi-scale Context for Single Shot Detector》</h2><hr>
+<p>PS: 颜水成组作品喲</p>
+<ol>
+<li>文章出发点: feature fusion(mulit-scale context fusion)确实能够提升SSD的物体检测的效果, 但是现在的fusion technique实在是计算量太大了, 消除了SSD的速度上的优势</li>
+<li>本文方法是: 迭代的从相邻的scale中进行context information的weave, 同时因为堆叠的是light-weight blocks, WeaveNet可以简单的不用batch normalization训练, 并且可以使用文章提出的结构简化进行加速</li>
+<li>认为高层次的信息是丢失了精确位置信息的</li>
+<li>具体设计:<br> (1). 将相邻两层进行融合, 然后下一阶段同样如此, 低分辨feature map使用双线性插值(后面又说用channel-wise的deconv…)进行放大操作, 高分辨feature map用max pool进行下采样<br> (2). 融合先进行简单的concate, 然后输入到文章设计的block中进行处理, 产生下一个阶段需要的输入<br> (3). block结构是两个conv+一个直接传递的分支, conv处理后的两个分支会给上一层和下一层进行处理, 直接传递的就是当层的作为下一个scale的数据 </li>
+<li>文章没有说明白… 但是看Figure3应该是给上下层的信息是16 channel的, 当层的信息为32channel. 64channel -&gt; 上下层给16中间留32层 … <ul>
+<li>但是channel怎么分的也没有说明白… 如果是固定32层原封不动的话em… 也就是一直会保留最原始的信息, 然后给上下层的信息是weave到最后的… 行吧</li>
+</ul>
+</li>
+<li>简化操作就先不看了…</li>
+<li>吐槽一下性能图… 自己用Titan X跑然后SSD不用… 没仔细看以为比SSD性能还要好</li>
+<li>性能为啥要好: em… 因为block很轻量级… 其feature channel没有明说, 但是看上去是应该小的… 所以快…</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1156,88 +1242,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/12/为文字版ubuntu配置中文支持/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/12/为文字版ubuntu配置中文支持/" class="post-title-link" itemprop="url">为文字版ubuntu配置中文支持</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-12 22:43:02 / Modified: 22:45:37" itemprop="dateCreated datePublished" datetime="2019-10-12T22:43:02+08:00">2019-10-12</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ol>
-<li><p>安装中文包:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install language-pack-zh*</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置环境变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//首先</span><br><span class="line">sudo vim /etc/environment</span><br><span class="line">//在上面的文件中加入下面的设置</span><br><span class="line">LANG=<span class="string">"zh_CN.UTF-8"</span></span><br><span class="line">LANGUAGE=<span class="string">"zh_CN:zh:en_US:en"</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>重新设置环境变量选项</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg-reconfigure locales</span><br><span class="line">// 然后选择全部区域中使用 zh_CN.UTF-8 即可</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1287,7 +1291,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
