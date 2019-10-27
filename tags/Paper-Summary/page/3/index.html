@@ -56,19 +56,14 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》 ###Introduction:  文章主要就是设计了RFB block, 说是考虑到了人的感受野的设计 木历史能够从lightweight CNN模型中加强特征的学习, 从而构建一个快速且准确的detector. RFB模块使用多路具有不同尺度空洞卷积进行">
-<meta name="keywords" content="Paper Summary">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Receptive Field Block Net for Accurate and Fast Object Detection">
-<meta property="og:url" content="http://suilin.top/2019/10/25/Simple-Summary-for-Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Suilin&#39;s Blog">
+<meta property="og:url" content="http://suilin.top/tags/Paper-Summary/page/3/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》 ###Introduction:  文章主要就是设计了RFB block, 说是考虑到了人的感受野的设计 木历史能够从lightweight CNN模型中加强特征的学习, 从而构建一个快速且准确的detector. RFB模块使用多路具有不同尺度空洞卷积进行">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-25T12:37:47.961Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Receptive Field Block Net for Accurate and Fast Object Detection">
-<meta name="twitter:description" content="简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》 ###Introduction:  文章主要就是设计了RFB block, 说是考虑到了人的感受野的设计 木历史能够从lightweight CNN模型中加强特征的学习, 从而构建一个快速且准确的detector. RFB模块使用多路具有不同尺度空洞卷积进行">
-  <link rel="canonical" href="http://suilin.top/2019/10/25/Simple-Summary-for-Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection/">
+<meta name="twitter:title" content="Suilin&#39;s Blog">
+  <link rel="canonical" href="http://suilin.top/tags/Paper-Summary/page/3/">
 
 
 <script id="page-configurations">
@@ -76,13 +71,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: true,
+    isPost: false,
     isPage: false,
     isArchive: false
   };
 </script>
 
-  <title>Simple Summary for Receptive Field Block Net for Accurate and Fast Object Detection | Suilin's Blog</title>
+  <title>Tag: Paper Summary | Suilin's Blog</title>
   
 
 
@@ -219,6 +214,24 @@
 
     
 
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+
 </nav>
 </div>
     </header>
@@ -236,132 +249,64 @@
           <div id="content" class="content">
             
 
-  <div class="posts-expand">
-      
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/25/Simple-Summary-for-Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            Simple Summary for Receptive Field Block Net for Accurate and Fast Object Detection
-            
-
-          
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        <h1 class="collection-header">Paper Summary
+          <small>Tag</small>
         </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-25 20:37:27 / Modified: 20:37:47" itemprop="dateCreated datePublished" datetime="2019-10-25T20:37:27+08:00">2019-10-25</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+      </div>
 
       
-        <h2 id="简单总结《Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection》"><a href="#简单总结《Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection》" class="headerlink" title="简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》"></a>简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》</h2><hr>
-<p>###Introduction:</p>
-<ol>
-<li>文章主要就是设计了RFB block, 说是考虑到了人的感受野的设计</li>
-<li>木历史能够从lightweight CNN模型中加强特征的学习, 从而构建一个快速且准确的detector.</li>
-<li>RFB模块使用多路具有不同尺度空洞卷积进行操作使得对应不同的RF然后进行reshape产生最终输出</li>
-<li>提到了关于感受野的一些工作:<ul>
-<li>(1). Inception block: 使用不同kernel size的分支去捕捉multi-scale的information. 但是认为所有kernel都从同一中心进行sample, 需要更多的kernel去达到一个比较大的尺度, 并且会因此失去一些重要细节(指的是相同的关注可能会使网络失去对不同视野的重要程度的辨别能力).</li>
-<li>(2). ASPP: 空洞卷积使得sample点和中心的距离不同, 但是feature和前一阶段conv layer因为有相同大小的kernel size而有一个同样的resolution, 对所有位置的信息同等程度对待, 可能会导致object和context信息的混淆</li>
-<li>(3). Deformable CNN: 虽然是可变的, 但是仍然在其RF内各个pixel是同等程度对待的(指的是, 本文的模块中因为会不同的分支考虑不同的采样范围感受野是有重叠的, 且中心是关注最多的, 越向外关注越少)</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>###Method:</p>
-<ol>
-<li>Visual Cortex Revisit: 认为RF和偏心度(在network中对应的就是采样点到中心的距离)应该是正相关的</li>
-<li>设计看图吧… 整个文章的总体思想就是很明确的针对感受野以及偏心率作文章</li>
-</ol>
-<hr>
-<p>###想法:<br>实验结果很nice 模型很干净 图很漂亮 文章主题很明确… 我要是能发现这么一个idea就好了 -_-</p>
+
+  
+  
+
+  
+    
+    <div class="collection-year">
+      <h1 class="collection-header">2019</h1>
+    </div>
+  
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2019-10-14T22:54:34+08:00"
+              content="2019-10-14">
+          10-14
+        </time>
+      </div>
+
+      <h2 class="post-title">
+        
+          <a class="post-title-link" href="/2019/10/14/Simple-Summary-for-Is-Faster-R-CNN-Doing-Well-for-Pedestrian-Detection/" itemprop="url">
+            <span itemprop="name">Simple Summary for Is Faster R-CNN Doing Well for Pedestrian Detection?</span>
+          </a>
+        
+      </h2>
+
+    </header>
+  </article>
+
+
 
     </div>
-
-    
-    
-    
-        
-      
-
-      <footer class="post-footer">
-          
-            
-          
-          <div class="post-tags">
-            
-              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
-            
-          </div>
-        
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-next post-nav-item">
-              
-                <a href="/2019/10/25/Simple-Summary-for-Feature-Selective-Networks-for-Object-Detection/" rel="next" title="Simple Summary for Feature Selective Networks for Object Detection">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Feature Selective Networks for Object Detection
-                </a>
-              
-            </div>
-
-            <span class="post-nav-divider"></span>
-
-            <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/" rel="prev" title="Simple Summary for Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution">
-                  Simple Summary for Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution <i class="fa fa-chevron-right"></i>
-                </a>
-              
-            </div>
-          </div>
-        
-      </footer>
-    
-  </article>
-  
-  
-  
-
   </div>
+  
+  
+  
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/tags/Paper-Summary/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/tags/Paper-Summary/">1</a><a class="page-number" href="/tags/Paper-Summary/page/2/">2</a><span class="page-number current">3</span>
+  </nav>
+
 
 
           </div>
@@ -378,11 +323,6 @@
 
   <aside class="sidebar">
     <div class="sidebar-inner">
-        
-        
-        
-        
-      
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
@@ -395,8 +335,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》</span></a></li></ol></div>
-        
       </div>
       <!--/noindex-->
 
