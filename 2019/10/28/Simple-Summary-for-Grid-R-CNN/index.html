@@ -56,16 +56,19 @@
   };
 </script>
 
-  <meta name="keywords" content="测试标签">
+  <meta name="description" content="简答总结《Grid R-CNN》 Introduction: 本文提出了一个新的obj detection framework, 通过grid guided localization 机制去进行accurate object detection.  Gride R-CNN能够准确的捕捉到空间信息, 并且能够通过全卷机结构捕捉到位置敏感的特征 不再像cornerNet通过两个角点进行物体的定位, 而">
+<meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="testMessage">
-<meta property="og:url" content="http://suilin.top/2019/10/11/testMessage/index.html">
+<meta property="og:title" content="Simple Summary for Grid R-CNN">
+<meta property="og:url" content="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简答总结《Grid R-CNN》 Introduction: 本文提出了一个新的obj detection framework, 通过grid guided localization 机制去进行accurate object detection.  Gride R-CNN能够准确的捕捉到空间信息, 并且能够通过全卷机结构捕捉到位置敏感的特征 不再像cornerNet通过两个角点进行物体的定位, 而">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-11T01:10:51.036Z">
+<meta property="og:updated_time" content="2019-10-28T07:34:55.750Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="testMessage">
-  <link rel="canonical" href="http://suilin.top/2019/10/11/testMessage/">
+<meta name="twitter:title" content="Simple Summary for Grid R-CNN">
+<meta name="twitter:description" content="简答总结《Grid R-CNN》 Introduction: 本文提出了一个新的obj detection framework, 通过grid guided localization 机制去进行accurate object detection.  Gride R-CNN能够准确的捕捉到空间信息, 并且能够通过全卷机结构捕捉到位置敏感的特征 不再像cornerNet通过两个角点进行物体的定位, 而">
+  <link rel="canonical" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN/">
 
 
 <script id="page-configurations">
@@ -79,7 +82,7 @@
   };
 </script>
 
-  <title>testMessage | Suilin's Blog</title>
+  <title>Simple Summary for Grid R-CNN | Suilin's Blog</title>
   
 
 
@@ -238,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/11/testMessage/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -252,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            testMessage
+            Simple Summary for Grid R-CNN
             
 
           
@@ -269,29 +272,12 @@
                 
               
 
-              <time title="Created: 2019-10-11 09:04:36 / Modified: 09:10:51" itemprop="dateCreated datePublished" datetime="2019-10-11T09:04:36+08:00">2019-10-11</time>
+              <time title="Created: 2019-10-28 15:34:36 / Modified: 15:34:55" itemprop="dateCreated datePublished" datetime="2019-10-28T15:34:36+08:00">2019-10-28</time>
             </span>
           
             
 
             
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/测试分类/" itemprop="url" rel="index">
-                    <span itemprop="name">测试分类</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -305,7 +291,47 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="简答总结《Grid-R-CNN》"><a href="#简答总结《Grid-R-CNN》" class="headerlink" title="简答总结《Grid R-CNN》"></a>简答总结《Grid R-CNN》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文提出了一个新的obj detection framework, 通过grid guided localization 机制去进行accurate object detection. </li>
+<li>Gride R-CNN能够准确的捕捉到空间信息, 并且能够通过全卷机结构捕捉到位置敏感的特征</li>
+<li>不再像cornerNet通过两个角点进行物体的定位, 而是设计了多个点以encode更多的clues去减少不准确的点带来的敏感性</li>
+<li>提到为了能够充分利用在一个grid中的点之间的关系, 提出了一个two-stage的information fusion strategy去将neighbor grid points的feature map进行fuse.  对每个grid point 都设计一组feature map, 对于一个grid point, 其neighbor grid points的feature maps都会被collected并且fuse到一个整体的feature map中, 并且会被用作相应grid point的location prediction(是类似refine一下的意思吗).</li>
+<li>提到的cornerNet的缺点仍然是, 当背景很简单同时角点其实是在物体范围之外的时候, 我们很难去定位一个obj -&gt; 因此希望能够通过设计一个多点的supervision formulation进行解决.</li>
+<li>本文的主要贡献:<ul>
+<li>(1). 提出了Grid R-CNN, 其能够通过全卷积的有效保留空间信息的network代替传统的基于anchor回归的network</li>
+<li>(2). 设计了一个multi-point supervision去进行grid中的points的预测, 从而减少不准确点带来的影响. 而且本文进一步的移除了feature map层次的information fusion机制, 使得spatially related grid points能够获取聚集周边grid point的特征信息, 从而能够更加准确的校准点的位置</li>
+<li>(3). 进行实验, 表明了其具有很好的效果</li>
+</ul>
+</li>
+<li>提到了最近的工作: R-FCN使用region-based的全卷机网络替代原来的包含FC的网络(其目的是解决location的不敏感性问题), FPN进行feature fusion融合了多尺度的feature map, Mask R-CNN从增加精度(roi align)以及联合分割的多任务loss出发.</li>
+<li>LocNet提出了boundary-based方法以进行object detection的准确定位(通过物体边的概率分布去计算物体的位置), 其依赖于region boundaries的条件概率, 而本文的方法是基于grid points prediction的. 同时认为LocNet是用来进行proposal generation的, 而Grid R-CNN是用来bbox prediction的.</li>
+<li>CornerNet: 具体思路见<a href="https://suilin0432.github.io/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/" target="_blank" rel="noopener">总结</a>, 认为其是bottom-up的方法, 也就是直接从整张图片去生成关键点而不定义像anchor之类的实体. 认为cornernet的一个关键部分就是keypoints的识别与正确分组. 而本文方法则是top-down的, 先在第一个阶段定义instance, 关注的是怎么准确的定位grid point. 后面又重复了一遍贡献</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>总体结构框架: 前部分仍然是Faster RCNN的标准结构, 将RoI替换为RoIAlign之后, 不再像原来一样进行bbox的regression, 而是使用grid guided机制去进行定位(PS: 但是分类还是分类的), grid prediction使用的是一个全卷积结构, 输出heatmap(文章中说采用的是FCN结构), 通过这个heatmap我们可以定位与obj对准的bbox的grid points. 然后通过这些grid point, 我们最终就能够从feature map层次的information fusion中判断决定obj bbox的准确性.</li>
+<li>Grid Guided Localization: <ul>
+<li>(1). 提到了自己全卷积进行object localization的方式: 设计了一个N<em>N的grid, 每个grid point的feature map都与proposal的bbox对齐, 文章以一个3</em>3为例子就是传统的9个点的选择位置. 也就是按照R-FCN的思路, 针对不同的位置设计不同的feature map(在这里叫做heatmap可能更好), 仍然通过mask rcnn的roi align生成固定的14<em>14大小的从原始图像中提取出来的feature map, 然后经过8个3</em>3的空洞卷积(说是为了更大的感受野), 之后接上两个反卷积去进行放大, 将这 N<em>N 个feature maps放大到56</em>56的大小, 然后跟上一个sigmoid函数, 每个heatmap都进行这个操作得到了各个grid point的概率图(目标区域5*5的cross shape 都被看做是positive 的location -&gt; 应该是为了减少训练难度以及鲁棒性)</li>
+<li>(2). 之后在推断阶段会从每个heatmap中选取最高的confidence的pixel, 并且使用原图像相应的位置作为一个grid point.</li>
+<li>(3). 然后我们会利用这些点去决定bbox的boundary. B=(x_l, y_u, x_r, y_b), 每个值都通过在这条边上的点的位置乘以其概率分布进行加权求和去进行确定(PS: 那中间点的点的意义何在?)</li>
+<li>PS: 这就是之前所说的不再像cornerNet一样仅仅根据两个点去确定bbox, 而选用更加稳定的方式进行的做法了</li>
+</ul>
+</li>
+<li>Grid Poitns Feature Fusion:<ul>
+<li>(1). 认为grid points之间是有内部关联的, 其位置可以通过其他的grid points去进行校准以减少总体上的偏差, 因此作者提出了一个空间信息融合module</li>
+<li>(2). 认为最直觉上的做法就是进行坐标的average, 但是feature map中的丰富信息就因此被丢弃了. 所以作者认为进一步可以来提取grid points的local features去进行进一步的fusion操作. 但是仍然认为会丢失不同feature map 响应位置的信息. eg: 以3*3的grid为例, 对左上角如果只是用左上角的feature map的左上角region信息可能会丢失掉比如中间点的feature map的左上角region所能够带来的信息贡献. 因此, 作者希望能够设计feature map level的information fusion机制去完全的利用信息</li>
+<li>(3). 对N<em>N个grid point的feature map 使用不同的filter去提取信息, 可以得到新的N</em>N个feature map</li>
+<li>(4). 对每个grid point, 邻近的grid point(L1距离为1的grid point)都会在fusion中产生贡献, 然后这个过程也需要进行卷积, 每个j gridpoint对i gridpoint产生贡献前需要进行三个5*5卷积(说是进行information transfer). 然后相关的grid point的feature map将会fuse一下产生新的feature map.</li>
+<li>(5). 之后还会再加上一轮feature fusion操作, 并且参数也不是共享的, 这一轮操作认为可以汇聚L1距离为2的gride point的信息, 认为是更加可靠的</li>
+</ul>
+</li>
+<li>Extended Region Mapping<ul>
+<li>(1). Grid prediction module输出的具有固定空间尺度的heatmap代表了grid points的分布置信度. 的那还是可能存在GT grid point的位置并不在roi中, 所以natural idea是放大proposal area.</li>
+</ul>
+</li>
+</ol>
+
     </div>
 
     
@@ -320,7 +346,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/测试标签/" rel="tag"># 测试标签</a>
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
             
           </div>
         
@@ -330,15 +356,15 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
+                <a href="/2019/10/27/Simple-Summary-for-Cascade-R-CNN-Delving-into-High-Quality-Object-Detection/" rel="next" title="Simple Summary for Cascade R-CNN: Delving into High Quality Object Detection">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Cascade R-CNN: Delving into High Quality Object Detection
+                </a>
+              
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/11/DownloadPage/" rel="prev" title="DownloadPage">
-                  DownloadPage <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -384,6 +410,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简答总结《Grid-R-CNN》"><span class="nav-number">1.</span> <span class="nav-text">简答总结《Grid R-CNN》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
