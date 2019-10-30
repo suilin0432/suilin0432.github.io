@@ -266,7 +266,7 @@
                 
               
 
-              <time title="Created: 2019-10-30 22:07:09 / Modified: 22:07:36" itemprop="dateCreated datePublished" datetime="2019-10-30T22:07:09+08:00">2019-10-30</time>
+              <time title="Created: 2019-10-30 22:07:09 / Modified: 22:10:40" itemprop="dateCreated datePublished" datetime="2019-10-30T22:07:09+08:00">2019-10-30</time>
             </span>
           
             
@@ -306,7 +306,7 @@
 <h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
 <li>Architecture of CBNet<ul>
 <li>(1). 首先CBNet是包含K个相等的backbone的. 每个backbone是包含L个stages的, 每个stages中包含了几个conv layers(对应生成的feature map是相同大小的)</li>
-<li>(2). 在传统的单backbone中, $x^l = F^l(x^{l-1})$, 但是在CBNet中显而易见的就是$x_k^l = F_k^l(x_k^{l-1}+g(x_{k-1}^l)), l &gt;= 2$ g(·)就是两个layer进行组合的映射了. 文章中g使用的是两个1*1 conv layer(用来减少channel数量的)跟上一个batch normalization layer, 之后进行upsample操作.</li>
+<li>(2). 在传统的单backbone中 $ x^l = F^l(x^{l-1}) $ , 但是在CBNet中显而易见的就是 $ x_k^l = F_k^l(x_k^{l-1}+g(x_{k-1}^l)), l &gt;= 2 $ g(·)就是两个layer进行组合的映射了. 文章中g使用的是两个1*1 conv layer(用来减少channel数量的)跟上一个batch normalization layer, 之后进行upsample操作.</li>
 <li>(3). 作者给fusion的方式起了个名字… Adjacent Higher-Level Composition(AHLC)</li>
 </ul>
 </li>
