@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-10-30T02:50:17.681Z</updated>
+  <updated>2019-10-30T09:34:56.428Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for (CenterNet)Objects as Points</title>
+    <link href="http://suilin.top/2019/10/30/Simple-Summary-for-CenterNet-Objects-as-Points/"/>
+    <id>http://suilin.top/2019/10/30/Simple-Summary-for-CenterNet-Objects-as-Points/</id>
+    <published>2019-10-30T09:34:32.000Z</published>
+    <updated>2019-10-30T09:34:56.428Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《Objects-as-Points》-CenterNet"><a href="#简单总结《Objects-as-Points》-CenterNet" class="headerlink" title="简单总结《Objects as Points》(CenterNet)"></a>简单总结《Objects as Points》(CenterNet)</h2><hr><p>PS: 这篇文章是大家所说的CenterNet, 和另外一篇名字叫做CenterNet的是同期的作品, 但是思路不太一样, 这篇文章真的是可以快又比较准, 又可以实时的达到很好的效果, 并且其可以在多领域都取得很好的效果, 很NB.<br>PS: 关于模型结构具体细节看论文吧. 其实论文中也没特别单独的说后面的部分的结构, 但是附录中还是有backbone的结构的.<br>PS: 其实对VOC数据集的效果没有想象中好.</p><h3 id="Intruduction"><a href="#Intruduction" class="headerlink" title="Intruduction:"></a>Intruduction:</h3><ol><li>提到Detection通常用axis-aligned box去确定objects, 大部分obj detector枚举所有obj可能在的位置然后进行分类, 认为这样是低效而浪费的. </li><li>本文提出了一种其他的方式 -&gt; 将obj看做一个single point(bbox的中心点), detector通过keypoint estimation去找到中心点然后去进行其他object properties的回归(比如2D检测的size, 3D检测的location, orientation, 人体pose等)</li><li>CenterNet是轻量、快速高效且准确的, 并且作者在多个领域的数据集上进行了实验都有着很好的效果</li><li>主要观点就是sliding window based object detector因为枚举所有的可能的object location与dimensions所以是很浪费的 -&gt; 预测物体中心</li><li>主要做法: input输入 -&gt; 经过fully conv network进行处理 -&gt; 得到heatmap -&gt; heatmap中的peak points认为是obj的中心 -&gt; 对每个peak point的Image feature进行objects bounding box的height和weight的predict. 模型用标准的dense supervised learning进行训练, 推断的时候并不进行non-maximal去进行后续的处理</li><li>预测中心点之后 1). 对2D obj detection: 预测width 和 height 2). 对3D obj detection: 预测obj absolute depth, 3D bbox dimension, obj orientation 3). 对human pose: 预测每个关节位置相对于中心节点的offset</li><li>PS: em… 文章中的高效detection是用resnet-18进行检测(可以…好像还没看到过有人用resnet-18去做detection, 话说为啥不用darknet试一下啊) em… 其实本质上还是后面比较快才能达到一个高效的效果, 比如two-stage系列大部分都是因为后面慢才太慢的, SSD就主要是backbone时间上的消耗…</li><li>提及到本文的CenterNet的Center point可以看作为形状不可知的anchor box. 但是提出了几点不同: (1). centerNet的所谓的”anchor”是只依赖于location的, 而不依赖于overlap, 也就是不会手动定义对foreground和background的threshold去进行前景背景分类 (2). 因为对每个object只有 positive “anchor” 所以不需要进行Non-Maximum Suppression. 只是简单的提取keypoint heatmap的local peaks. (3). CenterNet使用的是large output resolution(应该值得是feature map), 所以不需要多尺度的anchor(认为无论是小物体还是大物体都可以在一张feature map上去解决)</li><li>关于其他的KeyPoints-based detection framework:<ul><li>(1). CornerNet: 检测bbox的两个角点作为keypoints</li><li>(2). ExtremeNet: 检测, top-, left-, bottom-, right-most四个点</li><li>认为他们和本文CenterNet一样也是robust keypointestimation network, 但是他们在检测完corner之后需要一个组合分组阶段, 这个阶段的存在大大减少了算法的速度. 而CenterNet则简化为提取一个center point per object从而省去了最后的post-processing过程</li></ul></li><li>简单的说了一下3D object detection问题:<ul><li>(1). Deep3Dbox: 使用了RCNN风格的framework, 其首先detect 2D objects, 然后将每个object feed给3Destimation network. 3D RCNN额外的在Faster-RCNN的基础上添加了一个额外的head, 其后面会跟上一个3D projection</li><li>(2). Deep Manta: 采用了一个coarse-to-fine形式的多任务联合的 Faster-RCNN.</li><li>提到本文的做法类似于one-stage版本的Deep3Dbox / 3DRCNN. 主要优势就是足够快</li></ul></li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol><li>Preliminary:<ul><li>(1). 首先有一张W<em>H</em>3的image, 第一个目标就是生成一个 W/R <em> H/R </em> C 尺度的heatmap(R指的是stride 默认是4, C是类别:COCO就是80类物体, 人体pose就是17类关节) 在GT heatmap上 Y_x,y,c = 1代表了GT的detected keypoint(物体center), 0则代表是背景的中心点</li><li>(2). 文章说使用了不同的几种fully-conv encoder-decoder network去根据input Image(I)预测Heatmap(Y), 包括hourglass, resnet, DLA(<a href="http://openaccess.thecvf.com/content_cvpr_2018/papers/Yu_Deep_Layer_Aggregation_CVPR_2018_paper.pdf" target="_blank" rel="noopener">deep layer aggregation</a>是一个进行改进的层次融合resnetblock的网络, 这里还是做backbone用, 没有仔细看论文, 但是看了一下其和squeeze比较, 也就是应该是较轻量级的backbone)</li><li>(3). 训练方法是按照CornerNet提出的训练你方法进行训练的, 对每个GT keypoint p, 先将其映射到低分辨的feature map上(即p’=floor(p/R)), 然后将所有的gt keypoint按照这个方法贴成一个GT heatmap, 在贴的过程中以每个点做一个高斯分布每个高斯分布的方差是物体尺度自适应的参数(CornerNet中的设定是1/3的radius, radius在CornerNet中设定的是保证corners产生的anchor与GT bbox的overlap大于等于0.7的那个radius).</li><li>(4). 当上述操作过程中两个同类别点对应的高斯分布overlap的时候, 选用element-wise maximum操作处理(限制物体的辐射范围), 同样heatmap的loss function也是使用的focal loss. (因为生成的heatmap是使用高斯分布进行的, 所以就是有靠近中心点的negative损失衰减的功效)</li><li>(5). 也是提到了为了恢复缩放带来的精读损失, 会额外的预测一个offset feature map(W/R <em> H/R </em> 2) 这部分会使用L1 loss进行训练修正</li></ul></li><li>Objects as Points:<ul><li>(1). 对2D object detection: 使用L1 Loss去进行 w 和 h 的修正, 同时考虑到没有进行scale的normalization而是直接使用raw pixel coordinates, 所以会用一个constant进行放缩(附带着调整比例的作用)</li><li>(2). 所以总体的损失函数就是 heatmap值Loss + center点offset值Loss + 预测的anchorLoss</li><li>(3). <strong>From points to boundings boxes:</strong> inference时候, 首先对每个类别分别提取heatmap的peaks. 然后detect 所有值大于等于其8邻域的点, 最后选择最大的100个peak points. 得到100个点之后结合预测的offset以及w和h就可以计算出来anchor了.(PS: heatmap的值其实就是被看做为confidence的), 所有的keypoint的estimation不再进行NMS以及其他的处理了, 认为peak keypoint extration已经可以达到替代NMS的效果了(<strong><em>PS:判断8邻域点可以简单的通过3</em>3max pooling进行确定*</strong>)</li></ul></li><li>3D detection以及pose estimation先略过.</li><li>关于实现细节: <ul><li>(1). Hourglass结构: 计算量大, 慢但是能提供关键点预测的最好性能</li><li>(2). ResNet: ResNet也不是传统意义上的ResNet, 而是魔改成encoder-decoder形式的了, 选用的是<a href="http://openaccess.thecvf.com/content_ECCV_2018/papers/Bin_Xiao_Simple_Baselines_for_ECCV_2018_paper.pdf" target="_blank" rel="noopener">Simple baselines for human pose estimation and tracking</a>文章提出的网络形式, 其在ResNet stride为4之后会接上三个反卷积层, 本文为了快进行瘦身将channel调整为了256, 128, 64channel(因为越放越大, 所以channel数变小) 提到了deconv核由双线性插值初始化(个人认为: 因为结构是encorder-decorder形式, 所以希望deconv作用是信息的还原, 最直观的就是双线性插值(对图片进行放缩))</li><li>(3). DLA: DLA本来是一个image classification的层次级联的skip connection的network, 本文使用全卷积的DLA去进行dense prediction, 使用iterative deep aggregation去对称的增加feature map resolution(…不是很理解) 将skip connection用deform conv代替去产生output upsample中也是, 在每个output head后面会跟上一个256channel的3<em>3 conv layer. 最后会用1</em>1 conv去产生输出.</li></ul></li></ol><hr><h3 id="Additional-Experiments"><a href="#Additional-Experiments" class="headerlink" title="Additional Experiments:"></a>Additional Experiments:</h3><ol><li>center point collision: 作者在COCO数据集上实验表明在stride为4的时候只有不到0.1%的中心点重叠了, 所以不太会因为遗漏掉太多anchor而影响性能, 而two-stage方法因为anchor的不合理放置会有更多的anchor被错过, 同时哪怕考虑到相似的因为一个anchor与两个物体有着很高的IoU这个问题也存在着比重复点要多的情况出现.</li><li>MMS: 实验表明添加NMS这个post-processing过程并不会影响或者仅仅很少的影响性能. 尤其当backbone更强的时候NMS提升的程度更小</li><li>实验表明用比训练时采用尺度更大的尺度在inference时候作为输入会提升性能, 减少尺度会减低性能提升速度</li><li>我感觉从训练策略的描述中可以察觉到… 这种point-based的方法都不太好训练, 收敛都很慢… </li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol><li>focal loss前面加权 N为image中的keypoint的数量, 说目的是为了保证所有的positive focal loss instances为1, 也就是其希望每张图对positive产生的贡献是公平的(但是每张图实际上pixel的数量是一致的, 如果keypoint的差距过大的时候会不会导致包含少keypoint的物体的negative point的loss贡献过大? <del>将很多的值抑制到接近0, 仅仅很少的值放大到1很简单吗?</del> 并不是这么绝对的去抑制到0/1因为高斯分布)</li><li>PS: 个人认为point-based方法很大程度上是因为其解决了anchor不合理放置而导致的错过问题, 但是其因为没有密集采样的计算量消耗以及容错率, 所以应该还是有提升空间的.</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《Objects-as-Points》-CenterNet&quot;&gt;&lt;a href=&quot;#简单总结《Objects-as-Points》-CenterNet&quot; class=&quot;headerlink&quot; title=&quot;简单总结《Objects as Points》(Ce
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for CenterNet: Keypoint Triplets for Object Detection</title>
@@ -227,30 +251,6 @@
       
       
         &lt;h2 id=&quot;简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》&quot;&gt;&lt;a href=&quot;#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection</title>
-    <link href="http://suilin.top/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/"/>
-    <id>http://suilin.top/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/</id>
-    <published>2019-10-22T13:39:51.000Z</published>
-    <updated>2019-10-22T13:40:24.377Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》"><a href="#简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》" class="headerlink" title="简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》"></a>简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》</h2><hr><p>###Introduction:</p><ol><li>本文关注与训练过程, 提到关于模型结构有很多研究, 但是对于训练过程很少有人研究</li><li>认为训练效果不好有很大一部分原因是因为training process中的不平衡造成的<ul><li>(1). sample level</li><li>(2). feature level</li><li>(3). objective level</li></ul></li><li>本文为了解决上述的imbalance问题, 使用<ul><li>(1). IoU-balanced sampling</li><li>(2). balanced feature pyramid</li><li>(3). balanced L1 loss</li></ul></li><li>提到了目前的one-stage还是two-stage两者只是模型结构的pipeline不同, 其训练方法是一致的, 而训练的关键方面包括<ul><li>(1). 选择的region是否有代表性</li><li>(2). 是否提取的特征被充分利用了</li><li>(3). 定义的目标函数(损失函数)是否合理</li><li>文章通过表明传统的训练过程在这三方面上都存在着显著的不平衡去进行训练过程的改进</li></ul></li><li>sample level imbalance<ul><li>(1). 认为在训练中, hard samples更加有用, 因为其对提升detection性能有很大的作用, 但是ramdom sampling通常会导致sample的结果被easy samples所充斥</li><li>(2). 提到了OHEM可以帮助关注hard examples, 但是其对noise labels比较敏感, 而且会造成存储和计算上的损失</li><li>(3). 提到focal-loss确实在one-stage方法上有一定效果, 但是在two-stage模型中基本上没有效果, 认为是two-stage过程将大部分的easy negative去除掉了</li></ul></li><li>feature level imbalance:<ul><li>(1). 深层次的信息具有的是更多的语义信息, 浅层的信息描述了更多的内容信息. 认为两者是互补的</li><li>(2). 本文认为从各个resolution中提取平衡的信息效果更好, 但是之前的方法通常会过度关注与当前的信息而较少关注其他的信息</li><li>(3). 认为非相邻的语义信息在信息流动的过程中, 每次经过fusion之后都会被稀释一次</li></ul></li><li>objective level imbalance<ul><li>(1). 目标检测通常融合了两个任务 -&gt; classification 和 localization. 认为两种目标应该平衡, 不平衡将会导致性能的损失</li><li>(2). 认为如果不平衡, easy samples的小梯度会在hard samples的大梯度中被淹没, 因此会限制进一步的优化</li></ul></li><li>Libra RCNN: 在上述的三个方面中去尽可能的达到平衡<ul><li>(1). IoU-balanced sampling: 根据与GT的IoU挖掘hard samples</li><li>(2). balanced feature pyramid: strengthens the multi-level features using the same deeply integrated balanced semantic features</li><li>(3). balanced L1 loss: 加强关键的梯度, 对classification, overalllocalization, accurate localization的loss 进行再平衡</li></ul></li></ol><hr><p>###Details:</p><ol><li>IoU-balanced Sampling<ul><li>(1). 作者通过实验发现, 有超过60%的hard negatives与GT的overlap超过了0.05, 但是随机sampling只能提供30%超过0.05IoU的samples, 认为这会导致hard sample被easy sample淹没造成了急剧的不平衡</li><li>(2). 原本的算法中, 我们会从M个candidates anchor中选取N个negative sample, 每个anchor被选中的概率为 N/M</li><li>(3). 本文选择将anchor通过IoU划分为K个bins中, N个需要的anchor均匀的分布在其中, 就是每个中放 N/K个hard negatives, 这样每个anchor被选中的概率为: p_k = N/K * (1/M_k)</li><li>PS: 实际上就是按照概率去进行采样…</li></ul></li><li>Balanced Feature Pyramid<ul><li>(1). 将信息不断的向前汇集去到分辨率最高的层之后(FPN做法), 将multi-scale的feature resize到一个中间的size(比如{C2,C3,C4,C5}中将其余的feature都resize到C4上, 分别使用插值和max-pooling)</li><li>(2). 然后将这几个信息进行加权求和, C2, C3, C4, C5分别加权1/2 1/3 1/4 1/5</li><li>(3). 然后特征还可以进一步的refine, 通过conv或者non-local模块进行refine, 认为使用non-local更加稳定, 文章中使用了embedded Gaussian non-local attention模块进行refine处理, 然后将图像rescale到金字塔尺度和原本的金字塔相加 (后续仍然可以按照FPN进行处理)</li></ul></li><li>Balanced L1 Loss<ul><li>(1). 作者提到直接增加localization loss会使得模型对outliers更加敏感, 也就是hard examples会产生很大的梯度, 远超过inliers(easy samples)所贡献的梯度, 对训练造成不好的影响.</li><li>(2). Loss增加了对inliers的权重</li></ul></li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》&quot;&gt;&lt;a href=&quot;#简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-De
       
     
     </summary>
