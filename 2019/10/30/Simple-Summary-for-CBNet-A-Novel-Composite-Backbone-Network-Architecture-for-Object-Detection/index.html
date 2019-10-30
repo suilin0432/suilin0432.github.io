@@ -56,16 +56,19 @@
   };
 </script>
 
-  <meta name="keywords" content="测试标签">
+  <meta name="description" content="简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》 PS: 是大家所谓的”不漂亮”的模型, 但是性能就是很好… 而且相比于two-stage方法来说backbone的加厚并不会影响太多的性能, 因为实际上来说, two-stage算法的时间消耗大头在后续的处理, 尤其对Vanilla R">
+<meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="testMessage">
-<meta property="og:url" content="http://suilin.top/2019/10/11/testMessage/index.html">
+<meta property="og:title" content="Simple Summary for CBNet: A Novel Composite Backbone Network Architecture for Object Detection">
+<meta property="og:url" content="http://suilin.top/2019/10/30/Simple-Summary-for-CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》 PS: 是大家所谓的”不漂亮”的模型, 但是性能就是很好… 而且相比于two-stage方法来说backbone的加厚并不会影响太多的性能, 因为实际上来说, two-stage算法的时间消耗大头在后续的处理, 尤其对Vanilla R">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-11T01:10:51.036Z">
+<meta property="og:updated_time" content="2019-10-30T14:07:36.510Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="testMessage">
-  <link rel="canonical" href="http://suilin.top/2019/10/11/testMessage/">
+<meta name="twitter:title" content="Simple Summary for CBNet: A Novel Composite Backbone Network Architecture for Object Detection">
+<meta name="twitter:description" content="简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》 PS: 是大家所谓的”不漂亮”的模型, 但是性能就是很好… 而且相比于two-stage方法来说backbone的加厚并不会影响太多的性能, 因为实际上来说, two-stage算法的时间消耗大头在后续的处理, 尤其对Vanilla R">
+  <link rel="canonical" href="http://suilin.top/2019/10/30/Simple-Summary-for-CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection/">
 
 
 <script id="page-configurations">
@@ -79,7 +82,7 @@
   };
 </script>
 
-  <title>testMessage | Suilin's Blog</title>
+  <title>Simple Summary for CBNet: A Novel Composite Backbone Network Architecture for Object Detection | Suilin's Blog</title>
   
 
 
@@ -238,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/11/testMessage/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/30/Simple-Summary-for-CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -252,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            testMessage
+            Simple Summary for CBNet: A Novel Composite Backbone Network Architecture for Object Detection
             
 
           
@@ -269,29 +272,12 @@
                 
               
 
-              <time title="Created: 2019-10-11 09:04:36 / Modified: 09:10:51" itemprop="dateCreated datePublished" datetime="2019-10-11T09:04:36+08:00">2019-10-11</time>
+              <time title="Created: 2019-10-30 22:07:09 / Modified: 22:07:36" itemprop="dateCreated datePublished" datetime="2019-10-30T22:07:09+08:00">2019-10-30</time>
             </span>
           
             
 
             
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/测试分类/" itemprop="url" rel="index">
-                    <span itemprop="name">测试分类</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -305,7 +291,42 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h2 id="简单总结《CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection》"><a href="#简单总结《CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection》" class="headerlink" title="简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》"></a>简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》</h2><hr>
+<p>PS: 是大家所谓的”不漂亮”的模型, 但是性能就是很好… 而且相比于two-stage方法来说backbone的加厚并不会影响太多的性能, 因为实际上来说, two-stage算法的时间消耗大头在后续的处理, 尤其对Vanilla RCNN系列来说roi-pooling后的feature reprocess才是时间消耗的大头<br>PS: 文章也就只提出了这一个说法, 只是在fusion的时候使用了不同的fusion策略, 而且fusion做法也只给了一组数据… 是实验数据还没做好??? 等着投论文的时候补充吗? </p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>backbone网络对detector的性能很重要. 本文是使用现有的backbone通过构建一个更加强大的backbone(比如ResNet和ResNeXt)去达到一个更加的detection performance.</li>
+<li>主要思路是将多个backbone实体通过一个有效的策略去assemble到一起去形成一个more powerful backbone, 文章将这个称为(Composite Backbone Network: CBNet).</li>
+<li>CBNet会迭代式的将前一个backbone的输出feature feed给下一个backbone, 前面阶段的features被称为high-level features. 这么级联的feed之后最后一级的feature map将会被用来进行object detection. </li>
+<li>CBNet可以很容易的集成到现有的SOTA的detectors中(因为本质就是换了一个backbone啊… 而且也不是多尺度的输出), 并且可以显著的提高性能. 同时实验表明CBNet对分割问题也可以有很大的提升.</li>
+<li>一个intution: 重新设计一个novel &amp; powerful的network是很困难的, 并且需要在imageNet上去重新进行预训练, 同时还是老观点, 认为backbone通常都是针对classification去设计的, 对detection任务来说可能并不是最优的, 所以希望能够将现有的几个一样的backbone network进行assemble -&gt; CBNet</li>
+<li>CBNet的前几个backbone都叫做assistant backbone, 最后一个叫做Lead Backbone.</li>
+<li>将high-level到low-level的流动看做了features的融合, 认为因此能够提升detection 的性能. </li>
+<li>本文贡献总结: (1). assemble多个相同的backbone为一个更强的backbone, 且可以轻易的集成到现有的SOTA的detector中  (2). 对目标检测和分割都是一个很好的backbone.</li>
+<li>Related Work中提到 Backbone for Object detection: 原来的SOTA detector都是使用VGG, ResNet, ResNeXt作为backbone, 但是还是老观点, 认为classification用途的network作为backbone可能会对detection问题是次优的(反复提到的对位置是不是敏感的问题.)<ul>
+<li>之后提到了针对detection最近提出的backbone: DetNet与FishNet. 提到了两个网络虽然是针对detection设计的, 但是仍然使用imageNet classification进行pretrain(还是因为ImageNet的数据量是真的多2333) </li>
+</ul>
+</li>
+<li>Related Work中提到 Recurrent Convolution Neural Network: 作者提到本文的结构与RCNN的结构看上去是很像的, 但是实际上有着很大的差别. (1). 提到了在网络结构上CBNet并行的阶段之间并不共享参数, 而RCNN是共享参数的 (2). 提到了 在网络结构上是不同的.</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>Architecture of CBNet<ul>
+<li>(1). 首先CBNet是包含K个相等的backbone的. 每个backbone是包含L个stages的, 每个stages中包含了几个conv layers(对应生成的feature map是相同大小的)</li>
+<li>(2). 在传统的单backbone中, $x^l = F^l(x^{l-1})$, 但是在CBNet中显而易见的就是$x_k^l = F_k^l(x_k^{l-1}+g(x_{k-1}^l)), l &gt;= 2$ g(·)就是两个layer进行组合的映射了. 文章中g使用的是两个1*1 conv layer(用来减少channel数量的)跟上一个batch normalization layer, 之后进行upsample操作.</li>
+<li>(3). 作者给fusion的方式起了个名字… Adjacent Higher-Level Composition(AHLC)</li>
+</ul>
+</li>
+<li>Other possible composite styles:<ul>
+<li>(1). Same Level Composition(SLC): 直觉的做法, 简单进行相加.</li>
+<li>(2). Adjacent Lower-Level Composition(ALLC): 和AHLC类似, 仍然使用之前提到的类似的模块, 但是这次是将前面阶段的backbone的高分辨feature map和下一阶段的低分辨map进行fusion</li>
+<li>(3). Dense Higher-Level Composition(DHLC): 将前面的backbone当前stage的后续的所有输出层都进行模块的处理, 然后和后面的backbone的对应层进行fusion (PS: 不加个权吗?… 明显应该前面level的feature map的权重高一点有利吧…)</li>
+</ul>
+</li>
+<li>CBNet的detection network部分: …… 无所谓, 只是提供一个backbone… </li>
+<li>实验表明AHLC效果最好, 但是每种方法都相比于原网络有一定性能的提升, 只不过ALLC效果提升仅仅是一点点而已… (还是说明了encoder-decoder架构形式的有效性啊)</li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3>
     </div>
 
     
@@ -320,7 +341,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/测试标签/" rel="tag"># 测试标签</a>
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
             
           </div>
         
@@ -330,15 +351,15 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
+                <a href="/2019/10/30/Simple-Summary-for-CenterNet-Objects-as-Points/" rel="next" title="Simple Summary for (CenterNet)Objects as Points">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for (CenterNet)Objects as Points
+                </a>
+              
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/11/DownloadPage/" rel="prev" title="DownloadPage">
-                  DownloadPage <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -384,6 +405,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.3.</span> <span class="nav-text">问题:</span></a></li></ol></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
