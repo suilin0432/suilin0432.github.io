@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="简单总结《SNIPER: Efficient Multi-Scale Training》 Introduction: 本文提出的SNIPER是进行instance level visual recognition任务多尺度的高效训练的算法. 并不去进行image pyramid所有像素的处理, SNIPER只处理GT instance在合适的scale上周围的context的信息. 说bg sam">
+<meta name="keywords" content="Paper Summary">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simple Summary for SNIPER: Efficient Multi-Scale Training">
+<meta property="og:url" content="http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简单总结《SNIPER: Efficient Multi-Scale Training》 Introduction: 本文提出的SNIPER是进行instance level visual recognition任务多尺度的高效训练的算法. 并不去进行image pyramid所有像素的处理, SNIPER只处理GT instance在合适的scale上周围的context的信息. 说bg sam">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-11-06T01:16:21.197Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Simple Summary for SNIPER: Efficient Multi-Scale Training">
+<meta name="twitter:description" content="简单总结《SNIPER: Efficient Multi-Scale Training》 Introduction: 本文提出的SNIPER是进行instance level visual recognition任务多尺度的高效训练的算法. 并不去进行image pyramid所有像素的处理, SNIPER只处理GT instance在合适的scale上周围的context的信息. 说bg sam">
+  <link rel="canonical" href="http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Simple Summary for SNIPER: Efficient Multi-Scale Training | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            Simple Summary for SNIPER: Efficient Multi-Scale Training
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-06 09:15:57 / Modified: 09:16:21" itemprop="dateCreated datePublished" datetime="2019-11-06T09:15:57+08:00">2019-11-06</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简单总结《SNIPER-Efficient-Multi-Scale-Training》"><a href="#简单总结《SNIPER-Efficient-Multi-Scale-Training》" class="headerlink" title="简单总结《SNIPER: Efficient Multi-Scale Training》"></a>简单总结《SNIPER: Efficient Multi-Scale Training》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文提出的SNIPER是进行instance level visual recognition任务多尺度的高效训练的算法. 并不去进行image pyramid所有像素的处理, SNIPER只处理GT instance在合适的scale上周围的context的信息. 说bg sampling 的 context-regions都是通过一个短周期训练的RPN网络提取出来的, 因此每个image在训练中生成的chips的数目都是根据场景复杂度自适应的改变的. SNIPER在一个单尺度(800<em>1333)上仅仅需要处理30%左右的pixels即可, 而且其可以对极端大的resolution的图像进行处理(其实太大了导致物体超过了512</em>512肯定是不行的), 提到了SNIPER针对重新采样的low resolution chips(512*512)进行操作 -&gt; 因此可以在GPU上采取一个很大的batch(说因此就可以直接享受到batch-normalization的好处, 而不用跨GPU的去进行synchronizing batch-normalization). 作者认为, SNIPER将原图像划分为一个个的小的chips使得instance level recognition任务(主要指detection)更加倾向于image classification. 同时认为传统普遍接受的观点: 在high resolution图片上进行visual recognition十分重要可能并不是正确的(…其实你不也只是从大的图片上截取下来的吗…).</li>
+<li>又是从人眼角度开始描述的, 同样认为人们只会关注一小部分的图片而周围的区域将会是模糊的, 所以是难以同时处理多尺度的. 通常是仅仅处理一小部分的image, 然后自适应的忽略掉图像剩余部分的视觉信息, 而主流的detector为了robust的scale representation而多尺度的去进行训练, 并且其会对所有的pixel进行训练. 同时认为多尺度会因为放大且全处理导致时间的大量增长, 在很多情形下是不可行的.</li>
+<li>提到了之前自己的SNIP, 说在训练的过程中忽略掉特定scale下extreme resolution objects的梯度是有利于训练的. -&gt; 也就是在特定尺度上关注特定大小的物体 -&gt; 一个符合直觉的想法就是, 我们是不是可以不用将整张图片放大, 而只是sample在小物体周围的一个小的RoI chip就可以.同时从另一个角度说明这个选择就是, 当一个图像已经在一个high resolution了, 并且其中有很大的obj了, 那么upsample这些大的obj可能并不会带来好处(个人认为反而会因为感受野并不够大而错误判断一些事情)</li>
+<li>作者接下来又说, 确实放弃掉image中很大一部分然后在upsample有助于节省计算量, 但是一个小的chip可能会因为缺少contexual信息去进行识别. 很大一部分的背景信息可能也会被忽略掉 -&gt; trade-off between computation, context, negative mining. 也就是本文提出的训练算法(SNIPER), 其根据image content去自适应的从image pyramid不同尺度上去sample一些chips出来. </li>
+<li>会根据GT instances sample一些positive samples出来, 根据RPN网络的proposal sample一些negative samples出来. </li>
+<li>主要贡献: (1). 保证和SNIP相似性能的同时 可以减少3倍的处理pixel的数量. (2). 因为SNIP patch是比较小的, 所以可以享受到大的batch-normalization带来的好处(单卡20, 8卡160的batch-size, 即使使用的是resNet-101这种大backbone)</li>
+<li>提到了关于R-CNN与Fast-RCNN的一个对比, (本文主要是通过截取固定大小避免了很多没有意义的物体的放大与缩小这一角度出发, 但是一篇<a href="https://zhuanlan.zhihu.com/p/46810110" target="_blank" rel="noopener">知乎上的解读</a>认为可以看做是对RCNN具有尺度不变性和F-RCNN的没有的分析, 虽然文章没有这么表述, 个人也并不认为本文是从这个角度出发的)(deformable conv2从另外一个角度进行这个事情的解释). 提到了F-RCNN会对所有image中的proposal进行upsample与downsample. 和RCNN不同, RCNN每个proposal都会因为SS算法而固定到224*224的大小, large obj与small obj都没有进行upsample与downsample. 而是只处理当前尺度下包含合适resolution的物体的区域, 认为这是比较合适的(文章中的角度主要是指没有将大物体放大, 小物体缩小这种不恰当的处理, 但是实际上这么做在de-conv2中解释是有利于尺度不变性), 但是Fast-RCNN与Faster-RCNN中已经明确分析了, 因为SS没有共享feature map以及SS算法是基于CPU进行的所以速度很慢. 本文认为提出的SNIPER算法享受了两者的好处, (1). 生成尺度相关的固定大小的chips, 并且使chips中包含尽可能多的合适scale的物体 (2). 在一个chips内使用Fast RCNN的做法, 去进行chip中多proposal的处理. -&gt; 以上两点带来了好处就是, 不需要在包含大物体的地方进行upsample, 同时不用进行简单bg region的反复处理了. 相比于Fast-RCNN显著要快.</li>
+<li>在SNIP的基础上, 对SNIP的 480, 800以及多个从1400 crop出1000大小的image pyramid进行处理, 去sample 512大小的patch. 实验发现, 在比较大(3*)的image上, 计算量可能仅仅是原先的1/10. 但是遇到的一个问题是, 当仅仅使用GT instance去生成patch的时候, 因为仅仅处理图像的部分内容, 导致训练中很少会对背景信息进行学习处理, 所以导致了假正率的很高, 因此后来还是要对bg进行negative patch的sample(sample可能包含false positive的region)(使用一个轻量级短周期训练的RPN去生成这些区域). </li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><p>本文包含了两个模块: (1). positive/negative chip生成  (2). chip生成后的label assignment</p>
+<ol>
+<li>Chip generation:<ul>
+<li>(1). 首先SNIPER会在多个尺度{s1, s2 …}上进行chip的生成, 每个尺度上, 首先iamge会resize到 $W_i <em> H_i$ 上, 然后 K </em> K 大小的chips将会没 d pixels(本文是d=32)的进行生成(其实就相当于一个大的anchor… )</li>
+</ul>
+</li>
+<li>Positive Chip Selection: <ul>
+<li>(1). 在每个scale上, 指定了一定的area range, 决定了每个scale上参加训练的GT boxes/proposals. 这些GT bbox构成了一个集合, 然后我们贪心的去选择能够将cover valid GT box最多数量的patch, 只有当一个GT box被完全的覆盖在chip中的时候才被称之为covered. 一个scale中的每个picture的所有的positive chip将会被combine 在一起.</li>
+<li>(2). 上面的贪心保证了每个GT box都至少被一个patch所包含, 但是可能会存在一个GT bbox被同一个scale上的多个chip所包含, 也可能存在在不同的scales上被不同的chips所包含. </li>
+<li>(3). 没有被完全被chip包含的GT box是被crop的, 但是cropped GT box仍然会保留在chip中, 并用来进行label assignment(???什么意思???)</li>
+<li>(4). 至此, 所有的GT box都会在合适的scale上被covered. 同时提到了 因为crop-size是远小于图片resolution的, 因此SNIPER并没有在high resolution上对很多的背景信息进行处理. 这在处理high resolution image的时候大幅度的减少了计算量与内存需求. </li>
+</ul>
+</li>
+<li>Negative Chip Selection:<ul>
+<li>(1). 提到尽管positive chips覆盖了所有的positive instances, 但是很大一部分比例的bg并没有被覆盖到, 因此导致了在训练的过程中缺少背景的训练, 导致了在inference的时候false positive的上升. 提到当前点的object detection算法中, 通常multi-scale training是经常被使用的, 在所有的scale上图片的每个pixels都会被训练, 这可以有效的减少false positive, 但是却带来了大量的计算损耗, 并不像这么做(因为这么做就发不了paper了 2333). </li>
+<li>(2). 作者假设很大一部分比例的bg是很容易被区分的(算是常识… imbalance问题), 所以作者认为可以避免去使用这些bg region去进行训练. </li>
+<li>(3). 为了去找到这些区域, 作者认为最简单的方法就是使用object proposals去找出obj可能存在的区域, 剩下的区域就是被认为很简单就可以区分的区域, 这些区域就是我们应该放弃的. </li>
+<li>(4). 实现上面的方法, 首先用一些epoch去先训练一个RPN, 不适用negative chips去进行训练, 因为这个网络的目的就是帮助我们粗略的找到可能存在物体的regions(文章说的是可能包含false positive的区域, 其实是一个意思), 这个RPN不需要非常精准. </li>
+<li>(5). 对negative chip的选择时, 首先不考虑那些很简单就能区分的区域, 然后排除哪些与positive chips cover的proposal. 之后对于每一个scale, 我们类似选择贪心的去进行选择negative chip, 每个chip都只要要包含M个proposals, 这个时候就得到了最后的negative chips set</li>
+</ul>
+</li>
+<li>Label Assignment:<br> PS: 需要注意的是, 进入训练的是每个patch, 而不是original input image pyramid.<br> (1). 强调了本文是end2end训练的, 每个chips都会类似于Faster-RCNN去进行训练.<br> (2). 关于RPN的训练, 不进行尺度的区分(所以当一个大物体被一个chip crop的时候所剩下的小的region仍然是在这个阶段valid的), 但是后续进行proposal处理的时候只有落在当前尺度下的GT box才会被用来训练, 其他的将会被忽略掉. 剩下的设定和Fast-RCNN相似.</li>
+<li>Benefits: 大部分点都是之前提到过的, 另外其提及到本作可以一定程度的表明, 图片中有相当一部分的context对检测是没有什么作用的, 但是也有可能是因为深度网络还不够深, 其感受野(经验感受野)不足以覆盖全图的所有pixels.</li>
+<li>Inference过程: 使用图像金字塔: (480, 512), (800, 1280), (1400, 2000)的image pyramid(括号中的数字描述的是范围信息), 然后谈到了训练和推断期间有效的区域是和SNIP相似的. combine detections 使用的是soft-NMS</li>
+<li>关于为什么对那个筛选可能存在物体的区域的RPN只使用 positive sampling 进行训练 -&gt; 作者进行实验发现, 当RPN没有进行negative sampling的时候 召回率是没有下降的(与mAP相反), 因为召回率并不考虑假正率, 所以可以认为只使用positive sampling进行训练的时候, 已经可以发现所有的positive regions. 个人认为, 我们仅仅使用positive sampling可以加快收敛可以大大减少这个RPN的训练时间.</li>
+<li>Negative Chip Mining and Scale: </li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol>
+<li>原来AutoFocus的Chips的概念是是从这里延伸的啊, 但是为什么autoFocus的chips的大小并不保证一致呢? 而是设置一个最小大小? 是否是因为在AutoFocus实验中表明总是最小大小的FocusPatch将会被predict出来去进行下一步? </li>
+<li>PS: 虽然在处理的时候被crop的GT box并不被看做是covered, 但是实际上数据及上确实存在着只有部分的/被遮挡的obj. </li>
+<li>PS: SNIP SNIPER这个系列针对的都会训练过程, 推断过程都会使用大物体进行</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/05/Simple-Summary-for-An-Analysis-of-Scale-Invariance-in-Object-Detection-–-SNIP/" rel="next" title="Simple Summary for An Analysis of Scale Invariance in Object Detection – SNIP">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for An Analysis of Scale Invariance in Object Detection – SNIP
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《SNIPER-Efficient-Multi-Scale-Training》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《SNIPER: Efficient Multi-Scale Training》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.3.</span> <span class="nav-text">问题:</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

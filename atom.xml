@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-11-05T04:13:02.235Z</updated>
+  <updated>2019-11-06T01:16:21.197Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for SNIPER: Efficient Multi-Scale Training</title>
+    <link href="http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/"/>
+    <id>http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/</id>
+    <published>2019-11-06T01:15:57.000Z</published>
+    <updated>2019-11-06T01:16:21.197Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《SNIPER-Efficient-Multi-Scale-Training》"><a href="#简单总结《SNIPER-Efficient-Multi-Scale-Training》" class="headerlink" title="简单总结《SNIPER: Efficient Multi-Scale Training》"></a>简单总结《SNIPER: Efficient Multi-Scale Training》</h2><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol><li>本文提出的SNIPER是进行instance level visual recognition任务多尺度的高效训练的算法. 并不去进行image pyramid所有像素的处理, SNIPER只处理GT instance在合适的scale上周围的context的信息. 说bg sampling 的 context-regions都是通过一个短周期训练的RPN网络提取出来的, 因此每个image在训练中生成的chips的数目都是根据场景复杂度自适应的改变的. SNIPER在一个单尺度(800<em>1333)上仅仅需要处理30%左右的pixels即可, 而且其可以对极端大的resolution的图像进行处理(其实太大了导致物体超过了512</em>512肯定是不行的), 提到了SNIPER针对重新采样的low resolution chips(512*512)进行操作 -&gt; 因此可以在GPU上采取一个很大的batch(说因此就可以直接享受到batch-normalization的好处, 而不用跨GPU的去进行synchronizing batch-normalization). 作者认为, SNIPER将原图像划分为一个个的小的chips使得instance level recognition任务(主要指detection)更加倾向于image classification. 同时认为传统普遍接受的观点: 在high resolution图片上进行visual recognition十分重要可能并不是正确的(…其实你不也只是从大的图片上截取下来的吗…).</li><li>又是从人眼角度开始描述的, 同样认为人们只会关注一小部分的图片而周围的区域将会是模糊的, 所以是难以同时处理多尺度的. 通常是仅仅处理一小部分的image, 然后自适应的忽略掉图像剩余部分的视觉信息, 而主流的detector为了robust的scale representation而多尺度的去进行训练, 并且其会对所有的pixel进行训练. 同时认为多尺度会因为放大且全处理导致时间的大量增长, 在很多情形下是不可行的.</li><li>提到了之前自己的SNIP, 说在训练的过程中忽略掉特定scale下extreme resolution objects的梯度是有利于训练的. -&gt; 也就是在特定尺度上关注特定大小的物体 -&gt; 一个符合直觉的想法就是, 我们是不是可以不用将整张图片放大, 而只是sample在小物体周围的一个小的RoI chip就可以.同时从另一个角度说明这个选择就是, 当一个图像已经在一个high resolution了, 并且其中有很大的obj了, 那么upsample这些大的obj可能并不会带来好处(个人认为反而会因为感受野并不够大而错误判断一些事情)</li><li>作者接下来又说, 确实放弃掉image中很大一部分然后在upsample有助于节省计算量, 但是一个小的chip可能会因为缺少contexual信息去进行识别. 很大一部分的背景信息可能也会被忽略掉 -&gt; trade-off between computation, context, negative mining. 也就是本文提出的训练算法(SNIPER), 其根据image content去自适应的从image pyramid不同尺度上去sample一些chips出来. </li><li>会根据GT instances sample一些positive samples出来, 根据RPN网络的proposal sample一些negative samples出来. </li><li>主要贡献: (1). 保证和SNIP相似性能的同时 可以减少3倍的处理pixel的数量. (2). 因为SNIP patch是比较小的, 所以可以享受到大的batch-normalization带来的好处(单卡20, 8卡160的batch-size, 即使使用的是resNet-101这种大backbone)</li><li>提到了关于R-CNN与Fast-RCNN的一个对比, (本文主要是通过截取固定大小避免了很多没有意义的物体的放大与缩小这一角度出发, 但是一篇<a href="https://zhuanlan.zhihu.com/p/46810110" target="_blank" rel="noopener">知乎上的解读</a>认为可以看做是对RCNN具有尺度不变性和F-RCNN的没有的分析, 虽然文章没有这么表述, 个人也并不认为本文是从这个角度出发的)(deformable conv2从另外一个角度进行这个事情的解释). 提到了F-RCNN会对所有image中的proposal进行upsample与downsample. 和RCNN不同, RCNN每个proposal都会因为SS算法而固定到224*224的大小, large obj与small obj都没有进行upsample与downsample. 而是只处理当前尺度下包含合适resolution的物体的区域, 认为这是比较合适的(文章中的角度主要是指没有将大物体放大, 小物体缩小这种不恰当的处理, 但是实际上这么做在de-conv2中解释是有利于尺度不变性), 但是Fast-RCNN与Faster-RCNN中已经明确分析了, 因为SS没有共享feature map以及SS算法是基于CPU进行的所以速度很慢. 本文认为提出的SNIPER算法享受了两者的好处, (1). 生成尺度相关的固定大小的chips, 并且使chips中包含尽可能多的合适scale的物体 (2). 在一个chips内使用Fast RCNN的做法, 去进行chip中多proposal的处理. -&gt; 以上两点带来了好处就是, 不需要在包含大物体的地方进行upsample, 同时不用进行简单bg region的反复处理了. 相比于Fast-RCNN显著要快.</li><li>在SNIP的基础上, 对SNIP的 480, 800以及多个从1400 crop出1000大小的image pyramid进行处理, 去sample 512大小的patch. 实验发现, 在比较大(3*)的image上, 计算量可能仅仅是原先的1/10. 但是遇到的一个问题是, 当仅仅使用GT instance去生成patch的时候, 因为仅仅处理图像的部分内容, 导致训练中很少会对背景信息进行学习处理, 所以导致了假正率的很高, 因此后来还是要对bg进行negative patch的sample(sample可能包含false positive的region)(使用一个轻量级短周期训练的RPN去生成这些区域). </li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><p>本文包含了两个模块: (1). positive/negative chip生成  (2). chip生成后的label assignment</p><ol><li>Chip generation:<ul><li>(1). 首先SNIPER会在多个尺度{s1, s2 …}上进行chip的生成, 每个尺度上, 首先iamge会resize到 $W_i <em> H_i$ 上, 然后 K </em> K 大小的chips将会没 d pixels(本文是d=32)的进行生成(其实就相当于一个大的anchor… )</li></ul></li><li>Positive Chip Selection: <ul><li>(1). 在每个scale上, 指定了一定的area range, 决定了每个scale上参加训练的GT boxes/proposals. 这些GT bbox构成了一个集合, 然后我们贪心的去选择能够将cover valid GT box最多数量的patch, 只有当一个GT box被完全的覆盖在chip中的时候才被称之为covered. 一个scale中的每个picture的所有的positive chip将会被combine 在一起.</li><li>(2). 上面的贪心保证了每个GT box都至少被一个patch所包含, 但是可能会存在一个GT bbox被同一个scale上的多个chip所包含, 也可能存在在不同的scales上被不同的chips所包含. </li><li>(3). 没有被完全被chip包含的GT box是被crop的, 但是cropped GT box仍然会保留在chip中, 并用来进行label assignment(???什么意思???)</li><li>(4). 至此, 所有的GT box都会在合适的scale上被covered. 同时提到了 因为crop-size是远小于图片resolution的, 因此SNIPER并没有在high resolution上对很多的背景信息进行处理. 这在处理high resolution image的时候大幅度的减少了计算量与内存需求. </li></ul></li><li>Negative Chip Selection:<ul><li>(1). 提到尽管positive chips覆盖了所有的positive instances, 但是很大一部分比例的bg并没有被覆盖到, 因此导致了在训练的过程中缺少背景的训练, 导致了在inference的时候false positive的上升. 提到当前点的object detection算法中, 通常multi-scale training是经常被使用的, 在所有的scale上图片的每个pixels都会被训练, 这可以有效的减少false positive, 但是却带来了大量的计算损耗, 并不像这么做(因为这么做就发不了paper了 2333). </li><li>(2). 作者假设很大一部分比例的bg是很容易被区分的(算是常识… imbalance问题), 所以作者认为可以避免去使用这些bg region去进行训练. </li><li>(3). 为了去找到这些区域, 作者认为最简单的方法就是使用object proposals去找出obj可能存在的区域, 剩下的区域就是被认为很简单就可以区分的区域, 这些区域就是我们应该放弃的. </li><li>(4). 实现上面的方法, 首先用一些epoch去先训练一个RPN, 不适用negative chips去进行训练, 因为这个网络的目的就是帮助我们粗略的找到可能存在物体的regions(文章说的是可能包含false positive的区域, 其实是一个意思), 这个RPN不需要非常精准. </li><li>(5). 对negative chip的选择时, 首先不考虑那些很简单就能区分的区域, 然后排除哪些与positive chips cover的proposal. 之后对于每一个scale, 我们类似选择贪心的去进行选择negative chip, 每个chip都只要要包含M个proposals, 这个时候就得到了最后的negative chips set</li></ul></li><li>Label Assignment:<br> PS: 需要注意的是, 进入训练的是每个patch, 而不是original input image pyramid.<br> (1). 强调了本文是end2end训练的, 每个chips都会类似于Faster-RCNN去进行训练.<br> (2). 关于RPN的训练, 不进行尺度的区分(所以当一个大物体被一个chip crop的时候所剩下的小的region仍然是在这个阶段valid的), 但是后续进行proposal处理的时候只有落在当前尺度下的GT box才会被用来训练, 其他的将会被忽略掉. 剩下的设定和Fast-RCNN相似.</li><li>Benefits: 大部分点都是之前提到过的, 另外其提及到本作可以一定程度的表明, 图片中有相当一部分的context对检测是没有什么作用的, 但是也有可能是因为深度网络还不够深, 其感受野(经验感受野)不足以覆盖全图的所有pixels.</li><li>Inference过程: 使用图像金字塔: (480, 512), (800, 1280), (1400, 2000)的image pyramid(括号中的数字描述的是范围信息), 然后谈到了训练和推断期间有效的区域是和SNIP相似的. combine detections 使用的是soft-NMS</li><li>关于为什么对那个筛选可能存在物体的区域的RPN只使用 positive sampling 进行训练 -&gt; 作者进行实验发现, 当RPN没有进行negative sampling的时候 召回率是没有下降的(与mAP相反), 因为召回率并不考虑假正率, 所以可以认为只使用positive sampling进行训练的时候, 已经可以发现所有的positive regions. 个人认为, 我们仅仅使用positive sampling可以加快收敛可以大大减少这个RPN的训练时间.</li><li>Negative Chip Mining and Scale: </li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol><li>原来AutoFocus的Chips的概念是是从这里延伸的啊, 但是为什么autoFocus的chips的大小并不保证一致呢? 而是设置一个最小大小? 是否是因为在AutoFocus实验中表明总是最小大小的FocusPatch将会被predict出来去进行下一步? </li><li>PS: 虽然在处理的时候被crop的GT box并不被看做是covered, 但是实际上数据及上确实存在着只有部分的/被遮挡的obj. </li><li>PS: SNIP SNIPER这个系列针对的都会训练过程, 推断过程都会使用大物体进行</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《SNIPER-Efficient-Multi-Scale-Training》&quot;&gt;&lt;a href=&quot;#简单总结《SNIPER-Efficient-Multi-Scale-Training》&quot; class=&quot;headerlink&quot; title=&quot;简单总结《S
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for An Analysis of Scale Invariance in Object Detection – SNIP</title>
@@ -223,30 +247,6 @@
       
       
         &lt;h2 id=&quot;简单总结《Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution》&quot;&gt;&lt;a href=&quot;#简单总结《Accurate-Single-Stage-Detector-Using-Recurr
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution</title>
-    <link href="http://suilin.top/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/"/>
-    <id>http://suilin.top/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/</id>
-    <published>2019-10-27T02:50:39.000Z</published>
-    <updated>2019-10-27T03:21:14.212Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结《Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution》"><a href="#简单总结《Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution》" class="headerlink" title="简单总结《Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution》"></a>简单总结《Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution》</h2><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p>PS: 对cascaded rcnn的做法本文称之为iterative rpn, 总结中还是叫做cascaded rcnn</p><ol><li>本文是对RPN模块进行改进的, 目的是为了解决启发式的定义anchor以及启发式的将feature与anchor对准的问题</li><li>原本的RCNN 是使用预先设定好的一组anchor以及使用RoIPool层进行特征的对齐, 做出的假设是, anhcor是均匀初始化分布的 -&gt; 产生了一个矛盾: anchor是初始化按照stride均匀分布的, 但是GT box的分布实际上是任意的, 导致了RPN需要去学习具有很高的变化性, 而在Cascaded RCNN中, 如果在第一个阶段中能够很好的学习到这个回归, 那么在第二个阶段, 分布就会逐渐向狄拉克分布靠拢, 但是, 其还是因为anchor初始化分布的问题与GT存在着IoU很小的问题. (也就是认为确实在cascaded rcnn中stage2确实减小了anchor的可能分布范围, 使得正确的anchor更为靠近GT, 但是因为初始设定的anchor关系, 还是使得IoU比较小… PS: 作者实验图是证明了这个问题)</li><li>认为IoU很小打破了对准的问题</li><li>本文贡献:<ul><li>(1). 提出了Cascade RPN, 不再heuristically的定义anchor并将feature去与anchor进行对齐. 首先: 不再去定义一组不同大小的anchor, 而是依赖于一个anchor, 并且使用anchor-based和anchor-free的标准去定义positive box以达到一个高的性能. 其次: 在对准feature与box的同时, 进行multi-stage的refinement.</li><li>(2). Cascaded RPN提出了自适应的卷积, 去在每个阶段进行anchor的refine. 其是light-weighted的</li></ul></li><li>Mulit——stage RPN相关研究<ul><li>(1). 认为传统的cascaded RPN通常是一阶段一阶段的refine RPN, 将上一阶段的输出当做输入进行refine. 忽略了上一阶段得到的anchor与feature仍然是不对齐的这一特征, 打破了对准这一隐式的原则. 为了消除这个问题, 通常会使用deformable conv相关去处理这个问题, 希望能够通过deformable conv进行特征的对准</li><li>(2). 认为使用conv的做法使得无法进行分辨是align带来的好处 还是 deformable conv带来的好处.</li></ul></li><li>Anchor-based vs. Anchor-free Criterion for Sample Discrimination相关:<ul><li>(1). 认为bbox通常包含了物体以及周围的一定量的信息, 很难去决定这个box是positive的还是negative的sample. 通常我们通过比较IoU来确定, 但是因为anchor是均匀分布的</li><li>(2). 提到了不依赖于anchor进行positive/negative的判断, 一些工作通过预测点和物体center的距离去定义positive还是negative. 认为这种做法更加简单, 而且不用设定那么多的超参数, 但是对与复杂的场景来说有局限性.</li></ul></li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol><li>Region Proposal Network and Variants<ul><li>(1). RPN: 回顾了一下原始的RPN网络anchor定义 以及损失函数的计算</li><li>(2). Interative RPN and Variants: <ul><li>1). iterative RPN: 叠了两个RPN以及后续分类预测过程, 上一阶段的输入作为下一阶段的输出, 但是认为仍然存在着feature与anchor之间的对齐问题</li><li>2). iterative RPN+: 使用deformable conv去一定程度上将feature进行对齐, 然后再到下一阶段去进行进一步处理</li><li>3). GA-RPN: 相比于iterative RPN+ 不直接利用backbone的特征去进行offset的预测, 而是从第一个RPN的输出去进行offset的预测, 然后进行deformable conv的偏置后到下一个阶段</li><li>4). Cascade RPN: (本文), 认为deformable conv的使用不能强制对齐操作, 只是提供了对齐的可能, 所以仍然不是最好的选择… 本文使用提出的 自适应卷积保证了强制对齐.   结构是backbone后面接一个空洞卷积, 去生成类似featue map, 之后进行一个分支的卷积操作去生成anchor box, 根据这个anchor box进行 adaptive conv, 然后再进行分类, anchor box回归等操作.</li></ul></li></ul></li><li>Adaptive Convolution:<ul><li>(1). 基本思路仍然是: 不再像传统的卷积进行固定偏置的位置的sample, 而是选择使用一个offset去调整sample的点</li><li>(2). 举例了几种conv操作, 空洞卷积, deformable以及自己做法: 将卷积sample点搬到了anchor对应的9个点(4角点, 4边缘中心, anchor正中心)</li><li>(3). 认为deformable对这个问题的效果不好之处在于其范围是学习到的, 可能学习不好而在anchor范围之外进行采样…</li></ul></li><li>Simple Discrimination Metrics: <ul><li>(1). 不再使用预先定义好的多重的anchors, 而是在每一个位置仅仅依赖于一个单独的anchor然后进行multi-stage的refinement(PS: 这下和one-stage的AlignDet更加相近了…)</li><li>(2). 训练的时候在第一阶段使用中心在一定范围内进行判定, 第二阶段使用IoU overlap进行判定</li></ul></li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol><li>PS: 小声哔哔一句, 你觉得deformable conv可能在anchor范围外进行采样不好… 那可以直接限制必须在anchor内部采样啊… 超过范围的直接截断处理不就可以了.</li><li>PS: 再小声哔哔一句, 我觉得这篇文章整个思路就和AlignDet一毛一样, 只不过换了示意图, 换了个叙述角度…  效果还没那么好… 但是还是提出了比如训练方面的新观点的… </li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结《Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution》&quot;&gt;&lt;a href=&quot;#简单总结《Cascade-RPN-Delving-in
       
     
     </summary>
