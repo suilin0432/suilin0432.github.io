@@ -236,6 +236,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/" class="post-title-link" itemprop="url">Simple Summary for CornerNet: Detecting Objects as Paired Keypoints</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-22 09:21:02 / Modified: 09:21:29" itemprop="dateCreated datePublished" datetime="2019-10-22T09:21:02+08:00">2019-10-22</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《CornerNet-Detecting-Objects-as-Paired-Keypoints》"><a href="#简单总结《CornerNet-Detecting-Objects-as-Paired-Keypoints》" class="headerlink" title="简单总结《CornerNet: Detecting Objects as Paired Keypoints》"></a>简单总结《CornerNet: Detecting Objects as Paired Keypoints》</h2><hr>
+<p>PS: 算是Anchor-free最近火起来的比较早的一篇文章了</p>
+<p>PS: Data Augumentation中的那个PCA处理没有了解过, 可以通过看一下代码进行了解</p>
+<ol>
+<li>不再使用anchor作为物体的bbox, 改为使用一对关键点作为bbox来进行object detection -&gt; 不需要设计一组anchor box</li>
+<li>本位提出了corner pooling这一种新的pooling layer去帮助网络更好的定位角点</li>
+<li>认为使用anchor box有两个副作用:<ul>
+<li>(1). 通常我们需要很多的anchor(几万个甚至更多) -&gt; 因为detector被训练去进行分类: 是否每个anchor box都和GT box有着足够的overlap, 很多的anchor box是用来保证和GT box是有足够的overlap的 -&gt; 因此只有一小部分的anchor是有用的. -&gt; 造成了positive和negative之间的类别不平衡问题</li>
+<li>(2). 使用anchor会引入很多的超参数和设计上的选择(多少个anchor box, 其尺寸, aspect ratios等) 同时不同尺度上的特征图上可能使用不同的一组anchor</li>
+</ul>
+</li>
+<li>本文提出cornernet, 用top-left和bottom-right点代替anchor box<ul>
+<li>(1). 使用单个conv network去进行top-left角点的heatmap预测(区分类别)</li>
+<li>(2). 同样的有bottom-right的heatmap</li>
+<li>(3). 以及对每个检测角点有一个embedding vector -&gt; 用来将属于同一个物体的角点进行匹配</li>
+</ul>
+</li>
+<li>corner pooling:<ul>
+<li>(1). 帮助conv network更好的定位bbox角点的pooling层</li>
+<li>(2). 因为bbox的角点通常都是在obj之外的而不是内部, 所以corner是不能根据local evidence来定位的 -&gt; 所以为了确定top-left角点, 需要水平向右看物体的topmost边界 以及垂直的去看物体的leftmost边界 同理右下角点</li>
+<li>(3). 由(2)的设想引出corner pooling的设计 -&gt; 对每个channel输入两个feature map 在每个pixel的位置处从第一个feature map中maxpool其右侧的feature vector, 从第二个特征图中maxpool其下面feature map, 然后将两个result加在一起(em… 这就要保证左/上的角点的特征值要大吧… 不然全图都是一样的值就失去作用了…)</li>
+<li>详细做法: </li>
+</ul>
+</li>
+<li>陈述认为为什么检测角点要比anchor box或者proposal更好<ul>
+<li>(1). 认为box的中心是更难以定位的, 因为中心依赖于obj的四边, 而角点仅仅依赖于两条边相对来说更加简单同时利用了corner pooling, 引入了一些对角点定义的先验信息</li>
+<li>(2). 相对于anchor boxes来说corner是更加高效的, 不那么密集的, 只需要O(wh)的corner就可以表示O(w^2h^2)的anchor box</li>
+</ul>
+</li>
+<li>选用Hourglass104作为backbone, 后面跟着两个prediction module分别处理左上角点和右下角点. 然后每隔module都会使用corner poolingmodule去对hourglass network得到的信息进行处理, 然后进行heatmap, embedding, offset的predict.</li>
+<li>不额外的进行multi scale的添加, 而是通过对hourglass backbone不同scale的output进行子模块的接入然后进行检测</li>
+<li>对于每个角点只有一个GT positive的位置, 其他的所有位置都是negative的. 在训练过程中, 减少对在正确角点一个指定半径内的negative location的惩罚(因为认为即使点是不正确的, 但是在那个范围内的时候仍然可以和gt bbox有一个很高的overlap)<ul>
+<li>这个半径是根据物体的大小所决定的, 使overlap不小于0.7, 惩罚的加权系数是一个高斯分布</li>
+</ul>
+</li>
+<li>提到了一个观点, 因为会进行down_sample处理, 所以(x, y)位置会被映射到(floor(x/n), floor(y/n)), 当我们再次remap这个位置到原图像的时候会出现精度的丢失, 导致了小物体bbox精读的丢失, 会十分影响小物体预测bbox和GT的IoU<ul>
+<li>为此在remap之前predict一个corner location的微小的调整offset_k = (x_k/n-floor(x_k/n), y_k/n-floor(y_k/n)) </li>
+<li>x_k和y_k是对corner k的x和y的坐标, 对每个corner(其实就是每个点)的offset是类别共享的</li>
+</ul>
+</li>
+<li>Grouping Corners:<ul>
+<li>对每个corner进行embedding的生成, 然后通过距离(相似度)的比较将点进行分组</li>
+</ul>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/20/Simple-Summary-for-CFENet-An-Accurate-and-Efficient-Single-Shot-Object-Detector-for-Autonomous-Driving/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1129,106 +1245,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/15/Simple-Summary-for-Finding-Tiny-Faces/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/15/Simple-Summary-for-Finding-Tiny-Faces/" class="post-title-link" itemprop="url">Simple Summary for Finding Tiny Faces</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-15 17:29:09 / Modified: 17:29:42" itemprop="dateCreated datePublished" datetime="2019-10-15T17:29:09+08:00">2019-10-15</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结-《Finding-Tiny-Faces》"><a href="#简单总结-《Finding-Tiny-Faces》" class="headerlink" title="简单总结 《Finding Tiny Faces》"></a>简单总结 <strong><em>《Finding Tiny Faces》</em></strong></h2><p>PS: <a href="https://zhuanlan.zhihu.com/p/40991925" target="_blank" rel="noopener">知乎上的文章精读分析</a><br>PS: 说实话这篇文章观点很多… 但是重点不太清楚… 而且我又不熟悉人脸检测 记录的很多东西只是作为小物体检测观点的使用与积累吧 遇到实用的回来再看 总结暂时就这么简单</p>
-<ol>
-<li>本文关注的寻找小的人脸的三个方面:<ul>
-<li>(1). 尺度不变性</li>
-<li>(2). 图片分辨率</li>
-<li>(3). context 推理</li>
-</ul>
-</li>
-<li>对不同尺度分别训练detector</li>
-<li>表明context是很重要的, 并且使用很大的感受野</li>
-<li>提及到很多工作都使用的是scale-normalized classifiers(比如滑动窗口以及利用ROI-pooled image features的classifier), 这种做法将regions resize到了一个canonical template size. 但是作者认为我们应该怎么去确定这个template的size使其能够检测到小物体的同时检测到大物体. 因此作者训练了多个针对不同尺度(以及aspect ratios)的detectors. 但是训练一大组的针对特定尺度的detector会有如下的问题<ul>
-<li>(1). 训练很多个detector会缺少对应尺度的训练数据</li>
-<li>(2). 在推理阶段会导致低效</li>
-<li><strong>解决上面问题: 以一个多任务的方式进行 特定尺度的detector的训练和运行，使用从不同featrue map层共同提取的新的feature map (应该也就是共享feature map的思路?) -&gt; 但是说这么做提升了大目标的检测准确率但是对小目标仍然存在挑战</strong></li>
-</ul>
-</li>
-<li>如何从pre-trained network中提取scale-invariant features: 说本文证明现在的network是 tuned for 特定的尺度。 为了能够将从这些network中提取的features扩展到新的尺度，使用如下的策略:<ul>
-<li><strong><em>在测试阶段(???)通过插值和抽取去对图片resize</em></strong></li>
-</ul>
-</li>
-<li>提到很多识别系统都利用了图像金字塔(multi-resolution)的方式, 本文发现对最底层的pyramid进行插值对找到小物体十分有效</li>
-<li>本文使用的方法: 用粗粒度的图像金字塔去处理目标的大尺度的变化，为了小物体的性能, 引入足够的context信息将所有template设置成统一感受野大小的多尺度模板(即小template会加入多一些的context信息)，在从多个feature map层中提取的feature进行template的定义以及获取</li>
-<li>对于如何更好的对context进行encode: 一个大问题: 如何有效的对大规模的image regions进行encode -&gt; 多尺度信息的融合</li>
-<li>提到了大量提升context对成功识别定位小脸很有帮助，大脸并不需要这么做，因为有足够多的特征信息</li>
-<li>强调了特征融合带来的好处</li>
-<li>文章认为因为imageNet训练集基本都是中尺度目标以及采用的数据集也是大物体很少，小物体很多，所以任何分类器训练之后都会对中尺度检测效果更好-&gt;将大小物体都尽可能的靠对中尺度物体的检测去检测出来-&gt;从而引出使用图片金字塔(<em>0.5-&gt;为了大物体, </em>1-&gt;为了中物体， *2-&gt;为了小物体)</li>
-<li>scale-specific detection: 在不同尺度的input image上进行多个template的训练(每个template使用 t(h, w, σ)表示在σresolution上检测 (h/σ, w/σ) 大小的物体)，然后选择性能最好的针对特定尺度的template -&gt; <strong><em>(应该是这个操作解决推理慢的问题，并且说prune掉差的template之后反而会提升效果)</em></strong></li>
-<li>整个Architecture的pipeline: input image -&gt; 创建(<em>2, </em>1, *0.5)的image金字塔 -&gt; 使用CNN去获取每个尺度的 feature map -&gt; 使用训练、筛选、剪枝好的template去进行特定尺度下的检测</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1278,7 +1294,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">37</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
