@@ -236,6 +236,127 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/30/Simple-Summary-for-CenterNet-Keypoint-Triplets-for-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/30/Simple-Summary-for-CenterNet-Keypoint-Triplets-for-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for CenterNet: Keypoint Triplets for Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-30 10:49:53 / Modified: 10:50:17" itemprop="dateCreated datePublished" datetime="2019-10-30T10:49:53+08:00">2019-10-30</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《CenterNet-Keypoint-Triplets-for-Object-Detection》"><a href="#简单总结《CenterNet-Keypoint-Triplets-for-Object-Detection》" class="headerlink" title="简单总结《CenterNet: Keypoint Triplets for Object Detection》"></a>简单总结《CenterNet: Keypoint Triplets for Object Detection》</h2><hr>
+<p>PS: 这个centerNet好像不是大家说的那篇, 公认的centerNet应该是这个-&gt;<a href="Objects as Points">Objects as Points</a></p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>背景: keypoint-based方法通常会导致很多的不正确的object bounding boxes, 认为是缺少向cropped region中查看所导致的, 本文则提出额一种有效的解决方式, 用很少的代价就能探索cropped region中的信息辅助detection.</li>
+<li>是基于CornerNet进行的改进</li>
+<li>CenterNet使用三个点去定位物体, 能够提升精度与召回率. (左上 右下 中间三个点)</li>
+<li>本文设计了两个模块: (1). Cascaded corner pooling  (2). center pooling 去进行两个corner的信息的丰富以及提供central region的有效信息-&gt;去确定是不是个obj 减少1中所提到的不正确的obj bbox的情况的出现</li>
+<li>认为cornerNet的问题还是在于没有充分的考虑全局信息去确定物体, 而是通过边界的检测以及点的feature embedding去确定物体, 也就是其对边界的检测比较敏感, 但是对哪两个角点进行组合并没有很好的去进行利用. -&gt; 因此导致了误检的情况的大量出现, 作者认为, 只需要考虑到额外的信息就可以很好的解决误检问题.</li>
+<li>本位就是基于角点为其提供额外的信息, 使角点组合之后能够通过中心正确的判断这个bbox对应的是不是一个正确的obj. 选用中心区域作为辅助的额外信息的intuition是: 如果一个预测的IoU和GT有着很高的IoU, 那么在其central region的中心keypoint有着很高的概率被预测成同一个类别, 反之亦然. -&gt; 也就是在推断的时候 根据corner生成了”anchor”之后, 通过判断其中心区域是否有一个同类别的关键点来进行是不是该真实物体的判断.</li>
+<li>大致介绍(1).center pooling: 用来预测center keypoints的一个分支. 用来帮助center keypoints获得足够多的物体辨别信息 从而使得更加容易去关注(perceive)一个proposal的中心部分.(通过获取水平方向和垂直方向上的最大点进行该操作)    (2).cascade corner pooling: 在原有的corner pooling的基础上使其拥有感知接受内部信息的能力.(We achieve this by getting out the max summed response in both boundary and internal directions of objects on a feature map for predicting corners.) </li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>Baseline and Motivation<ul>
+<li>(1). 使用CornerNet作为baseline, 重新梳理了一下CornerNet的思路(注意一下, left-top和right-bottom heatmap中分别选取top-k个点作为角点去进行匹配. 一个最后输出的bbox的confidence score是两个角点置信度的平均值)</li>
+<li>(2)作者对CornerNet进行了一个实验, 其在MS-COCO验证集上对CornerNet的FD(false discovery)进行了计数, 说实验表明了, incorrect bounding boxes占据了很大一部分的错误, 即使当IoU threshold很低的时候(PS: 这里指的IoU threshold很低指的是被判断为是incorrect的bbox与GT的overlap很低的意思, 不是指训练或者nms的那个IoU threshold), 当IoU threshold设置为0.05的时候有32.7%的错误, 设置为0.25的时候有36.8%, 0.5的时候有43.8% (PS:这可以说明生成低IoU的错误判断的bbox占据了大部分所生成的bbox) 对小物体来说就更是如此了.(个人认为小物体本身就很难去与其overlap, 所以相对来说比较多, 而且小物体也很难通过看内部去进行是否是该物体的判断(因为可能小物体只占据feature map上的一个pixel, 容错性就已经很差了))</li>
+<li>(3). 提到了为了能够是CornerNet看到bbox内部的信息, 一种方法是使用two-stage的detector, 使用RoI pooling去看向bbox内部的visual patterns. 但是又觉得two-stage方法太慢了.</li>
+</ul>
+</li>
+<li>Object Detection as Keypoint Triplets<ul>
+<li>(1). 总体的框架还是没什么变化的, 仍然是采用了cornerNet的结构, 产生heatmap, 预测embedding以及offset, 选择top-k的corner以及匹配策略去生成bbox(一看到这里就知道这个不是大家普遍说的cornerNet了…) 但是细节上还是有变化的</li>
+<li>(2). 细节上:<ul>
+<li>1). 网络结构上除了corner分支还添加了center分支, 但是center分支并不进行embedding的预测, 只是生成heatmap以及offset, 生成heatmap经过了本文所谓的提出的center pooling, 同时corner分支上将corner pooling替换成了cascade corner pooling  </li>
+<li>2). 在预测了offset并且组成了bbox之后 人为的定义一个central region, 然后去检查在central region中是否包含这个类别的center keypoints, 如果检测到了就保留这个anchor, 如果没有检测到就不保留</li>
+<li>3). 最后bbox的置信度分数更改为 左上角点、右下角点、中心点的置信度的平均值</li>
+</ul>
+</li>
+<li>(3). central region的大小定义很明显将会影响到最终的检测结果. (eg: 小的central region将会使得small bboxrecall rate变低, 大的central region将会使得large bounding box的precision变低), 作者因此选择scale-aware central region去自适应的根据bbox的size调整central region的大小.(即小bbox产生大central region, 大bbox产生小central region)</li>
+<li>(4). 因此得到的region区域的坐标是与n相关的, n越小占比越大, n越大占比越小, 文章是设置大于150anchor的n=5, 否则n=3</li>
+</ul>
+</li>
+<li>Enriching Center and Corner Information<ul>
+<li>(1). Center pooling: 认为物体的几何中心并不一定要表达出非常有辨识度的visual pattern(eg: 认为比如对人来说, 人头才是有辨识度的, 但是center point通常在人身体上) -&gt; 基于这个问题提出了center pooling 来捕捉you辨识度的视觉信息. <strong><em>具体做法是: backbone输出feature map之后, 去决定是否pixel在feature map中是一个center keypoint, 找水平方向和垂直方向的最大值, 然后把他们加起来.</em></strong> -&gt; 认为可以有效的帮助辨别center keypoints (PS: 为啥不像corner pooling一样从右侧和下侧/左侧和上侧取, 而不是整行取 -&gt; 个人认为是因为center的确定需要四个方向的关键值)</li>
+<li>(2). Cascade corner pooling: 认为corner经常是在obj外面的, 缺少local appearance features, 所以认为Corner pooling的目的实际上是为了寻找边界方向上的最大值来去决定角点. 但是, 这么做使得角点对边过于敏感. -&gt; 希望能够让角点看到obj内部的visual pattern. 因此提出了Cascade Corner pooling<ul>
+<li><strong><em>主要思想: 考虑到中间信息 -&gt; 先用中间信息帮助确定边界点, 用边界点确定角点</em></strong></li>
+<li><strong><em>具体做法: 首先沿着boundary 去找一个边界最大值, 然后沿着最大边界值的地方look inside去找一个最大的internal value, 最后将两个最大的values加起来</em></strong>(PS: 那为啥不先沿着一个方向去找最大internal value, 然后再去找最大boundary, 然后将两个boundary相加???)</li>
+<li><strong><em>feature map进来 一个分支做conv后shortcut保留feautre, 上路进行做conv后做left pooling提取边界右侧的最大值, 然后conv后用top pooling去查看内部信息</em></strong>(PS: 我怎么觉得这两步反了… 不是应该先top pooling然后再left pooling去得到corner的沿着边界之后看内部的信息吗???)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Training and Inference:<ul>
+<li>(1). network从scratch开始训练的!!! 可以有</li>
+<li>(2). 511的input size -&gt; heatmap size为128*128 使用Adam作为优化器</li>
+<li>(3). Loss组成: 1). 对角点和中心点都进行focal loss(针对置信度), 2). 对corner进行pull loss和push loss的计算(是针对embedding的, 想要同一对角点的embedding相近, 不同对的原理, 具体细节请看cornerNet论文), 3). 以及对corner和center计算l1-loss(针对位置)</li>
+</ul>
+</li>
+<li></li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3>
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN-Plus-Faster-and-Better/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1217,84 +1338,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/22/Simple-Summary-for-DSSD-Deconvolutional-Single-Shot-Detector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/22/Simple-Summary-for-DSSD-Deconvolutional-Single-Shot-Detector/" class="post-title-link" itemprop="url">Simple Summary for DSSD : Deconvolutional Single Shot Detector</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-22 09:22:54 / Modified: 09:23:16" itemprop="dateCreated datePublished" datetime="2019-10-22T09:22:54+08:00">2019-10-22</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《DSSD-Deconvolutional-Single-Shot-Detector》"><a href="#简单总结《DSSD-Deconvolutional-Single-Shot-Detector》" class="headerlink" title="简单总结《DSSD : Deconvolutional Single Shot Detector》"></a>简单总结《DSSD : Deconvolutional Single Shot Detector》</h2><hr>
-<ol>
-<li>本文的核心就是引入context信息, 同时使用ResNet-101作为backbone</li>
-<li>直接使用ResNet-101作为backbone反而会降低性能, 因此作者使用了新的prediction module才能达到更好的效果</li>
-<li>主要的反卷积fusion结构见论文吧</li>
-<li>没啥好总结的了… 具体的见之前的手写笔记吧</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1344,7 +1387,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

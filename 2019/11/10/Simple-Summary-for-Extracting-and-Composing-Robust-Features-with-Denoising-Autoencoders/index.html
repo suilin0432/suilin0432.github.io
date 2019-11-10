@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="File DownloadtestFileDownload">
-<meta name="keywords" content="文件下载">
+  <meta name="description" content="《Extracting and Composing Robust Features with Denoising Autoencoders》PS: 具体部分见纸质版笔记.PS: DAs  Introduction: 首先本文说前人工作表明: 通过unspervised learning的方式去将inputs map到一个有用的中间表示上, 从而使的训练深的generative/discrimina">
+<meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DownloadPage">
-<meta property="og:url" content="http://suilin.top/2019/10/11/DownloadPage/index.html">
+<meta property="og:title" content="Simple Summary for Extracting and Composing Robust Features with Denoising Autoencoders">
+<meta property="og:url" content="http://suilin.top/2019/11/10/Simple-Summary-for-Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="File DownloadtestFileDownload">
+<meta property="og:description" content="《Extracting and Composing Robust Features with Denoising Autoencoders》PS: 具体部分见纸质版笔记.PS: DAs  Introduction: 首先本文说前人工作表明: 通过unspervised learning的方式去将inputs map到一个有用的中间表示上, 从而使的训练深的generative/discrimina">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-11T02:26:31.325Z">
+<meta property="og:updated_time" content="2019-11-10T08:14:19.754Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DownloadPage">
-<meta name="twitter:description" content="File DownloadtestFileDownload">
-  <link rel="canonical" href="http://suilin.top/2019/10/11/DownloadPage/">
+<meta name="twitter:title" content="Simple Summary for Extracting and Composing Robust Features with Denoising Autoencoders">
+<meta name="twitter:description" content="《Extracting and Composing Robust Features with Denoising Autoencoders》PS: 具体部分见纸质版笔记.PS: DAs  Introduction: 首先本文说前人工作表明: 通过unspervised learning的方式去将inputs map到一个有用的中间表示上, 从而使的训练深的generative/discrimina">
+  <link rel="canonical" href="http://suilin.top/2019/11/10/Simple-Summary-for-Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>DownloadPage | Suilin's Blog</title>
+  <title>Simple Summary for Extracting and Composing Robust Features with Denoising Autoencoders | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/11/DownloadPage/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/10/Simple-Summary-for-Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            DownloadPage
+            Simple Summary for Extracting and Composing Robust Features with Denoising Autoencoders
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-11 10:09:57 / Modified: 10:26:31" itemprop="dateCreated datePublished" datetime="2019-10-11T10:09:57+08:00">2019-10-11</time>
+              <time title="Created: 2019-11-10 16:13:45 / Modified: 16:14:19" itemprop="dateCreated datePublished" datetime="2019-11-10T16:13:45+08:00">2019-11-10</time>
             </span>
           
             
@@ -291,7 +291,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="File-Download"><a href="#File-Download" class="headerlink" title="File Download"></a>File Download</h3><h2 id="testFileDownload"><a href="#testFileDownload" class="headerlink" title="testFileDownload"></a><a href="/download/test.txt">testFileDownload</a></h2>
+        <h2 id="《Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders》"><a href="#《Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders》" class="headerlink" title="《Extracting and Composing Robust Features with Denoising Autoencoders》"></a>《Extracting and Composing Robust Features with Denoising Autoencoders》</h2><p>PS: 具体部分见纸质版笔记.<br>PS: DAs</p>
+<hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>首先本文说前人工作表明: 通过unspervised learning的方式去将inputs map到一个有用的中间表示上, 从而使的训练深的generative/discriminative models变得相对来说简单一些. 本文则是引入了一种针对unsupervised learning的一种新的训练原则, 其基于的思想是学习到有足够对partial corruption的input pattern具有鲁棒性的representation. </li>
+<li>提到了之前的逐层进行参数初始化的方式是有效的, 能够部分解决deep网络不容易训练的问题, 其中的关键就是如何学习到一个好的中间的representations of input patterns. 本文希望能够将partial destruction的input达到一个鲁棒性的效果作为一个好的representation的评判标准. 对partial destruction input的评判标准是和原图几乎相同的表现. </li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>为了达到这个目的, 做法就是使用partially destroyed input去进行训练来reconstruct一个clean “repaired” input. 然后除了优化步骤中需要对原始的input进行partially corrupted的input之外其余的训练过程是和原始的auto-encoder一致的, 也是stack block的方式去一层层训练, 然后最后用有监督的数据进行训练.</li>
+</ol>
+
     </div>
 
     
@@ -306,7 +316,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/文件下载/" rel="tag"># 文件下载</a>
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
             
           </div>
         
@@ -316,8 +326,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/11/testMessage/" rel="next" title="testMessage">
-                  <i class="fa fa-chevron-left"></i> testMessage
+                <a href="/2019/11/09/Simple-Summary-for-Deep-Reflectance-Maps/" rel="next" title="Simple Summary for Deep Reflectance Maps">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Deep Reflectance Maps
                 </a>
               
             </div>
@@ -325,10 +335,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/12/The-Marginal-and-Conditional-distributions-of-multivariate-normal-distribution/" rel="prev" title="The Marginal and Conditional distributions of multivariate normal distribution">
-                  The Marginal and Conditional distributions of multivariate normal distribution <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -374,7 +380,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#File-Download"><span class="nav-number">1.</span> <span class="nav-text">File Download</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#testFileDownload"><span class="nav-number"></span> <span class="nav-text">testFileDownload</span></a></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#《Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders》"><span class="nav-number">1.</span> <span class="nav-text">《Extracting and Composing Robust Features with Denoising Autoencoders》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->
