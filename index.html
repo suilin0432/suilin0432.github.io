@@ -236,6 +236,103 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/" class="post-title-link" itemprop="url">Simple Summary for Semi-Supervised Learning with Ladder Networks</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-12 15:40:56 / Modified: 15:41:11" itemprop="dateCreated datePublished" datetime="2019-11-12T15:40:56+08:00">2019-11-12</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Semi-Supervised-Learning-with-Ladder-Networks》"><a href="#简单总结《Semi-Supervised-Learning-with-Ladder-Networks》" class="headerlink" title="简单总结《Semi-Supervised Learning with Ladder Networks》"></a>简单总结《Semi-Supervised Learning with Ladder Networks》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进行改进, 从unsupervised变成semi-supervised的network.</li>
+<li>PS: 文章说的permutation invariant指的是排列不变性(个人认为因为是使用神经网络进行拟合的所以只是要求有这个功能, 并不要求有这个完全严格的输出值的限制), 应该是对pixel进行冲排列之后不会造成影响(所以因此不适合对conv进行这样的约束, 因为CNN考虑的是local信息)</li>
+<li>提到了半监督学习中很多工作都进行了supervised和unsupervised的结合, 其中unsupervised任务包括了进行图像的重建或者能够将物体正确的分类.</li>
+<li>提到了确实有同时使用无监督学习和监督学习的工作, 比如用无监督学习去辅助监督学习的工作(使用无监督学习进行预训练, 然后用监督学习进行fine-tune), 但是作者认为通常无监督和监督学习的任务是不同的, 使用无监督学习得到的特征可能并不适合于监督学习.</li>
+<li>本文工作是基于Ladder network的, 提到了Ladder Network的辅助任务是在model的每层去denoise representation. 模型结构是添加了encoder到decoder的skip connection的autoencoder, 同时Ladder Network的learning task和denoising autoencoder类似, 但是其对每层都添加noise, 认为skip connection有助于减轻模型高层次represent details的压力. (PS: 这也就是为什么加noise了, 不然很容易就直接学习到identity关系了). 本文的改进点是 传统的Ladder network只使用了unsupervised学习, 本文进行了和supervised learning的结合</li>
+<li>本文贡献: <ul>
+<li>(1). 能够与监督学习方法兼容: unsupervised部分关注与supervised learning找到线索的相关细节(注意强调了”相关”). 并且可以添加到现有的前馈神经网络中, 文章后续表明了, 可以先用supervised learning得到一个state-of-art结果之后进一步使用非监督学习进行性能进一步提升</li>
+<li>(2). Scalability resulting from local learning(???没翻译明白): 在top层的supervised target之外还有per level 的 local unsupervised target, 认为会使层次更加适合深度网络.</li>
+<li>(3). Computational efficiency: 正常而言需要几倍的训练时间去添加解码器, 但是本文通过更有效的方法只需要一个很小的时间倍数</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>本文首先从因变量模型角度对ladderNet进行解释.<ul>
+<li>(1). 提到了因变量模型是很有吸引力的半监督模型, 因为其可以结合监督学习和非监督学习. 其中唯一的区别就是label是否可以被观察到. 尤其是层次隐变量模型, 岂能通过底层来描述细节, 高层次去关注那些更加抽象的具有不变性质的feature以更好地处理任务.</li>
+<li>(2). 讲述了一下DAEs和DSS两个模型的区别: DAEs: (给定观察量, DAEs从加噪版的观察量学习去重构观察量)x加噪声-&gt;x’-&gt;重构得到x^, 任务目标使 x^与x的MSE loss最小.  DSS: (重构隐变量, 给定观察量) DSS训练一个映射函数f(x)-&gt;z, 来获得因变量z, 然后对z进行归一化之后使用一个降噪函数g(z_norm)-&gt;z^, 得到一个重构量z^, 任务目标是使 z^与z的 (这里强调了一下一定要对z进行归一化, 否则g会学习到恒等函数)</li>
+<li>(3). LadderNet结构: 首先进行x的输入, 然后加噪进行一个映射关系的到第一个隐变量z^1, 然后对z^1加噪得到z^1’….直到z^n’, 然后会之后利用这个一层层的去还原(降噪)z^i, 同时每个z^i(skip connection)和z^i+1’都会共同来去学习还原z^i. 每层都是有损失函数的贡献的(z^i与z^i’的MSEloss) z^i是用另外的一个不加噪编码的分支得到的</li>
+<li>(4). 本文的有监督部分是在加噪过程的最后的那个hidden layer后面利用这个representation去学习针对分类的任务, 对此进行有监督的训练, 无监督的训练指的是laddernet本身(也就是target为 加噪过程的降噪结果得到的还原隐变量和不加噪过程得到的隐变量的MSE loss)</li>
+</ul>
+</li>
+</ol>
+<p>PS: 个人认为本文的思路主要就是为了解决AutoEncoder自监督学习以及有监督分类的任务目的的不同, 自监督的特征会强调保留原有特征信息去用来重构, 但是分类任务通常需要抽象的语义信息, 所以本文对加噪encoder部分的最后进行监听, 希望能够使得encode特征是有用的, 同时又能够利用自学习(非监督学习)很好的约束优化(因为这时候还没有好的初始化方法去使得直接训练网络达到一个很好的效果)</p>
+<p>PS: 具体的分析有点看不懂, 只是大致理解思路而已, 有需要的时候回来看后面</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/10/Simple-Summary-for-Stacked-Convolutional-Auto-Encoders-for-Hierarchical-Feature-Extraction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1194,112 +1291,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/30/Simple-Summary-for-CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/30/Simple-Summary-for-CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for CBNet: A Novel Composite Backbone Network Architecture for Object Detection</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-30 22:07:09 / Modified: 22:10:40" itemprop="dateCreated datePublished" datetime="2019-10-30T22:07:09+08:00">2019-10-30</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection》"><a href="#简单总结《CBNet-A-Novel-Composite-Backbone-Network-Architecture-for-Object-Detection》" class="headerlink" title="简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》"></a>简单总结《CBNet: A Novel Composite Backbone Network Architecture for Object Detection》</h2><hr>
-<p>PS: 是大家所谓的”不漂亮”的模型, 但是性能就是很好… 而且相比于two-stage方法来说backbone的加厚并不会影响太多的性能, 因为实际上来说, two-stage算法的时间消耗大头在后续的处理, 尤其对Vanilla RCNN系列来说roi-pooling后的feature reprocess才是时间消耗的大头<br>PS: 文章也就只提出了这一个说法, 只是在fusion的时候使用了不同的fusion策略, 而且fusion做法也只给了一组数据… 是实验数据还没做好??? 等着投论文的时候补充吗? </p>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>backbone网络对detector的性能很重要. 本文是使用现有的backbone通过构建一个更加强大的backbone(比如ResNet和ResNeXt)去达到一个更加的detection performance.</li>
-<li>主要思路是将多个backbone实体通过一个有效的策略去assemble到一起去形成一个more powerful backbone, 文章将这个称为(Composite Backbone Network: CBNet).</li>
-<li>CBNet会迭代式的将前一个backbone的输出feature feed给下一个backbone, 前面阶段的features被称为high-level features. 这么级联的feed之后最后一级的feature map将会被用来进行object detection. </li>
-<li>CBNet可以很容易的集成到现有的SOTA的detectors中(因为本质就是换了一个backbone啊… 而且也不是多尺度的输出), 并且可以显著的提高性能. 同时实验表明CBNet对分割问题也可以有很大的提升.</li>
-<li>一个intution: 重新设计一个novel &amp; powerful的network是很困难的, 并且需要在imageNet上去重新进行预训练, 同时还是老观点, 认为backbone通常都是针对classification去设计的, 对detection任务来说可能并不是最优的, 所以希望能够将现有的几个一样的backbone network进行assemble -&gt; CBNet</li>
-<li>CBNet的前几个backbone都叫做assistant backbone, 最后一个叫做Lead Backbone.</li>
-<li>将high-level到low-level的流动看做了features的融合, 认为因此能够提升detection 的性能. </li>
-<li>本文贡献总结: (1). assemble多个相同的backbone为一个更强的backbone, 且可以轻易的集成到现有的SOTA的detector中  (2). 对目标检测和分割都是一个很好的backbone.</li>
-<li>Related Work中提到 Backbone for Object detection: 原来的SOTA detector都是使用VGG, ResNet, ResNeXt作为backbone, 但是还是老观点, 认为classification用途的network作为backbone可能会对detection问题是次优的(反复提到的对位置是不是敏感的问题.)<ul>
-<li>之后提到了针对detection最近提出的backbone: DetNet与FishNet. 提到了两个网络虽然是针对detection设计的, 但是仍然使用imageNet classification进行pretrain(还是因为ImageNet的数据量是真的多2333) </li>
-</ul>
-</li>
-<li>Related Work中提到 Recurrent Convolution Neural Network: 作者提到本文的结构与RCNN的结构看上去是很像的, 但是实际上有着很大的差别. (1). 提到了在网络结构上CBNet并行的阶段之间并不共享参数, 而RCNN是共享参数的 (2). 提到了 在网络结构上是不同的.</li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>Architecture of CBNet<ul>
-<li>(1). 首先CBNet是包含K个相等的backbone的. 每个backbone是包含L个stages的, 每个stages中包含了几个conv layers(对应生成的feature map是相同大小的)</li>
-<li>(2). 在传统的单backbone中 $ x^l = F^l(x^{l-1}) $ , 但是在CBNet中显而易见的就是 $ x_k^l = F_k^l(x_k^{l-1}+g(x_{k-1}^l)), l &gt;= 2 $ g(·)就是两个layer进行组合的映射了. 文章中g使用的是两个1*1 conv layer(用来减少channel数量的)跟上一个batch normalization layer, 之后进行upsample操作.</li>
-<li>(3). 作者给fusion的方式起了个名字… Adjacent Higher-Level Composition(AHLC)</li>
-</ul>
-</li>
-<li>Other possible composite styles:<ul>
-<li>(1). Same Level Composition(SLC): 直觉的做法, 简单进行相加.</li>
-<li>(2). Adjacent Lower-Level Composition(ALLC): 和AHLC类似, 仍然使用之前提到的类似的模块, 但是这次是将前面阶段的backbone的高分辨feature map和下一阶段的低分辨map进行fusion</li>
-<li>(3). Dense Higher-Level Composition(DHLC): 将前面的backbone当前stage的后续的所有输出层都进行模块的处理, 然后和后面的backbone的对应层进行fusion (PS: 不加个权吗?… 明显应该前面level的feature map的权重高一点有利吧…)</li>
-</ul>
-</li>
-<li>CBNet的detection network部分: …… 无所谓, 只是提供一个backbone… </li>
-<li>实验表明AHLC效果最好, 但是每种方法都相比于原网络有一定性能的提升, 只不过ALLC效果提升仅仅是一点点而已… (还是说明了encoder-decoder架构形式的有效性啊)</li>
-</ol>
-<hr>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3>
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1349,7 +1340,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

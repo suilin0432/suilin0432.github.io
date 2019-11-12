@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Learning Deconvolution Network for Semantic Segmentation》 Introduction: 本文主要思想就是学习一个深的deconv network.  强调了传统方法会出现的一些问题: 对待极端大物体会出现属于同一个物体pixels的不一致lable(就是物体太大了, 不能完全辨认, 被network辨别成了多个不同的物体), 对待小">
+  <meta name="description" content="简单总结《Semi-Supervised Learning with Ladder Networks》 Introduction: 本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Learning Deconvolution Network for Semantic Segmentation">
-<meta property="og:url" content="http://suilin.top/2019/11/09/Simple-Summary-for-Learning-Deconvolution-Network-for-Semantic-Segmentation/index.html">
+<meta property="og:title" content="Simple Summary for Semi-Supervised Learning with Ladder Networks">
+<meta property="og:url" content="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Learning Deconvolution Network for Semantic Segmentation》 Introduction: 本文主要思想就是学习一个深的deconv network.  强调了传统方法会出现的一些问题: 对待极端大物体会出现属于同一个物体pixels的不一致lable(就是物体太大了, 不能完全辨认, 被network辨别成了多个不同的物体), 对待小">
+<meta property="og:description" content="简单总结《Semi-Supervised Learning with Ladder Networks》 Introduction: 本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-09T03:43:13.967Z">
+<meta property="og:updated_time" content="2019-11-12T07:41:11.307Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Learning Deconvolution Network for Semantic Segmentation">
-<meta name="twitter:description" content="简单总结《Learning Deconvolution Network for Semantic Segmentation》 Introduction: 本文主要思想就是学习一个深的deconv network.  强调了传统方法会出现的一些问题: 对待极端大物体会出现属于同一个物体pixels的不一致lable(就是物体太大了, 不能完全辨认, 被network辨别成了多个不同的物体), 对待小">
-  <link rel="canonical" href="http://suilin.top/2019/11/09/Simple-Summary-for-Learning-Deconvolution-Network-for-Semantic-Segmentation/">
+<meta name="twitter:title" content="Simple Summary for Semi-Supervised Learning with Ladder Networks">
+<meta name="twitter:description" content="简单总结《Semi-Supervised Learning with Ladder Networks》 Introduction: 本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进">
+  <link rel="canonical" href="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for Learning Deconvolution Network for Semantic Segmentation | Suilin's Blog</title>
+  <title>Simple Summary for Semi-Supervised Learning with Ladder Networks | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/09/Simple-Summary-for-Learning-Deconvolution-Network-for-Semantic-Segmentation/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for Learning Deconvolution Network for Semantic Segmentation
+            Simple Summary for Semi-Supervised Learning with Ladder Networks
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-11-09 11:42:49 / Modified: 11:43:13" itemprop="dateCreated datePublished" datetime="2019-11-09T11:42:49+08:00">2019-11-09</time>
+              <time title="Created: 2019-11-12 15:40:56 / Modified: 15:41:11" itemprop="dateCreated datePublished" datetime="2019-11-12T15:40:56+08:00">2019-11-12</time>
             </span>
           
             
@@ -291,28 +291,32 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结《Learning-Deconvolution-Network-for-Semantic-Segmentation》"><a href="#简单总结《Learning-Deconvolution-Network-for-Semantic-Segmentation》" class="headerlink" title="简单总结《Learning Deconvolution Network for Semantic Segmentation》"></a>简单总结《Learning Deconvolution Network for Semantic Segmentation》</h2><hr>
+        <h2 id="简单总结《Semi-Supervised-Learning-with-Ladder-Networks》"><a href="#简单总结《Semi-Supervised-Learning-with-Ladder-Networks》" class="headerlink" title="简单总结《Semi-Supervised Learning with Ladder Networks》"></a>简单总结《Semi-Supervised Learning with Ladder Networks》</h2><hr>
 <h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>本文主要思想就是学习一个深的deconv network. </li>
-<li>强调了传统方法会出现的一些问题: 对待极端大物体会出现属于同一个物体pixels的不一致lable(就是物体太大了, 不能完全辨认, 被network辨别成了多个不同的物体), 对待小的物体可能会被忽略掉. 以及物体的细节结构很容易被丢失或者平滑掉, 因为输入到deconv层的label map相对来说太粗粒度了, deconv过程也相对太简单. 强调了FCN在得到16<em>16的label map之后直接就deconv到原图尺寸, 而没有用大规模数据集去训练一个deep deconv network, 也因此使得重建一个关于物体边界的highly non-linear structure 变得十分困难, 因此当前很多工作使用CRF去解决这个问题.  **</em>PS:总结起来就是 目标的细节结构容易缺失, 边缘信息保留不够好 认为原因就是 -&gt; FCN得到的label map过于粗糙, deconv过程太过简单(所以本文基于这个观点进行了问题的解决)***</li>
-<li>本文使用了不同的策略, 贡献如下:<br> (1). 学习deep deconv network, 包括了deconvoluiton, unpooling以及rectified linear unit layers.<br> (2). 训练的网络被应用在individual object proposals上去获取instance-wise segmentations, 与最终的final semantic segmentation相结合.<br> (3). 达到了一个很好的效果</li>
+<li>本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进行改进, 从unsupervised变成semi-supervised的network.</li>
+<li>PS: 文章说的permutation invariant指的是排列不变性(个人认为因为是使用神经网络进行拟合的所以只是要求有这个功能, 并不要求有这个完全严格的输出值的限制), 应该是对pixel进行冲排列之后不会造成影响(所以因此不适合对conv进行这样的约束, 因为CNN考虑的是local信息)</li>
+<li>提到了半监督学习中很多工作都进行了supervised和unsupervised的结合, 其中unsupervised任务包括了进行图像的重建或者能够将物体正确的分类.</li>
+<li>提到了确实有同时使用无监督学习和监督学习的工作, 比如用无监督学习去辅助监督学习的工作(使用无监督学习进行预训练, 然后用监督学习进行fine-tune), 但是作者认为通常无监督和监督学习的任务是不同的, 使用无监督学习得到的特征可能并不适合于监督学习.</li>
+<li>本文工作是基于Ladder network的, 提到了Ladder Network的辅助任务是在model的每层去denoise representation. 模型结构是添加了encoder到decoder的skip connection的autoencoder, 同时Ladder Network的learning task和denoising autoencoder类似, 但是其对每层都添加noise, 认为skip connection有助于减轻模型高层次represent details的压力. (PS: 这也就是为什么加noise了, 不然很容易就直接学习到identity关系了). 本文的改进点是 传统的Ladder network只使用了unsupervised学习, 本文进行了和supervised learning的结合</li>
+<li>本文贡献: <ul>
+<li>(1). 能够与监督学习方法兼容: unsupervised部分关注与supervised learning找到线索的相关细节(注意强调了”相关”). 并且可以添加到现有的前馈神经网络中, 文章后续表明了, 可以先用supervised learning得到一个state-of-art结果之后进一步使用非监督学习进行性能进一步提升</li>
+<li>(2). Scalability resulting from local learning(???没翻译明白): 在top层的supervised target之外还有per level 的 local unsupervised target, 认为会使层次更加适合深度网络.</li>
+<li>(3). Computational efficiency: 正常而言需要几倍的训练时间去添加解码器, 但是本文通过更有效的方法只需要一个很小的时间倍数</li>
+</ul>
+</li>
 </ol>
 <hr>
 <h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>architecture: 整个网络就是由 (1). convolution part (2). deconvolution part 两部分构成的. 强调conv part就是将原图像进行特征提取, deconv part就是将提取到的信息用来进行object segmentation的生成. 最终的输出是和原图像相同尺度的probability map.</li>
-<li>conv part使用 VGG 16, deconv part是 conv part的镜像结构, 但是操作就取而代之的使用deconv, unpooling, rectification layers等.</li>
-<li>unpooling: <ul>
-<li>(1). 关于pooling, 强调了虽然是为了过滤掉没有必要的多余的”噪音”从而对classification任务引入了鲁棒性所以达到了很好的效果, 但是pooling过程中, 空间语义是丢失了的, 可能会对精确地定位产生了大的影响. 所以本文提出了在deconv part 中的 unpooling layers, 其记录了当时pool的过程中选择了留下了各个感受野中的哪个元素的坐标, 然后在unpooling过程中在那个记录的位置进行信息的填充.</li>
+<li>本文首先从因变量模型角度对ladderNet进行解释.<ul>
+<li>(1). 提到了因变量模型是很有吸引力的半监督模型, 因为其可以结合监督学习和非监督学习. 其中唯一的区别就是label是否可以被观察到. 尤其是层次隐变量模型, 岂能通过底层来描述细节, 高层次去关注那些更加抽象的具有不变性质的feature以更好地处理任务.</li>
+<li>(2). 讲述了一下DAEs和DSS两个模型的区别: DAEs: (给定观察量, DAEs从加噪版的观察量学习去重构观察量)x加噪声-&gt;x’-&gt;重构得到x^, 任务目标使 x^与x的MSE loss最小.  DSS: (重构隐变量, 给定观察量) DSS训练一个映射函数f(x)-&gt;z, 来获得因变量z, 然后对z进行归一化之后使用一个降噪函数g(z_norm)-&gt;z^, 得到一个重构量z^, 任务目标是使 z^与z的 (这里强调了一下一定要对z进行归一化, 否则g会学习到恒等函数)</li>
+<li>(3). LadderNet结构: 首先进行x的输入, 然后加噪进行一个映射关系的到第一个隐变量z^1, 然后对z^1加噪得到z^1’….直到z^n’, 然后会之后利用这个一层层的去还原(降噪)z^i, 同时每个z^i(skip connection)和z^i+1’都会共同来去学习还原z^i. 每层都是有损失函数的贡献的(z^i与z^i’的MSEloss) z^i是用另外的一个不加噪编码的分支得到的</li>
+<li>(4). 本文的有监督部分是在加噪过程的最后的那个hidden layer后面利用这个representation去学习针对分类的任务, 对此进行有监督的训练, 无监督的训练指的是laddernet本身(也就是target为 加噪过程的降噪结果得到的还原隐变量和不加噪过程得到的隐变量的MSE loss)</li>
 </ul>
 </li>
-<li>deconv: <ul>
-<li>PS: 本文所指的deconv部分, 并不是传统意义上的反卷积结构, 而是将unpooling得到的系数的activations值通过类似convlution的方法去进行处理.</li>
-<li>(1). 文章认为在deconv layers中学习到的filters是用作还原input object shape的. 因此进行了一系列的deconv layers去捕捉不通过level的shape details.</li>
-<li>(2). 发现低层次的filtrs倾向于去捕捉一个物体的总体的形状, 在深层次的filter中倾向于encodeclass-specific fine-details -&gt; 网络可以直接用class-specific shape information去进行semantic segmentation.</li>
-</ul>
-</li>
-<li>后面部分内容暂时无关… 略过…</li>
 </ol>
+<p>PS: 个人认为本文的思路主要就是为了解决AutoEncoder自监督学习以及有监督分类的任务目的的不同, 自监督的特征会强调保留原有特征信息去用来重构, 但是分类任务通常需要抽象的语义信息, 所以本文对加噪encoder部分的最后进行监听, 希望能够使得encode特征是有用的, 同时又能够利用自学习(非监督学习)很好的约束优化(因为这时候还没有好的初始化方法去使得直接训练网络达到一个很好的效果)</p>
+<p>PS: 具体的分析有点看不懂, 只是大致理解思路而已, 有需要的时候回来看后面</p>
 
     </div>
 
@@ -338,8 +342,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/11/06/Simple-Summary-for-Stacked-Hourglass-Networks-for-Human-Pose-Estimation/" rel="next" title="Simple Summary for Stacked Hourglass Networks for Human Pose Estimation">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Stacked Hourglass Networks for Human Pose Estimation
+                <a href="/2019/11/10/Simple-Summary-for-Stacked-Convolutional-Auto-Encoders-for-Hierarchical-Feature-Extraction/" rel="next" title="Simple Summary for Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction
                 </a>
               
             </div>
@@ -347,10 +351,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/11/09/Simple-Summary-for-Deep-Reflectance-Maps/" rel="prev" title="Simple Summary for Deep Reflectance Maps">
-                  Simple Summary for Deep Reflectance Maps <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -396,7 +396,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Learning-Deconvolution-Network-for-Semantic-Segmentation》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Learning Deconvolution Network for Semantic Segmentation》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Semi-Supervised-Learning-with-Ladder-Networks》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Semi-Supervised Learning with Ladder Networks》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->
