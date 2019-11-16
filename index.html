@@ -236,6 +236,133 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/16/Simple-Summary-for-Pixel-Recurrent-Neural-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/11/16/Simple-Summary-for-Pixel-Recurrent-Neural-Networks/" class="post-title-link" itemprop="url">Simple Summary for Pixel Recurrent Neural Networks</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-16 15:06:27 / Modified: 15:06:51" itemprop="dateCreated datePublished" datetime="2019-11-16T15:06:27+08:00">2019-11-16</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Pixel-Recurrent-Neural-Networks》"><a href="#简单总结《Pixel-Recurrent-Neural-Networks》" class="headerlink" title="简单总结《Pixel Recurrent Neural Networks》"></a>简单总结《Pixel Recurrent Neural Networks》</h2><hr>
+<p>PS: 说实话没看懂… 但是mark一下重点以及没有明白的点, 文章确实引入的东西很多, 没有对所有的细节进行描述, 有点不明觉厉的样子, 以后需要研究就要好好看看代码去研究一下了.</p>
+<h3 id="没有明白的问题"><a href="#没有明白的问题" class="headerlink" title="没有明白的问题:"></a>没有明白的问题:</h3><ol>
+<li>文章关于Row LSTM的部分列的公式是指在训练中的分布的训练和检验是按行生成的, Row LSTM每次的state产生的就是一行图片(注意的是和LSTM一样, 堆叠LSTM的层数并不是指堆叠不同的时间… 即使只有一个LSTMlayer, 也是可以一行一行进行图片数据的输出的), 通过对这个的循环就可以得到整个图像的分布概率. </li>
+<li>但是在生成的时候强调是一个pixel一个pixel生成d的, 没有很理解这是怎么做的, 如果是按照文中(2)公式的话, 具体怎么实现的没有明白</li>
+<li>PixelCNN我也没有明确的明白到底是怎么去并行的, 优势在哪</li>
+<li>对角LSTM其depend的关注区域在哪里</li>
+<li>masked Conv的问题, 既然说是进行mask的生成, 防止看到future的pixels, 因为每次都是对一行的pixel的值去进行生成的(但是mask应该并不用针对不同位置的元素去发生变化的, 因为每个位置的关注区域好像是相同的, PS: 但是对角LSTM那个是每个点都相同还是怎么的是真的没看明白)</li>
+<li>同样按照文章公式的描述是有: 因为考虑到每个点所依赖的感受野的问题, 每个阶段的LSTM都是会对全图进行处理的, 这样才能使下面的row能够得到广阔一点的感受野(PS: 这么做就有点浪费, 是不是能够在处理完当前的行之后后面的直接就忽略掉???, 按照文章的说法这么做全图 CNN的目的是提高了计算的并行性) 因为生成的就是</li>
+<li>另外x_i应该指的就是全局的input信息, 那这个x应该是会随着一行行数据的生成而发生变化的吧, 如果是的话不是还是应该每次都计算一遍吗?. 这个进行全局的卷积是提取的全局都可以利用的信息, 文章是说了这个信息会先被计算从而提升计算的并行程度.</li>
+</ol>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p>PS: 对tractable和scalar进行一下解释: (1). tractable是可解的意思, 指的是定义的P(model)通过最大化data likelihood去求解P(model) intractable就是不定义P(model) 但是可以sample出来data  (2). scalable是可扩展的意思, 指的是模型在input size变大的时候复杂度的增长是仍然是可以接受的</p>
+<ol>
+<li>强调了对natural image的分布进行建模是无监督学习中很重要的一个问题. 这个任务需要image model能够同时是具有表现力的, 可解的且可扩展的. 本文提出的深度模型是在二维空间维度上一个像素一个像素的去进行image的生成预测. 本文方法的能够对raw pixel values进行discrete probability进行model, 并且将image中的全部依赖关系进行encode???</li>
+<li>模型结构的创新点在于: (1). fast two-dimensional recurrent layers (2). 在deep RNN中添加了residual cnnections.</li>
+<li>强调了当前模型的一个难点是在于怎么使得生成模型是tractable且scalable的(可解&amp;可扩展). 提到了很多工作都是基于随机因变量模型(eg: VAE)去提取meaningful representations, 但是通常面临着其具有一个intractable inference step的问题, 阻碍了其性能. 另外对于tractable model来说通常会考虑 将图像中的pixels的joint distribution看做是条件分布的乘积 -&gt; 将问题变成了一个序列问题, 即模型会根据所有已经生成的pixels去进行下一个pixel的生成. 但是认为这样的模型(复杂度)都是高度非线性的, 需要考虑到长程关系, 因此在high resolution上是低效的.  综上所述, 文章描述了现有的模型都是对可解和可扩展(其实意思是当input规模增长的时候)</li>
+<li>本文在RNN(SLTM)模块中引入residual connection的原因就是希望能够加深网络 -&gt; 可以堆叠12层.</li>
+<li>本文提出了两种LSTM单元: Row LSTM, Diagonal BiLSTM.  同时考虑对模型进行简化得到 PixelCNN, 发现CNN也可以去用来构建一个具有固定依赖范围的序列模型(通过masked convolution). </li>
+<li>本文对pixel value的预测使用的是离散的值(通过一个softmax层实现的multinomial distribution), 而不是通常大家所做的连续的值. 并且实验证明对本文提出的模型可以提升最后的性能.</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>强调了一下, 本文的目标是估计一个natural image的分布, 以用来可解的计算image的分布概率, 并能够生成新的image.</li>
+<li>Generating an Image Pixel by Pixel:<ul>
+<li>(1). 目标就是对每个n*n的图片x生成一个概率分布p(x). 可以把image写成一个序列, x_1, …, x_n^2. 为了预测联合分布, 会把其写成条件概率分布的成绩 p(x) = ∏p(xi|x1,…,x_i-1)</li>
+<li>(2). 因此p(x_i|x_1, …x_i-1)就是预测当前像素值的分布函数了, 每个pixel生成的顺序就是从左上开始一行一行进行的</li>
+<li>(3). 因为图像是3通道的, 所以每个位置的值是由3个值所确定的, $p(x_i|x_{&lt;i}) = p(x_{i,R}|x_{&lt;i})p(x_{i,G}|x_{&lt;i},x_{i,R})p(x_{i,B}|x_{i,R},x_{i,G})$ (也就是三个像素值之间也是有着条件概率关系的).</li>
+<li>(4). 提到了在进行训练和验证的时候每个像素的值的计算都是并行的, 但是在进行图像生成的时候是sequential的去进行生成的</li>
+</ul>
+</li>
+<li>Pixels as Discrete Variables:<ul>
+<li>之前的方法对image中pixel值的预测是连续分布, 本文则把这个考虑成了离散分布(通过把上面(3)中提到的公式的每一个p项考虑成一个用softmax实现的multinomial)把值划分为256个离散的值就可以了, 认为这么做形式简单同时不再需要对其distribution的shape做特定的prior分布, 同时文章实验发现, 使用离散的分布式能产生一个更好的结果的.</li>
+</ul>
+</li>
+<li>Pixel Recurrent Neural Networks:<ul>
+<li>(1). Row LSTM: <ul>
+<li>强调了Row LSTM是单向的layer, 从上到下的一行一行去计算feautres. 计算是使用一维的1 * k 的 convolution进行的, 对一个像素x来说, 这个层次会对其上的一个倒三角型的区域进行计算(因为每个点会考虑几个像素, 然后上一层的点又会考虑再上一层的几个像素, 一层层就拓展到成了倒三角)  k越大对每层捕捉的context越多. 认为共享的权重有利于保证translation invariance. </li>
+<li><strong><em>整体流程是: 先对当前阶段的输入x_i用一个卷积进行处理, 对上一阶段的hidden state h_i-1进行一个卷积处理, 两者维度都是4h </em> n <em> n, 将两者相加, 然后用sigmoid激活函数(针对output、forget、input三个门), tanh函数(这怒地content gate这个门)处理一下的到了四个门的参数. 然后用四个门的参数、前一阶段的hidden state与前一阶段的cell state最后可以求出当前阶段的hidden state以及cell state.</em></strong></li>
+<li>提到了, LSTM层中都会有 input-to-stage 以及 stage-to-stage 两个component, 这两个component共同决定了LSTM中的四个门. 为了提高计算的并行性, 对于input-to-state component首先会进行全图的input map的计算, conv是使用带有淹没的只考虑有效context的conv实现的, 最后得到的tensor的尺度是4h <em> n </em> n, 代表了input map上的每个位置的gate vectors. 之后再得到了前一阶段的 hidden-state 以及 cell-state 之后就可以计算当前阶段的两个值了.</li>
+<li>强调了针对对input-to-state component进行加权的conv(masked conv)是被提前计算好的(文章后面应该是有介绍的) -&gt; LSTM的一次一次的迭代我们就可以得到了最后的state值了.</li>
+<li>提到了因为Row LSTM的receptive field的问题, 感受野是不可能去捕捉到整个全图的范围的</li>
+</ul>
+</li>
+<li>(2). DIagonal BiLSTM<ul>
+<li>希望不像Row LSTM一样捕捉的是倒三角区域的感受野, 而是希望能够利用全图的context. 从两个角点开始, 每个角点都对其下方以及(右侧/左侧)提供context(中间点只会对下方提供context)</li>
+<li>提到了使用大的一维卷积都不会改变考虑的context的范围是全局的这一特点, 所以使用更大的kernel是没有很大帮助的. (…但是明明这个是local的…)</li>
+<li>具体操作就不看了</li>
+</ul>
+</li>
+<li>(3). Residual Connections: PixelRNN会训练到12层那么深 为了提高收敛速度以及解决反向传播的问题(爆炸、消失)所以使用残差连接. 就是每层简单的加一个shortcut</li>
+<li>(4). Mask Convolution: 提到了每个pixel的h channel的features是会被分为3个部分的, 分别对应于RGB的通道. 当在预测R通道的时候, 只有上面和左面的pixel才能被作为context, 当预测G通道的时候当前的pixel的R通道也会额外被当做context, B通道同理. 为此提出了mask conv这个东西, 有两种mask的方式: 1). Mask A: 其只对PixelRNN中的第一个conv layer中使用, 也就对应着前面所说的, 只有相邻的pixel(这个应该根据文章不同的两个LSTM模块的设置去进行这个相邻的定义, Row针对的是上面的3个像素, DIagonal指的同样是按照其定义的相邻)的值以及当前pixel的自己通道之前的通道的值会产生作用.(实现方法是保证每次更新之后都将不应该放入连接的位置的值设置为0) 2). Mask B: Mask B会在除了input连接的第一个conv之外使用, 将连接放开为不限制一定要是预测完的channel才会进行连接. </li>
+</ul>
+</li>
+<li>PixelCNN: 提到了Row LSTM和Diagonal BiLSTM layer度有一个潜在的无边界的依赖范围, 从而使得每个state的更新需要sequential的更新, 带来了额外的计算量. 认为一个直接额想法就是让RF变大, 但是不是没有边界的. 所以希望能够使用传统的CNN去进行边界的限定, 直接生成所有位置的features的计算. PixelCNN使用多个masked CNN layer去进行, mask仍然是为了防止看到future context. (从描述上来看个人是认为, 多个local的CNN的使用就不用每次都要从头考虑到全局的信息了, 但是生成的时候仍然是需要一个一个的生成的, 仍然是不能并行的) </li>
+<li>Multi-Scale PixelRNN: 多尺度PixelRNN是由一个unconditional PixelRNN和一个或者多个conditional PixelRNN组成的. unconditional PixelRNN首先用一个小一点的s <em> s的image去进行生成, 然后conditional network将小的image作为输入去生成一个更大一点的n </em> n的image</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1183,119 +1310,11 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/02/Chapter15-Exercise-Simple-Summary-for-Dropout-A-Simple-Way-to-Prevent-Neural-Networks-from-Overfitting/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/02/Chapter15-Exercise-Simple-Summary-for-Dropout-A-Simple-Way-to-Prevent-Neural-Networks-from-Overfitting/" class="post-title-link" itemprop="url">(Chapter15--Exercise) Simple Summary for Dropout: A Simple Way to Prevent Neural Networks from Overfitting</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-02 20:50:11 / Modified: 20:50:33" itemprop="dateCreated datePublished" datetime="2019-11-02T20:50:11+08:00">2019-11-02</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Chapter15–Exercise-简单总结《Dropout-A-Simple-Way-to-Prevent-Neural-Networks-from-Overfitting》"><a href="#Chapter15–Exercise-简单总结《Dropout-A-Simple-Way-to-Prevent-Neural-Networks-from-Overfitting》" class="headerlink" title="Chapter15–Exercise 简单总结《Dropout: A Simple Way to Prevent Neural Networks from Overfitting》"></a>Chapter15–Exercise 简单总结《Dropout: A Simple Way to Prevent Neural Networks from Overfitting》</h2><hr>
-<p>PS: 文章30页实际上对前馈神经网络的主要内容在前7页… 以思想为主, 后面的就先不看了</p>
-<h3 id="Abstract-amp-Introduction"><a href="#Abstract-amp-Introduction" class="headerlink" title="Abstract &amp; Introduction:"></a>Abstract &amp; Introduction:</h3><ol>
-<li>出发点: 强调了Overfitting是在深度学习中很常见且很严重的一个问题, 并且因为大型的深度网络很慢, 所以我们不可能通过combine多个大型神经网络的方式去在test time中使用. </li>
-<li>Key idea: 训练过程中在network中随机的drop掉一些units及与其相连的connections.  -&gt; 认为这可以有效的避免units之间co-adapting过度.</li>
-<li>在训练过程中, 会从指数级别的可能的”thinned” network中进行sample出一个网络进行训练, 在测试的时候, 认为简单的使用没有经过 “瘦身” 的网络就可以是一个对所有瘦身网络的效果的近似. </li>
-<li>强调了因为deep neural network强大的学习能力, 能够对非常复杂的输入到输出的关系进行关系的建立. 但是因为训练数据是有限的, 所以 很多的复杂关联的建立可能是对sample中噪声的关系建立, 因此会导致overfitting. (包括(1). 在验证集中性能下降的时候就停止训练 (2). 引入L1,L2正则化等对权重的惩罚, (3). 权重共享(soft weight sharing) 在内的一系列方法都想要解决这个问题)</li>
-<li>认为当计算能力无限的时候, 最好的对固定尺寸的model进行regularize的方法就是将所有可能的parameters的设定得到的prediction结果进行综合考量, 根据给定的训练数据的后验概率进行加权 -&gt; 认为需要的计算太多了, 本文提出的dropout正是一种意义上等同的指数级的共享参数的模型的weighted grometric mean.</li>
-<li>强调模型的组合确实总能提升性能, 但是大型network中是不可行的 成本过大的. 同时说将明显不同的模型机型组合是最有帮助的, 这些模型需要结构与训练数据都不同, 然而训练很多个模型结构是很困难的(因为要找每个模型的最优解的超参数, 且数据通常也是很有限的), 而且这么做也会导致inference时候的缓慢.</li>
-<li>dropout指的是在network中隐藏但是可见. 即暂时去掉其所有的输入与输出连接(将它孤立^_^) 选择drop掉的unit是随机的(提到了关于保留比例: 0.5的比例对中间层大概是不错的, 对输入单元接近1是比较好的)</li>
-<li>unit的状态有保持和dropout两种状态, 所以相当于一个有N个unit的dropout网络是 $2^N$ 个网络的汇集, 但是因为权重的共享, 还是 O(n^2) 个参数. 本质上可以看做相当于每个网络都只训练很少的次数甚至没有进行训练 </li>
-<li>inference阶段采取近似的方式而不是穷举所有可能网络进行加权, 就是之前提到的使用一个网络进行输出, 简单的调整就是一个unit保留的概率是p, 那么对其输出权重用p进行加权</li>
-<li>文章还提到了不仅仅对前向网络有效, 对其他的图模型也是有效的, 比如Boltzmann Machines.</li>
-</ol>
-<hr>
-<h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation:"></a>Motivation:</h3><ol>
-<li>em… 说是从基因得到的灵感… 染色体会从parents双方各获得一半的基因, 然后添加很小可能的随机突变就产生了一个后代. 所以认为这种从parents获取信息仅仅做微小改变的对优化个体的很好的方式, 因为一组很好的”genes”可以通过直接传递给offspring而很好的共同work. 认为sexual reproduction(有性生殖)从另一个角度看就是 打破基因之间的 co-adapted, 认为因为co-adapted 可能会因为已经形成了一个比较复杂的co-adapted系统而阻碍适应性. 因此认为这是一种最优的机体进化出来的方式.</li>
-<li>em… 越说越玄学… 认为这种方式的优越性的解释可能是因为自然界的长期选择可能不是根据个体的适应能力, 而是根据基因的混合性. —&gt; 有性生殖不仅仅是让好的新的基因进行广泛的传播, 而且是通过降低co-adaptations去使新的gene对现有系统有一定的提升空间, 而不是因为过度的co-adaptation而阻止新gene产生的效果.</li>
-<li>因此认为dropout会强制要求hidden unit必须学习更加鲁棒的能够提升自己表达能力的features 而不是依赖于其他的hidden unit去纠正其自身的错误.</li>
-<li>后面还有个直觉上的比喻就算了…</li>
-<li>核心就是复杂的co-adaptations可以在训练集上达到好的效果, 但是对从来没有见到过的信息的测试数据集很可能没有一个很好的效果(相比于多个简单的co-adaptations的组合, 也就是dropout后产生的thinnet所学习到的内容)</li>
-</ol>
-<hr>
-<h3 id="Related-Work"><a href="#Related-Work" class="headerlink" title="Related Work:"></a>Related Work:</h3><ol>
-<li>提到了dropout可以从通过对hidden units添加noise来进行neural network的regularizing方面进行解释. (应该指的是对unit的output进行加权这一个操作)</li>
-<li>同样可以将dropout看作为一种随机的正则化技巧</li>
-</ol>
-<hr>
-<h3 id="Model-Description-amp-Learning-Dropout-Nets"><a href="#Model-Description-amp-Learning-Dropout-Nets" class="headerlink" title="Model Description &amp; Learning Dropout Nets"></a>Model Description &amp; Learning Dropout Nets</h3><ol>
-<li>整个基本概念的描述就是在layer中加入一个阶段去进行一个服从伯努利分布(其实是二项分布)的参数r的采样, 然后和layer的原输出进行相乘, 用这个值代替原来的输出值. (PS:因为前馈的时候输入没有向后传递, 所以反馈的时候也并不会更新, 所以不需要显示的将前面的连接删除-&gt;因为一定是0)</li>
-<li>Backpropagation: 可以使用SGD方法可以进行, 但是是在thinnet上进行的propogation(both forward and backward). 每个parameter会在mini-batch中进行平均.(提到这一点应该是因为不是所有的parameter都会被更新.) 为了强调方法的普遍适用性, 强调了填的类似momentum, 衰减学习率, L2权重衰减等在dropout基础上设置后仍然都是有效的.</li>
-<li>强调了 强制使 新的每层的weight vector的norm值小于一个固定的值c是一个对dropout非常有效的regularization. </li>
-<li>给出了一个组合: dropout + max-norm regularization + large decaying learning rates + high momentum. (max-norm正则化作用之一是防止因为过大的学习率导致参数超出一定的范围, 而使学习到的参数更新到一个很不好的值)</li>
-<li>Unsupervised Pretraining: 对预训练网络同样进行dropout, 提到了最初担心dropout会导致对网络中原有的信息造成破坏. 但是提到了 最终实验表明当学习率与训练随机初始化网络的最佳学习率一致的时候会有这样的问题(应该指的就是性能退化), 当时采用更小的学习率的时候会获得更好的性能</li>
-</ol>
-<hr>
-<p>后面就是实验部分了. 在各种数据集以及网络上进行了大量的实验.</p>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1340,7 +1359,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
