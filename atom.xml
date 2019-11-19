@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-11-18T02:32:39.767Z</updated>
+  <updated>2019-11-19T01:27:29.050Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for Representation Learning by Learning to Count</title>
+    <link href="http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/"/>
+    <id>http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/</id>
+    <published>2019-11-19T01:26:49.000Z</published>
+    <updated>2019-11-19T01:27:29.050Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《Representation-Learning-by-Learning-to-Count》"><a href="#简单总结《Representation-Learning-by-Learning-to-Count》" class="headerlink" title="简单总结《Representation Learning by Learning to Count》"></a>简单总结《Representation Learning by Learning to Count》</h2><hr><p>PS: 在论文总结中说的是本文学习在downsampled images与tiled images中数features数目并且使其在两者中满足等价关系.<br>PS: 另一个论文总结中说实质上本文受益的是: 在高层次上, 通常语义信息丰富、纹理信息复杂的norm都大</p><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol><li>本文目的: 提出一个基于视觉原语的使用artificial supervision signal的方法(这里的artificial指的应该是人去定义的而不是人工标注的)去进行<strong><em>representation learning.</em></strong></li><li>supervised signal是通过equicariance relation获取的, 不需要人工的标注. 文章将transformations of image和transformations of representations相联系起来. 但是文章强调自己关注的找到满足这种关系的representation而不是针对特定representation的transformations. 本文在context of counting中使用两种transformations: scaling &amp;&amp; tiling. 强调scaling利用的是visual primitives的珊瑚粮应该是与scale无关的, tiling则允许我们去同等看待整个图片中没个tile的visual primitives的总数. 提到了这两个transformations会被结合到一个约束中, 并用来使用一个contrastive loss去进行neural network的训练. 本文提出的方法在迁移学习中有很好的效果.</li><li>本文认为先前的自监督的工作表明了, 自监督学习的本质与最终要解决的问题最相关的自监督任务(pretext task)更可能构建出来好的representations. -&gt; 本文的pretext task: counting visual primitives (这个自监督信号需要有辨别力的feature, 对分类是有帮助的, 同时其可以通过detection任务进行formulated). </li><li>为了获取对counting有利的supervision信号, 利用了如下的性质: 如果我们将image分割成了不重叠的regions的时候, 每个regions 中 visual primitives的数量加起来就是整个图片中visual primitives的数量 </li><li>同时本文做出的假设是: 模型需要能够将image分离处high-level factors of variation,从而将orginal image与其regions之间的复杂关系转变为简单的算数关系(本文就是counting).</li><li>强调了虽然本文使用的是特定的两种变换的组合, 但是可以使用其他的变换的组合作为vision signals. 同样可以用于更大范围的任务之中.</li><li>本文贡献: (1). 引入了一个新的不使用手工标记数据的特征学习方法 (2). 提出利用counting作为自监督任务, 同时证明了其与counting visual primitives之间的联系(???) (3). SOTA效果</li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol><li>Transforming Images to Transform Features: <ul><li>(1). 提及到characterize a feature of interest的一种方式就是描述其是如何作为function随着input data的变化而变化的. eg: visual primitives的计数不应该被scale, 2D translation, 2D rotation变化所影响. 整体的magnitude of feautres应该大于region的.</li><li>(2). 本文, 作者会使用已知的input与output之间的关系作为superisory signal 去进行representation的学习.</li><li>(3). 首先定义了图片为 $x ∈ R^{m<em>n</em>3}$ 定义了一组image transformations $G={G_1, …, G_J}$ 每个变换 $G_j : R^{m<em>n</em>3}-&gt;R^{p<em>q</em>3}$ 将image作为输入, 并且将其映射到 p <em> q大小的image上. 之后定义一个feature $φ:R^{p</em>q<em>3}-&gt;R^k$ 将transformed image映射到一个 k 维度的vector上. 最后, 定义一个feature transformation $g:R^k</em>···*R^k-&gt;R^k$ 将J个features作为输入, 并将其映射到另外的一个feature中. 因此给定了image transformation family G 和 g, 通过后面的公式所定义的artificial supervisory signal学习feature φ: $g(φ(G_1◦x), …, φ(G_j◦x)) = 0$</li><li>(4). 在本作中, transformation family由downsampling operator D(下采样系数为2), tiling operation operator $T_j, j = 1, …, 4 $组成. 因此 $G={D, T_1, … ,T_4}$. 同样定义了 $g(d, t_1, …, t_4) = d - Σ_{j=1}^4t_j$ 这个公式可以被写成 $φ(D◦x)=Σ_{j=1}^4φ(T_j◦x)$</li><li>(5). 说这个关联也和equivariance(同变性, 指的是不要求CNN所强调的invariance不变性, 而是要考虑到坐标之类的信息的)有所关联. Equivariance通常被定义为一个给定feature的性质. 本文中通过固定transformations并寻找一个满足这些变换的representation来将上面的定义的逻辑反过来. 同时, equivariance被约束在应用在inputs和features的transforamtions上.  (???有点迷)</li></ul></li><li>Learning to Count: <ul><li>PS: 使用CNN去获取representations. </li><li>(1). 原则上可以去用一个large database中的图片进行训练, 使用基于上面counting公式的 l2 loss作为损失函数. 即: $l(x)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|^2$  但是认为loss总是会有 φ(z) = 0 的这个平凡解的. 为了避免这个情况的出现, 选择使用<a href="https://zhuanlan.zhihu.com/p/82199561" target="_blank" rel="noopener">contrastive loss, 连接是知乎一个描述</a> 本文中的 loss形式为: $l_{con}(x,y)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|^2 + max{0, M-|φ(D◦y)-Σ_{j=1}^4φ(T_j◦x)|^2} , x\not=y$ 目的是希望能够强迫两个随机选择的不同的image的counting feature尽可能的不同. M取经验值为10.</li><li>(2). 结合结构图食用可以明白: 整个流程是: 1). 选取两张不同的图 2). 将一张图只进行downsample, 将另外一张图做downsample并且进行tiling 3). 使用共享参数的AlexNet进行2).中得到的图的处理 4). 每个后续接上几组全连接层进行处理, 得到对应的最后的vector 5). 进行Loss的计算, Loss分为两个部分 1. 进行了downsample以及tiling的图片中: 计算正常的counting loss的计算 2. 只进行downsample图片的最后结果和另外image的tiling计算结果进行max(0, M - counting loss)的计算(希望两个不同的image 的 intra-image 差异尽可能的大)</li><li>(3). Least effort bias: a bias of the system是: 可以通过学习尽可能少的对visual primitives进行count来达到基本loss(指的是$l(x)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|$)的目标  因此很多的feature mapping会坍塌到0, 在imageNet、COCO等数据集上已经发现了1000个entry中只有几十个非零, 特征因此是稀疏的. 此外本文的transfer learning实验表明了hidden layers在一些benchmarks上表现很好. 但是本文的contrastive loss限制了least effort bias. 因为counting feature当可数的visual primitives很少的时候并不能很好的和其他图像进行区分. 因此contrastive项也可以看做是将不同图像(intra-)区分开来的作用.</li></ul></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《Representation-Learning-by-Learning-to-Count》&quot;&gt;&lt;a href=&quot;#简单总结《Representation-Learning-by-Learning-to-Count》&quot; class=&quot;headerlink&quot;
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Deep Clustering for Unsupervised Learning of Visual Features</title>
@@ -223,30 +247,6 @@
       
       
         &lt;h2 id=&quot;简单总结《FEATURE-INTERTWINER-FOR-OBJECT-DETECTION》&quot;&gt;&lt;a href=&quot;#简单总结《FEATURE-INTERTWINER-FOR-OBJECT-DETECTION》&quot; class=&quot;headerlink&quot; title=&quot;
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for SNIPER: Efficient Multi-Scale Training</title>
-    <link href="http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/"/>
-    <id>http://suilin.top/2019/11/06/Simple-Summary-for-SNIPER-Efficient-Multi-Scale-Training/</id>
-    <published>2019-11-06T01:15:57.000Z</published>
-    <updated>2019-11-06T01:16:21.197Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结《SNIPER-Efficient-Multi-Scale-Training》"><a href="#简单总结《SNIPER-Efficient-Multi-Scale-Training》" class="headerlink" title="简单总结《SNIPER: Efficient Multi-Scale Training》"></a>简单总结《SNIPER: Efficient Multi-Scale Training》</h2><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol><li>本文提出的SNIPER是进行instance level visual recognition任务多尺度的高效训练的算法. 并不去进行image pyramid所有像素的处理, SNIPER只处理GT instance在合适的scale上周围的context的信息. 说bg sampling 的 context-regions都是通过一个短周期训练的RPN网络提取出来的, 因此每个image在训练中生成的chips的数目都是根据场景复杂度自适应的改变的. SNIPER在一个单尺度(800<em>1333)上仅仅需要处理30%左右的pixels即可, 而且其可以对极端大的resolution的图像进行处理(其实太大了导致物体超过了512</em>512肯定是不行的), 提到了SNIPER针对重新采样的low resolution chips(512*512)进行操作 -&gt; 因此可以在GPU上采取一个很大的batch(说因此就可以直接享受到batch-normalization的好处, 而不用跨GPU的去进行synchronizing batch-normalization). 作者认为, SNIPER将原图像划分为一个个的小的chips使得instance level recognition任务(主要指detection)更加倾向于image classification. 同时认为传统普遍接受的观点: 在high resolution图片上进行visual recognition十分重要可能并不是正确的(…其实你不也只是从大的图片上截取下来的吗…).</li><li>又是从人眼角度开始描述的, 同样认为人们只会关注一小部分的图片而周围的区域将会是模糊的, 所以是难以同时处理多尺度的. 通常是仅仅处理一小部分的image, 然后自适应的忽略掉图像剩余部分的视觉信息, 而主流的detector为了robust的scale representation而多尺度的去进行训练, 并且其会对所有的pixel进行训练. 同时认为多尺度会因为放大且全处理导致时间的大量增长, 在很多情形下是不可行的.</li><li>提到了之前自己的SNIP, 说在训练的过程中忽略掉特定scale下extreme resolution objects的梯度是有利于训练的. -&gt; 也就是在特定尺度上关注特定大小的物体 -&gt; 一个符合直觉的想法就是, 我们是不是可以不用将整张图片放大, 而只是sample在小物体周围的一个小的RoI chip就可以.同时从另一个角度说明这个选择就是, 当一个图像已经在一个high resolution了, 并且其中有很大的obj了, 那么upsample这些大的obj可能并不会带来好处(个人认为反而会因为感受野并不够大而错误判断一些事情)</li><li>作者接下来又说, 确实放弃掉image中很大一部分然后在upsample有助于节省计算量, 但是一个小的chip可能会因为缺少contexual信息去进行识别. 很大一部分的背景信息可能也会被忽略掉 -&gt; trade-off between computation, context, negative mining. 也就是本文提出的训练算法(SNIPER), 其根据image content去自适应的从image pyramid不同尺度上去sample一些chips出来. </li><li>会根据GT instances sample一些positive samples出来, 根据RPN网络的proposal sample一些negative samples出来. </li><li>主要贡献: (1). 保证和SNIP相似性能的同时 可以减少3倍的处理pixel的数量. (2). 因为SNIP patch是比较小的, 所以可以享受到大的batch-normalization带来的好处(单卡20, 8卡160的batch-size, 即使使用的是resNet-101这种大backbone)</li><li>提到了关于R-CNN与Fast-RCNN的一个对比, (本文主要是通过截取固定大小避免了很多没有意义的物体的放大与缩小这一角度出发, 但是一篇<a href="https://zhuanlan.zhihu.com/p/46810110" target="_blank" rel="noopener">知乎上的解读</a>认为可以看做是对RCNN具有尺度不变性和F-RCNN的没有的分析, 虽然文章没有这么表述, 个人也并不认为本文是从这个角度出发的)(deformable conv2从另外一个角度进行这个事情的解释). 提到了F-RCNN会对所有image中的proposal进行upsample与downsample. 和RCNN不同, RCNN每个proposal都会因为SS算法而固定到224*224的大小, large obj与small obj都没有进行upsample与downsample. 而是只处理当前尺度下包含合适resolution的物体的区域, 认为这是比较合适的(文章中的角度主要是指没有将大物体放大, 小物体缩小这种不恰当的处理, 但是实际上这么做在de-conv2中解释是有利于尺度不变性), 但是Fast-RCNN与Faster-RCNN中已经明确分析了, 因为SS没有共享feature map以及SS算法是基于CPU进行的所以速度很慢. 本文认为提出的SNIPER算法享受了两者的好处, (1). 生成尺度相关的固定大小的chips, 并且使chips中包含尽可能多的合适scale的物体 (2). 在一个chips内使用Fast RCNN的做法, 去进行chip中多proposal的处理. -&gt; 以上两点带来了好处就是, 不需要在包含大物体的地方进行upsample, 同时不用进行简单bg region的反复处理了. 相比于Fast-RCNN显著要快.</li><li>在SNIP的基础上, 对SNIP的 480, 800以及多个从1400 crop出1000大小的image pyramid进行处理, 去sample 512大小的patch. 实验发现, 在比较大(3*)的image上, 计算量可能仅仅是原先的1/10. 但是遇到的一个问题是, 当仅仅使用GT instance去生成patch的时候, 因为仅仅处理图像的部分内容, 导致训练中很少会对背景信息进行学习处理, 所以导致了假正率的很高, 因此后来还是要对bg进行negative patch的sample(sample可能包含false positive的region)(使用一个轻量级短周期训练的RPN去生成这些区域). </li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><p>本文包含了两个模块: (1). positive/negative chip生成  (2). chip生成后的label assignment</p><ol><li>Chip generation:<ul><li>(1). 首先SNIPER会在多个尺度{s1, s2 …}上进行chip的生成, 每个尺度上, 首先iamge会resize到 $W_i <em> H_i$ 上, 然后 K </em> K 大小的chips将会没 d pixels(本文是d=32)的进行生成(其实就相当于一个大的anchor… )</li></ul></li><li>Positive Chip Selection: <ul><li>(1). 在每个scale上, 指定了一定的area range, 决定了每个scale上参加训练的GT boxes/proposals. 这些GT bbox构成了一个集合, 然后我们贪心的去选择能够将cover valid GT box最多数量的patch, 只有当一个GT box被完全的覆盖在chip中的时候才被称之为covered. 一个scale中的每个picture的所有的positive chip将会被combine 在一起.</li><li>(2). 上面的贪心保证了每个GT box都至少被一个patch所包含, 但是可能会存在一个GT bbox被同一个scale上的多个chip所包含, 也可能存在在不同的scales上被不同的chips所包含. </li><li>(3). 没有被完全被chip包含的GT box是被crop的, 但是cropped GT box仍然会保留在chip中, 并用来进行label assignment(???什么意思???)</li><li>(4). 至此, 所有的GT box都会在合适的scale上被covered. 同时提到了 因为crop-size是远小于图片resolution的, 因此SNIPER并没有在high resolution上对很多的背景信息进行处理. 这在处理high resolution image的时候大幅度的减少了计算量与内存需求. </li></ul></li><li>Negative Chip Selection:<ul><li>(1). 提到尽管positive chips覆盖了所有的positive instances, 但是很大一部分比例的bg并没有被覆盖到, 因此导致了在训练的过程中缺少背景的训练, 导致了在inference的时候false positive的上升. 提到当前点的object detection算法中, 通常multi-scale training是经常被使用的, 在所有的scale上图片的每个pixels都会被训练, 这可以有效的减少false positive, 但是却带来了大量的计算损耗, 并不像这么做(因为这么做就发不了paper了 2333). </li><li>(2). 作者假设很大一部分比例的bg是很容易被区分的(算是常识… imbalance问题), 所以作者认为可以避免去使用这些bg region去进行训练. </li><li>(3). 为了去找到这些区域, 作者认为最简单的方法就是使用object proposals去找出obj可能存在的区域, 剩下的区域就是被认为很简单就可以区分的区域, 这些区域就是我们应该放弃的. </li><li>(4). 实现上面的方法, 首先用一些epoch去先训练一个RPN, 不适用negative chips去进行训练, 因为这个网络的目的就是帮助我们粗略的找到可能存在物体的regions(文章说的是可能包含false positive的区域, 其实是一个意思), 这个RPN不需要非常精准. </li><li>(5). 对negative chip的选择时, 首先不考虑那些很简单就能区分的区域, 然后排除哪些与positive chips cover的proposal. 之后对于每一个scale, 我们类似选择贪心的去进行选择negative chip, 每个chip都只要要包含M个proposals, 这个时候就得到了最后的negative chips set</li></ul></li><li>Label Assignment:<br> PS: 需要注意的是, 进入训练的是每个patch, 而不是original input image pyramid.<br> (1). 强调了本文是end2end训练的, 每个chips都会类似于Faster-RCNN去进行训练.<br> (2). 关于RPN的训练, 不进行尺度的区分(所以当一个大物体被一个chip crop的时候所剩下的小的region仍然是在这个阶段valid的), 但是后续进行proposal处理的时候只有落在当前尺度下的GT box才会被用来训练, 其他的将会被忽略掉. 剩下的设定和Fast-RCNN相似.</li><li>Benefits: 大部分点都是之前提到过的, 另外其提及到本作可以一定程度的表明, 图片中有相当一部分的context对检测是没有什么作用的, 但是也有可能是因为深度网络还不够深, 其感受野(经验感受野)不足以覆盖全图的所有pixels.</li><li>Inference过程: 使用图像金字塔: (480, 512), (800, 1280), (1400, 2000)的image pyramid(括号中的数字描述的是范围信息), 然后谈到了训练和推断期间有效的区域是和SNIP相似的. combine detections 使用的是soft-NMS</li><li>关于为什么对那个筛选可能存在物体的区域的RPN只使用 positive sampling 进行训练 -&gt; 作者进行实验发现, 当RPN没有进行negative sampling的时候 召回率是没有下降的(与mAP相反), 因为召回率并不考虑假正率, 所以可以认为只使用positive sampling进行训练的时候, 已经可以发现所有的positive regions. 个人认为, 我们仅仅使用positive sampling可以加快收敛可以大大减少这个RPN的训练时间.</li><li>Negative Chip Mining and Scale: </li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol><li>原来AutoFocus的Chips的概念是是从这里延伸的啊, 但是为什么autoFocus的chips的大小并不保证一致呢? 而是设置一个最小大小? 是否是因为在AutoFocus实验中表明总是最小大小的FocusPatch将会被predict出来去进行下一步? </li><li>PS: 虽然在处理的时候被crop的GT box并不被看做是covered, 但是实际上数据及上确实存在着只有部分的/被遮挡的obj. </li><li>PS: SNIP SNIPER这个系列针对的都会训练过程, 推断过程都会使用大物体进行</li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结《SNIPER-Efficient-Multi-Scale-Training》&quot;&gt;&lt;a href=&quot;#简单总结《SNIPER-Efficient-Multi-Scale-Training》&quot; class=&quot;headerlink&quot; title=&quot;简单总结《S
       
     
     </summary>

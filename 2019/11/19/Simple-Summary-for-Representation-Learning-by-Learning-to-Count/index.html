@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》PS: 只看观点思路 没看细节  提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow d">
+  <meta name="description" content="简单总结《Representation Learning by Learning to Count》 PS: 在论文总结中说的是本文学习在downsampled images与tiled images中数features数目并且使其在两者中满足等价关系.PS: 另一个论文总结中说实质上本文受益的是: 在高层次上, 通常语义信息丰富、纹理信息复杂的norm都大  Introduction: 本文目的">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors">
-<meta property="og:url" content="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/index.html">
+<meta property="og:title" content="Simple Summary for Representation Learning by Learning to Count">
+<meta property="og:url" content="http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》PS: 只看观点思路 没看细节  提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow d">
+<meta property="og:description" content="简单总结《Representation Learning by Learning to Count》 PS: 在论文总结中说的是本文学习在downsampled images与tiled images中数features数目并且使其在两者中满足等价关系.PS: 另一个论文总结中说实质上本文受益的是: 在高层次上, 通常语义信息丰富、纹理信息复杂的norm都大  Introduction: 本文目的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-15T13:14:10.577Z">
+<meta property="og:updated_time" content="2019-11-19T01:27:29.050Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors">
-<meta name="twitter:description" content="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》PS: 只看观点思路 没看细节  提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow d">
-  <link rel="canonical" href="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/">
+<meta name="twitter:title" content="Simple Summary for Representation Learning by Learning to Count">
+<meta name="twitter:description" content="简单总结《Representation Learning by Learning to Count》 PS: 在论文总结中说的是本文学习在downsampled images与tiled images中数features数目并且使其在两者中满足等价关系.PS: 另一个论文总结中说实质上本文受益的是: 在高层次上, 通常语义信息丰富、纹理信息复杂的norm都大  Introduction: 本文目的">
+  <link rel="canonical" href="http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors | Suilin's Blog</title>
+  <title>Simple Summary for Representation Learning by Learning to Count | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/15/Simple-Summary-for-Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors
+            Simple Summary for Representation Learning by Learning to Count
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-15 21:13:44 / Modified: 21:14:10" itemprop="dateCreated datePublished" datetime="2019-10-15T21:13:44+08:00">2019-10-15</time>
+              <time title="Created: 2019-11-19 09:26:49 / Modified: 09:27:29" itemprop="dateCreated datePublished" datetime="2019-11-19T09:26:49+08:00">2019-11-19</time>
             </span>
           
             
@@ -291,19 +291,35 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》"><a href="#简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》" class="headerlink" title="简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》"></a>简单总结 <strong><em>《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》</em></strong></h2><p>PS: 只看观点思路 没看细节</p>
-<ol>
-<li>提出Adaptive Feeding 去将一个 Fast but less accurate detector 与一个 Accurate but slow detector 进行结合, 适应性的决定一个图片困难还是简单去决定使用哪一个detector进行分类</li>
-<li>首先利用一个很简单的很快的detector首先生成一些instance proposals, 并基于这些内容去决定使用快的还是准的model去进行后面的步骤</li>
-<li>优点<ul>
-<li>(1). AF快的同时准确</li>
-<li>(2). 可以将两个不同架构的模型进行直接组合利用, 而不需要额外的training data</li>
-<li>(3). AF使用一个不平衡的学习框架去从hard images中辨认easy ones(???), 并且这个框架可以调整speed和accuracy之间的trade-off</li>
+        <h2 id="简单总结《Representation-Learning-by-Learning-to-Count》"><a href="#简单总结《Representation-Learning-by-Learning-to-Count》" class="headerlink" title="简单总结《Representation Learning by Learning to Count》"></a>简单总结《Representation Learning by Learning to Count》</h2><hr>
+<p>PS: 在论文总结中说的是本文学习在downsampled images与tiled images中数features数目并且使其在两者中满足等价关系.<br>PS: 另一个论文总结中说实质上本文受益的是: 在高层次上, 通常语义信息丰富、纹理信息复杂的norm都大</p>
+<hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文目的: 提出一个基于视觉原语的使用artificial supervision signal的方法(这里的artificial指的应该是人去定义的而不是人工标注的)去进行<strong><em>representation learning.</em></strong></li>
+<li>supervised signal是通过equicariance relation获取的, 不需要人工的标注. 文章将transformations of image和transformations of representations相联系起来. 但是文章强调自己关注的找到满足这种关系的representation而不是针对特定representation的transformations. 本文在context of counting中使用两种transformations: scaling &amp;&amp; tiling. 强调scaling利用的是visual primitives的珊瑚粮应该是与scale无关的, tiling则允许我们去同等看待整个图片中没个tile的visual primitives的总数. 提到了这两个transformations会被结合到一个约束中, 并用来使用一个contrastive loss去进行neural network的训练. 本文提出的方法在迁移学习中有很好的效果.</li>
+<li>本文认为先前的自监督的工作表明了, 自监督学习的本质与最终要解决的问题最相关的自监督任务(pretext task)更可能构建出来好的representations. -&gt; 本文的pretext task: counting visual primitives (这个自监督信号需要有辨别力的feature, 对分类是有帮助的, 同时其可以通过detection任务进行formulated). </li>
+<li>为了获取对counting有利的supervision信号, 利用了如下的性质: 如果我们将image分割成了不重叠的regions的时候, 每个regions 中 visual primitives的数量加起来就是整个图片中visual primitives的数量 </li>
+<li>同时本文做出的假设是: 模型需要能够将image分离处high-level factors of variation,从而将orginal image与其regions之间的复杂关系转变为简单的算数关系(本文就是counting).</li>
+<li>强调了虽然本文使用的是特定的两种变换的组合, 但是可以使用其他的变换的组合作为vision signals. 同样可以用于更大范围的任务之中.</li>
+<li>本文贡献: (1). 引入了一个新的不使用手工标记数据的特征学习方法 (2). 提出利用counting作为自监督任务, 同时证明了其与counting visual primitives之间的联系(???) (3). SOTA效果</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>Transforming Images to Transform Features: <ul>
+<li>(1). 提及到characterize a feature of interest的一种方式就是描述其是如何作为function随着input data的变化而变化的. eg: visual primitives的计数不应该被scale, 2D translation, 2D rotation变化所影响. 整体的magnitude of feautres应该大于region的.</li>
+<li>(2). 本文, 作者会使用已知的input与output之间的关系作为superisory signal 去进行representation的学习.</li>
+<li>(3). 首先定义了图片为 $x ∈ R^{m<em>n</em>3}$ 定义了一组image transformations $G={G_1, …, G_J}$ 每个变换 $G_j : R^{m<em>n</em>3}-&gt;R^{p<em>q</em>3}$ 将image作为输入, 并且将其映射到 p <em> q大小的image上. 之后定义一个feature $φ:R^{p</em>q<em>3}-&gt;R^k$ 将transformed image映射到一个 k 维度的vector上. 最后, 定义一个feature transformation $g:R^k</em>···*R^k-&gt;R^k$ 将J个features作为输入, 并将其映射到另外的一个feature中. 因此给定了image transformation family G 和 g, 通过后面的公式所定义的artificial supervisory signal学习feature φ: $g(φ(G_1◦x), …, φ(G_j◦x)) = 0$</li>
+<li>(4). 在本作中, transformation family由downsampling operator D(下采样系数为2), tiling operation operator $T_j, j = 1, …, 4 $组成. 因此 $G={D, T_1, … ,T_4}$. 同样定义了 $g(d, t_1, …, t_4) = d - Σ_{j=1}^4t_j$ 这个公式可以被写成 $φ(D◦x)=Σ_{j=1}^4φ(T_j◦x)$</li>
+<li>(5). 说这个关联也和equivariance(同变性, 指的是不要求CNN所强调的invariance不变性, 而是要考虑到坐标之类的信息的)有所关联. Equivariance通常被定义为一个给定feature的性质. 本文中通过固定transformations并寻找一个满足这些变换的representation来将上面的定义的逻辑反过来. 同时, equivariance被约束在应用在inputs和features的transforamtions上.  (???有点迷)</li>
 </ul>
 </li>
-<li>hard 还是 easy 认为应该是由image中的instances决定影响的 -&gt; 因此在AF第一阶段放一个 instance generator去提取决定 easy vs. hard 分类的特征</li>
-<li>为了后续分类的高效以及准确这个很快的detector应该提供((1). 预测的类别 (2). 置信度分数 (3). bbox 坐标), 同时要求这个detector是高效而且比较准确的 -&gt; 文章使用 Tini Yolo.  选择top K个最高置信度分数的proposals去决定这个image是简单还是难(通过SVM分类器)</li>
-<li>对于这个 easy vs. hard SVM分类器, 认为并不简单, 因为要考虑到不平衡以及cost-sensitive 问题 -&gt; 因为大部分的images是简单的, 只需要都猜简单我们就能达到一个看上去很好的性能, 这显然是不行</li>
+<li>Learning to Count: <ul>
+<li>PS: 使用CNN去获取representations. </li>
+<li>(1). 原则上可以去用一个large database中的图片进行训练, 使用基于上面counting公式的 l2 loss作为损失函数. 即: $l(x)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|^2$  但是认为loss总是会有 φ(z) = 0 的这个平凡解的. 为了避免这个情况的出现, 选择使用<a href="https://zhuanlan.zhihu.com/p/82199561" target="_blank" rel="noopener">contrastive loss, 连接是知乎一个描述</a> 本文中的 loss形式为: $l_{con}(x,y)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|^2 + max{0, M-|φ(D◦y)-Σ_{j=1}^4φ(T_j◦x)|^2} , x\not=y$ 目的是希望能够强迫两个随机选择的不同的image的counting feature尽可能的不同. M取经验值为10.</li>
+<li>(2). 结合结构图食用可以明白: 整个流程是: 1). 选取两张不同的图 2). 将一张图只进行downsample, 将另外一张图做downsample并且进行tiling 3). 使用共享参数的AlexNet进行2).中得到的图的处理 4). 每个后续接上几组全连接层进行处理, 得到对应的最后的vector 5). 进行Loss的计算, Loss分为两个部分 1. 进行了downsample以及tiling的图片中: 计算正常的counting loss的计算 2. 只进行downsample图片的最后结果和另外image的tiling计算结果进行max(0, M - counting loss)的计算(希望两个不同的image 的 intra-image 差异尽可能的大)</li>
+<li>(3). Least effort bias: a bias of the system是: 可以通过学习尽可能少的对visual primitives进行count来达到基本loss(指的是$l(x)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|$)的目标  因此很多的feature mapping会坍塌到0, 在imageNet、COCO等数据集上已经发现了1000个entry中只有几十个非零, 特征因此是稀疏的. 此外本文的transfer learning实验表明了hidden layers在一些benchmarks上表现很好. 但是本文的contrastive loss限制了least effort bias. 因为counting feature当可数的visual primitives很少的时候并不能很好的和其他图像进行区分. 因此contrastive项也可以看做是将不同图像(intra-)区分开来的作用.</li>
+</ul>
+</li>
 </ol>
 
     </div>
@@ -330,8 +346,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/15/Simple-Summary-for-Finding-Tiny-Faces/" rel="next" title="Simple Summary for Finding Tiny Faces">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Finding Tiny Faces
+                <a href="/2019/11/18/Simple-Summary-for-Deep-Clustering-for-Unsupervised-Learning-of-Visual-Features/" rel="next" title="Simple Summary for Deep Clustering for Unsupervised Learning of Visual Features">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Deep Clustering for Unsupervised Learning of Visual Features
                 </a>
               
             </div>
@@ -339,10 +355,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/" rel="prev" title="Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective">
-                  Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -388,7 +400,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结-《Adaptive-Feeding-Achieving-Fast-and-Accurate-Detections-by-Adaptively-Combining-Object-Detectors》"><span class="nav-number">1.</span> <span class="nav-text">简单总结 《Adaptive Feeding: Achieving Fast and Accurate Detections by Adaptively Combining Object Detectors》</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Representation-Learning-by-Learning-to-Count》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Representation Learning by Learning to Count》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->
