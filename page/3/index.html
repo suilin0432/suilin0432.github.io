@@ -236,6 +236,109 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/27/Simple-Summary-for-Cascade-R-CNN-Delving-into-High-Quality-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/27/Simple-Summary-for-Cascade-R-CNN-Delving-into-High-Quality-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Cascade R-CNN: Delving into High Quality Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-27 20:42:21 / Modified: 22:06:37" itemprop="dateCreated datePublished" datetime="2019-10-27T20:42:21+08:00">2019-10-27</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Cascade-R-CNN-Delving-into-High-Quality-Object-Detection》"><a href="#简单总结《Cascade-R-CNN-Delving-into-High-Quality-Object-Detection》" class="headerlink" title="简单总结《Cascade R-CNN: Delving into High Quality Object Detection》"></a>简单总结《Cascade R-CNN: Delving into High Quality Object Detection》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>提到文章的初衷: 我们现在设定一个IoU阈值去进行positive和negative的区分定义, 但是一个不是很高的阈值通常会导致noisy detection的产生, 然而过高的IoU threshold则通常会导致性能的退化, 认为原因有两点<ul>
+<li>(1). 训练的过程中因为正样本vanishing positive samples导致的过拟合</li>
+<li>(2). inference阶段训练好的最佳模型得到的IoU与input hypothesis的不匹配(???啥意思…)</li>
+</ul>
+</li>
+<li>本文Cascade RCNN的architecture包含了一系列的detectors, 使用逐渐增长的IoU thresholds进行训练, 来逐步的减少假正(false positive)情况的出现. </li>
+<li>本文detector是stage-by-stage的训练的, 认为是基于一个detector的输出对于下一个更高质量的detector来说是一个很好的分布.</li>
+<li>认为obj detection是由(1).distinguish foreground objects from background (2).assign object to proper obj class labels (3).localization obj三个问题组成的, 认为这三个问题都很难解决, 因为detector存在着很多的false positive问题, detector必须要找到true positive的同时对false positive进行抑制</li>
+<li>认为原本的通常的做法(设置threshold为0.5)不够好, 因为会放过很多接近于true positive的false positive</li>
+<li>强调了一下本文定义的quality是 <strong><em>与GT的IoU大小</em></strong>, quality of detector是 <strong><em>采用训练的IoU threshould</em></strong>.</li>
+<li>Basic idea: 一个单独的detector只能对一个特定的quality level达到最优.</li>
+<li>PS: 作者示例图的意思是用 RPN得到的IoU作为location performance, regression后的out作为detection performance. 每个bbox regressor在IoU接近训练的threshould的时候是有最好的检测性能的, detector也是训练的时候选择什么阈值检测最后的结果就是什么阈值最好的. -&gt; 基于两个图的实验, 作者认为选择一个threshold进行训练是不能得到多种情况下的最优值的.</li>
+<li>同时认为直接选择一个高的threshold进行训练是反而会降低性能的, 认为原因是, proposal detector所假设的分布通常会因为imbalance问题倾向与低IoU的, 选择大的IoU就意味着只关注那较小数量的样本(就是1.(1).提到的问题).  以及认为high threshold只对high quality (distribution) hypothese上成立, 在很多没有见到过的实际input中只是次优的.(就是1.(2).提到的问题).</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>提到了之前的认为RPN阶段不够的文章: <ul>
+<li>(1). iterative bbox: 认为存在两个问题: 1). 只采用了一个threshold, 其对于更高的IoU的对象来说是次优的, 最后造成了对很高的IoU的对象的性能的退化 2).bbox的distribution随着RPN阶段的变化之后分布发生了明显的变化, 对第一阶段RPN最优的设置对于后来的阶段可能是suboptimal的. 从而导致了其需要进行很多的人工设置, 并且通常情况下简单的重复两遍并不会带来性能的提升.</li>
+</ul>
+</li>
+<li>Detection Quality: <ul>
+<li>(1). 提到了一个自然而然希望能够将多种IoU threshold聚集在一起的设置方法: 用一组不同IoU threshold的loss去进行, 但是实际上是不可行的, 因为可以发现在原始阶段IoU边高的时候样本数量是急剧下降的, 所以导致不同threshold的loss其positive样本数量上存在一定的问题</li>
+</ul>
+</li>
+<li>Cascaded Bounding Box Regression: 其实和iterative BBox结构上没有什么区别, 但是实际上是有区别的: (1). 认为iter bbox是迭代的refine bbox的过程, 而自己是想要通过重采样改变bbox的分布的过程 (2). Cascade BBOX在训练和推理阶段都使用, 所以认为在训练和推理两个阶段之间的分布式不存在差异的… (3). 认为iter bbox每个阶段使用同样的处理”函数”, 而自己是不同的(threshold改变了) (PS: 除了(3)前两个像是凑数)</li>
+<li>Cascaded Detection: 又列举了一个实验图, 强调RPN proposal所选取的bbox是低质量的(低IoU的), 因此会影响到后续对高质量anchor的训练过程, 本文方法通过cascaded bbox regrssion将roi分布重采样到有利于高质量anchor训练的程度上.<ul>
+<li>每个阶段都会进行classify以及regressor, 损失函数也是这么加权的</li>
+</ul>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/27/Simple-Summary-for-Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1187,109 +1290,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Single-Shot Refinement Neural Network for Object Detection</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 22:38:57 / Modified: 22:39:23" itemprop="dateCreated datePublished" datetime="2019-10-19T22:38:57+08:00">2019-10-19</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Single-Shot-Refinement-Neural-Network-for-Object-Detection》"><a href="#简单总结《Single-Shot-Refinement-Neural-Network-for-Object-Detection》" class="headerlink" title="简单总结《Single-Shot Refinement Neural Network for Object Detection》"></a>简单总结《Single-Shot Refinement Neural Network for Object Detection》</h2><hr>
-<ol>
-<li>文章目的: 想要结合two-stage精确以及one-stage快速两者的优点</li>
-<li>RefineDet中包含了两个内联的module.<ul>
-<li>(1). anchor refinement module(ARM): 1. 去除negative anchors去减少classifier 的 search space  2. 粗略的调整anchors的location与size以为后续的bbox regressor提供更好的初始化</li>
-<li>(2). object detection module(ODM): 和正常的detection module差不多的作用</li>
-</ul>
-</li>
-<li>同时设计了transfer connection block去将anchor refinement module的feature transfer到object detection module中去进行locations, sizes, class labels的预测</li>
-<li>加上了multi-task loss function去保证网络训练的end2end</li>
-<li>认为one-stage性能不是很好的原因之一是: 类别不平衡问题</li>
-<li>谈及two-stage的优点有:<ul>
-<li>(1). 使用类别不可知的sampling的two-stage结构能够处理类别不平衡问题</li>
-<li>(2). 使用两个阶段去cascaded处理box regression问题</li>
-<li>(3). 使用tow-stage的feature去进行obj的描述 (PS: 确实RPN加入将问题变成了 cascaded的先进行二分类+box regression -&gt; detection feature + box regression. 那么也就是说我的想法的实现也可以间接的达到这个效果?)</li>
-</ul>
-</li>
-<li>因为RefineDet的流程是筛除掉不好的anchor以及进行anchor的refine之后进行进一步的refine以及detection, 认为借鉴了two-stage的思想, 所以具有了two-stage的三个优点</li>
-<li>ARM模块: 去掉了原本的classification layers的同时添加了一些辅助结构</li>
-<li>OMD的input是TCB的output, 之后连接prediction layers去进行分类以及refined anchor box的regression</li>
-<li>Transfer Connection Block: <ul>
-<li>(1). 模块输入是: 当层feature map以及更深一层经过得到的TCB模块的输出</li>
-<li>(2). 对当层的进行conv+relu+conv然后和右侧deconv的进行dot sum然后再relu+conv+relu得到的就是输出</li>
-<li>PS: 说是进行feature的迁移, 实际上也是进行context/feature fusion操作(原文也说了)</li>
-</ul>
-</li>
-<li>两阶段级联的box regression就不仔细说了, 很简单的思路以及实现(PS: 因为SSD就是预测的是box的变化参数, 而不是具体位置, 所以是独立出来的, 不要总盯着feature map的channel数看 2333)</li>
-<li>Negative Anchor Filtering: 思想是早期先拒绝掉一些很简单就能辨认出不对的negative anchors去一定程度上解决imbalance问题</li>
-<li>其他细节请见paper吧 有空一定好好看一下loss的设计</li>
-</ol>
-<hr>
-<p>Loss Function的设计<br>Loss由两个部分组成: (1). loss of ARM  (2). loss of ODM<br>loss of ARM: (1). 给每个anchor一个binary class label(是不是一个obj) -&gt; 计算二分类的交叉熵loss, 并且(2). regress anchor的location与其size(这个目的是给出一个更好的anchor) -&gt; 和Fast RCNN 一致的针对regression的L1 Loss<br>loss of ODM: (1). regression loss(和ARM的loss一致) (2). 多分类的softmax Loss</p>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1339,7 +1339,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
