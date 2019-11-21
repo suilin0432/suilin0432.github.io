@@ -266,7 +266,7 @@
                 
               
 
-              <time title="Created: 2019-11-21 15:16:42 / Modified: 15:17:23" itemprop="dateCreated datePublished" datetime="2019-11-21T15:16:42+08:00">2019-11-21</time>
+              <time title="Created: 2019-11-21 15:16:42 / Modified: 16:28:59" itemprop="dateCreated datePublished" datetime="2019-11-21T15:16:42+08:00">2019-11-21</time>
             </span>
           
             
@@ -285,7 +285,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-amp-amp-常用module总结"><a href="#简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-amp-amp-常用module总结" class="headerlink" title="简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&amp;&amp;常用module总结)"></a>简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&amp;&amp;常用module总结)</h2><p>PS: 将会按着 Faster-RCNN-FPN-Resnet-50 这条路走<br>PS: 具体的Train中函数的细节另外的文档写</p>
+          <h2 id="简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-amp-amp-常用module总结"><a href="#简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-amp-amp-常用module总结" class="headerlink" title="简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&amp;&amp;常用module总结)"></a>简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&amp;&amp;常用module总结)</h2><p>PS: 将会按着 Faster-RCNN-FPN-Resnet-50 这条路走<br>PS: 具体的Train中函数的细节另外的文档写<br>PS: <strong><em>下面说cfg是一个dict的描述都不是很准确, 其可以看做是一个dict, 但是实际上是Config类的实例, Config类中封装了一个ConfigDict对象, 并且Config对存取操作等进行了重写</em></strong></p>
 <hr>
 <h3 id="一、处理流程"><a href="#一、处理流程" class="headerlink" title="一、处理流程"></a>一、处理流程</h3><h4 id="一-、test-py文件-inference过程"><a href="#一-、test-py文件-inference过程" class="headerlink" title="(一)、test.py文件(inference过程)"></a>(一)、test.py文件(inference过程)</h4><ol>
 <li>进行命令行输入参数的解析</li>
