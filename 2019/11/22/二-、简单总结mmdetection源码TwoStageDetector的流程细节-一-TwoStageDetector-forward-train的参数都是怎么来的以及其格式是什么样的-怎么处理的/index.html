@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的 正文: 让我们看一下train_forward这个函数:  (1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, g">
+<meta name="keywords" content="Codes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(二)、简单总结mmdetection源码TwoStageDetector的流程细节(一) -- TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的">
+<meta property="og:url" content="http://suilin.top/2019/11/22/二-、简单总结mmdetection源码TwoStageDetector的流程细节-一-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的 正文: 让我们看一下train_forward这个函数:  (1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, g">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-11-22T03:29:13.938Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(二)、简单总结mmdetection源码TwoStageDetector的流程细节(一) -- TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的">
+<meta name="twitter:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的 正文: 让我们看一下train_forward这个函数:  (1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, g">
+  <link rel="canonical" href="http://suilin.top/2019/11/22/二-、简单总结mmdetection源码TwoStageDetector的流程细节-一-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>(二)、简单总结mmdetection源码TwoStageDetector的流程细节(一) -- TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的 | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/22/二-、简单总结mmdetection源码TwoStageDetector的流程细节-一-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            (二)、简单总结mmdetection源码TwoStageDetector的流程细节(一) -- TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-22 11:27:48 / Modified: 11:29:13" itemprop="dateCreated datePublished" datetime="2019-11-22T11:27:48+08:00">2019-11-22</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简单总结mmdetection源码TwoStageDetector的流程细节-一-–-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的"><a href="#简单总结mmdetection源码TwoStageDetector的流程细节-一-–-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的" class="headerlink" title="简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的"></a>简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的</h2><hr>
+<h3 id="正文"><a href="#正文" class="headerlink" title="正文:"></a>正文:</h3><ol>
+<li><p>让我们看一下train_forward这个函数:</p>
+<ul>
+<li>(1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, gt_bboxes_ignore=None, gt_masks=None, proposals=None):<ul>
+<li>img: 图片Tensor: shape: [N, C, H, W] 是input images. 提到了images通常会被mean centered and std scaled.(PS: std scaled是啥???)</li>
+<li>img_meta: list[dict] image info dict列表, 每个dict中包含 img_shape, scale_factor, flip, filename, ori_shape, pad_shape, img_norm_cfg 等参数, 提到了mmdet/datasets/pipelines/formatting.py:Collect有更多细节 -&gt; Collect中提到其通常是dataloader pipeline最后的一个阶段, 其从loader中Collect出特定任务的数据</li>
+<li>gt_bbox: list[]</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>img_meta是怎么来的:</p>
+<ul>
+<li>PS: 之前在阅读源码的时候没有仔细关注到img_meta是怎么来的, 看build_dataloader也并没有引入这部分的信息, 所以追本溯源, 在img_meta的解释处提到了, formatting.py:Collect, 然后看到了其上面的@PIPELINE.register_module, 所以明显这就是PIPELINE梳理的时候引入的, 找到PIPELINE, 其是数据库module中和DATASETS一起被实例化成Registry对象的, 所以从头开始看(从test.py分析, train.py这个方面是一样的)</li>
+<li><p>(1). 首先看test.py的<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* (2). 然后看```build_dataset(cfg.data.test)```, 其调用了```build_from_cfg(cfg, DATASETS, default_args)```这时候引入了DATASETS, 根据cfg(cfg.data.test)中的type所指定的类进行了实例化处理, 然后进行返还. (PS: 就是在这个实例化处理的时候引入了PIPELINE, 当时没有仔细看里面的实现, 错过了这个)</span><br><span class="line">* (3). 接下来就看DATASETS中对应数据库类实例化的过程, 这里以```CocoDataset```为例. 可以看到```CocoDataset```并没有```__init__()```函数 所以找其父类```CustomDataset```, 发现其```__init__```函数为```__init__(self, ann_file, pipeline, data_root=None, img_prefix=&apos;&apos;, seg_prefix=None, proposal_file=None, test_mode=False):```里面是有pipeline这个参数的, 所以就是这里引入了pipeline这个东西. 也说明了cfg(cfg.data.test)中是包含pipeline这个东西的</span><br><span class="line">* (4). 查看cfg文件中的```cfg.data.test.pipeline```, 发现其对应的就是一个list, 其中描述了这个pipeline的各种操作, list中的每个entry都是一个dict, 里面说明了type和各种对应type需要的操作. 可以看到以```faster_rcnn_r50_fpn_1x.py```配置文件为例, test_pipeline 包含了两个dict ```LoadImageFromFile``` 以及 ```MultiScaleFlipAug</span><br></pre></td></tr></table></figure></p>
+</li>
+<li><p>(5). 在进行一些提取annotation函数等处理之后, 会进行pipeline的赋值: <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">	* (6). 在Compose的```__init__```函数中, 会首先对传入的pipeline(transforms) 检验是否是```collections.abc.Sequence类型```, 然后会将其中一个个transform使用build_from_cfg进行获取, 然后放入transform list中. 在```Compose.__call__()```函数中, 会将输入沿着这个顺序一个一个的进行处理. 所以接下来看什么时候引入了image\_meta信息就可以了</span><br><span class="line">	* (7). 可以在```Compose.prepare_train_img()```发现, 其会通过一个dict将anno\_info和img\_info进行组合, 还要在这个dict中使用```Compose.pre_pipeline```添加```img_prefix, seg_prefix, proposal_file, bbox_fields, mask_fields```键值, 然后传递给经过Compose对象进行处理</span><br><span class="line">	* (8). 同时可以发现, 在```LoadImageFromFile```类中, 我们还会进行```filename, img, img_shape, ori_shape```参数的加入. 同理, 在其他的处理中, 我们会想result中加入各种各样的参数, 不仅仅包含了anno\_info, img\_info</span><br><span class="line">	* (9). 我们dataloader取出的一组数据, 应该是每个数据都对应着一个dict, 但是实际上上面很多的dict中的键值是为了方便中途处理的, 最后我们需要的并没有那么多, 我们会在config文件中的data.test.pipeline(也就是test_pipeline)中的最后一个阶段: Collect设置参数keys以及meta_keys, 然后在```Collect.__call__```中我们会将keys中的键值对单独提取出来, meta_keys中的键值对则存放在img\_meta项中, 最后返回, 这就对应了我们train或者test阶段前向传播需要的参数.</span><br><span class="line">	* (10). 综上所述, 我们最终从dataloader中提取到的实际上是在Dataset中经过Pipeline中的最后一个类Collect类处理后得到的结果, 其result中包含的是一个包含所有keys中的键值对以及img\_meta项的dict, 所以在test.py中可以看到在```single_gpu_test```函数中进行从dataloader中取出来的data在传入```model.__call__```的时候是以**data传入的.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">3. 仍然有一个问题: 因为GT bbox等dict中元素的数量针对不同的图片是不等的(eg: A img: 有3个GT bbox, B img: 有4个GT bbox, 这时候A: (3,4), B: (4,4)), 这时候dataloader在数据收集的时候就会报错, 因为针对这个的维度是不等的, 因此要探究一下是哪里进行了维度相等的改变, 或者是哪里的更改使得不需要保持维度的相等.</span><br><span class="line">	* (1). 在各种变换中并没有发现有什么问题... 有什么改变变化```results[&quot;gt_bboxes&quot;]</span><br></pre></td></tr></table></figure></p>
+</li>
+<li><p>(2). 将目光放在了pipeline中的最后两个处理过程之上 – <figure class="highlight plain"><figcaption><span>&& Collect```, 可以发现Collect只是简单的进行了数据的collect, 并且已经分析过了, 并没有涉及对gt\_bbox的任何修改, 所以从只可能是```DefaultFormatBundle```中对这个问题进行了一定的处理</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">	* (3). 在```mmdet.datasets.pileline.formating.DefaultFormatBundle类```中我们可以发现其注释就说明了会将数据类型变为tensor并封装到DataContainer之中, 然后在```build_loader.py```文件中可以发现, 在Dataloader的构建中还是需要进行sampler的赋值的, 也就是要使用mmdetection中自定义封装好的```GroupSampler```去对DataContainer进行处理 这样就能解决这个问题了...</span><br><span class="line">	* (4). 上面还是遗留了一个问题... mmp真的复杂... 就是阅读了DataContainer源代码之后, 发现其并不算是一个封装好的tensor什么的, 其只是简单地封装了一个data参数... 所以直接取出来是不能用的啊, 每一个gt\_bbox都对应了一个DataContainer, 可以发现在collate中, 会根据情况进行拆分, 将每个gt\_bbox都从DataContainer中拆分出来了, 然后放进了一个List中, 最后又封装到了一个DataContainer中...(PS: image信息会用原本的default_collate进行处理) 但是最后这个DataContainer在哪里拆封的???</span><br><span class="line">	* ***(5). 所以最后到底是什么地方可以拆分??? 还是说其在model中进行forward的时候并不需要取出来data??? 这个问题没有解决... 实验的时候看一下应该怎么解决吧...***: 我傻逼了Σ(☉▽☉&quot;a.... 在test中根本不需要处理这个问题... 只有在train的过程中需要考虑这个问题... 所以看一下train.py</span><br><span class="line">	* (6). train.py的流程好复杂... 先不仔细进行分析了... 只是看了一下具体涉及的部分... 在```mmcv/runner/runner.py```中的```train函数```中发现了会使用```batch_processor函数```进行batch数据的处理... 在这个步骤的时候就会将DataContainer去掉, 拿到其中的data了... 这样就可以feed给model使用了...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PS: 给train_forward的input是怎么产生的, 产生的格式为什么是这样, 到现在就已经全部梳理完毕了, 关于各种变换的细节, 以及想要构建自己的data augumentation就需要按照上面描述的套路去进行添加, 并且在实现后在PIPELINE中进行注册即可</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">### 其他有意思的东西</span><br><span class="line"></span><br><span class="line">1. Config类的有趣的设计:</span><br></pre></td></tr></table></figure></p>
+</li>
+</ul>
+</li>
+<li><p>在看到test.py中有 cfg.data.test.test_mode = True的设置, 但是看config文件中并没有在对应的dict中发现有这个key对应的项, 所以意识到了cfg并不是一个纯粹的dict, 仔细观察之后发现确实其是一个Config对象. Config对象可以看做一个dict类型的数据结构, 其中包含了一个稍微重写了dict的ConfigDict类作为存储, 然后在Config中重写了<strong>set_attr</strong>方法, 使得可以在对不存在的key进行赋值的时候不会报错.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">### module中命令总结</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>np.clip(array, min, max): 将array中的所有数小于min的调整到min, 大于max的调整到max<br><code>`</code></p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Codes/" rel="tag"># Codes</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/21/一-、简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-常用module总结/" rel="next" title="(一)、简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&&常用module总结)">
+                  <i class="fa fa-chevron-left"></i> (一)、简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&&常用module总结)
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结mmdetection源码TwoStageDetector的流程细节-一-–-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的"><span class="nav-number">1.</span> <span class="nav-text">简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#正文"><span class="nav-number">1.1.</span> <span class="nav-text">正文:</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
