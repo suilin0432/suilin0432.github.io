@@ -64,7 +64,7 @@
 <meta property="og:site_name" content="Suilin&#39;s Blog">
 <meta property="og:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的 正文: 让我们看一下train_forward这个函数:  (1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, g">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-22T03:29:13.938Z">
+<meta property="og:updated_time" content="2019-11-22T06:20:28.639Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="(二)、简单总结mmdetection源码TwoStageDetector的流程细节(一) -- TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的">
 <meta name="twitter:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(一) – TwoStageDetector.forward_train的参数都是怎么来的以及其格式是什么样的, 怎么处理的 正文: 让我们看一下train_forward这个函数:  (1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, g">
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-11-22 11:27:48 / Modified: 11:29:13" itemprop="dateCreated datePublished" datetime="2019-11-22T11:27:48+08:00">2019-11-22</time>
+              <time title="Created: 2019-11-22 11:27:48 / Modified: 14:20:28" itemprop="dateCreated datePublished" datetime="2019-11-22T11:27:48+08:00">2019-11-22</time>
             </span>
           
             
@@ -297,8 +297,13 @@
 <ul>
 <li>(1). def forward_train: (self, img, img_meta, gt_bboxes, gt_labels, gt_bboxes_ignore=None, gt_masks=None, proposals=None):<ul>
 <li>img: 图片Tensor: shape: [N, C, H, W] 是input images. 提到了images通常会被mean centered and std scaled.(PS: std scaled是啥???)</li>
-<li>img_meta: list[dict] image info dict列表, 每个dict中包含 img_shape, scale_factor, flip, filename, ori_shape, pad_shape, img_norm_cfg 等参数, 提到了mmdet/datasets/pipelines/formatting.py:Collect有更多细节 -&gt; Collect中提到其通常是dataloader pipeline最后的一个阶段, 其从loader中Collect出特定任务的数据</li>
-<li>gt_bbox: list[]</li>
+<li>img_meta: list[dict]: image info dict列表, 每个dict中包含 img_shape, scale_factor, flip, filename, ori_shape, pad_shape, img_norm_cfg 等参数, 提到了mmdet/datasets/pipelines/formatting.py:Collect有更多细节 -&gt; Collect中提到其通常是dataloader pipeline最后的一个阶段, 其从loader中Collect出特定任务的数据</li>
+<li>gt_bboxes: list[Tensor]: GT bbox信息</li>
+<li>gt_labels: list[Tensor]: GT labels信息</li>
+<li>gt_bboxes_ignore: None/list[Tensor]: 在计算loss中忽略的GT bbox</li>
+<li>gt_masks: None/Tensor: GT masks信息</li>
+<li>proposals: None/Tensor: 使用引入的proposals代替rpn产生的proposals</li>
+<li>返回值: dist[str, Tensor]: train过程中的loss component</li>
 </ul>
 </li>
 </ul>
