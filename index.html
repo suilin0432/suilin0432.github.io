@@ -266,7 +266,7 @@
                 
               
 
-              <time title="Created: 2019-11-23 22:01:26 / Modified: 22:18:22" itemprop="dateCreated datePublished" datetime="2019-11-23T22:01:26+08:00">2019-11-23</time>
+              <time title="Created: 2019-11-23 22:01:26 / Modified: 22:33:07" itemprop="dateCreated datePublished" datetime="2019-11-23T22:01:26+08:00">2019-11-23</time>
             </span>
           
             
@@ -383,7 +383,10 @@
 <li>(3). 然后筛选小于 cfg 中设定的最小尺寸的对象</li>
 <li>(4). 然后 proposal 是 score(可以说是 confidence score) 以及 bbox 信息的concate. </li>
 <li>(5). 之后使用 nms 进行处理, 得到最终的 proposal</li>
-<li>(6). 将各个尺度的 proposal 在 mlvl_proposals 中 append 进去, 然后返回, 这就是一个 image 对应的了, 多个 image 将会最后再 放入另外的一个 list 中, 然后返回, 我们就得到了 proposal 列表了</li>
+<li>(6). 将各个尺度的 proposal 在 <code>mlvl_proposals</code> 中 append 进去, 然后使用 <code>torch.cat</code> 进行多尺度的信息的拼接</li>
+<li>(7). 如果设置中设置了要进行跨尺度的 nms, 那么进行跨尺度的 nms</li>
+<li>(8). 筛选出最后的 <code>cfg.max_num</code> 个 proposals</li>
+<li>(9). 最后将筛选出的 proposals 返回, 这就是一个 image 对应的 proposals 了, 多个 image 将会最后再 放入另外的一个 list 中, 然后返回, 我们就得到了 proposals 列表了</li>
 </ul>
 </li>
 </ol>
