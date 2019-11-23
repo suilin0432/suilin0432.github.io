@@ -56,18 +56,18 @@
   };
 </script>
 
-  <meta name="description" content="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss 一、前言 上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 FPN 得到的输出结果是一个 tuple, 其包含的 entry(各个 stage ouput) 数目是按照 config 文件中设置的 num_outs 所决定的 等的流程以及细节问题. 本文将会">
+  <meta name="description" content="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss PS: 有好多部分还是有坑没有看, 比如 anchor_target_single 这个部分, 以及没有对 loss 部分进行分析, 还有些其他的具体细节也没有分析… 理清整个流程后一定要回来看 一、前言 上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 F">
 <meta name="keywords" content="Codes">
 <meta property="og:type" content="article">
 <meta property="og:title" content="(四)、简单总结mmdetection源码TwoStageDetector的流程细节(三) -- 解析RPN处理部分以及RPN Loss">
 <meta property="og:url" content="http://suilin.top/2019/11/23/四-、简单总结mmdetection源码TwoStageDetector的流程细节-三-解析RPN处理部分以及RPN-Loss/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss 一、前言 上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 FPN 得到的输出结果是一个 tuple, 其包含的 entry(各个 stage ouput) 数目是按照 config 文件中设置的 num_outs 所决定的 等的流程以及细节问题. 本文将会">
+<meta property="og:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss PS: 有好多部分还是有坑没有看, 比如 anchor_target_single 这个部分, 以及没有对 loss 部分进行分析, 还有些其他的具体细节也没有分析… 理清整个流程后一定要回来看 一、前言 上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 F">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-23T14:01:45.470Z">
+<meta property="og:updated_time" content="2019-11-23T14:18:22.689Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="(四)、简单总结mmdetection源码TwoStageDetector的流程细节(三) -- 解析RPN处理部分以及RPN Loss">
-<meta name="twitter:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss 一、前言 上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 FPN 得到的输出结果是一个 tuple, 其包含的 entry(各个 stage ouput) 数目是按照 config 文件中设置的 num_outs 所决定的 等的流程以及细节问题. 本文将会">
+<meta name="twitter:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss PS: 有好多部分还是有坑没有看, 比如 anchor_target_single 这个部分, 以及没有对 loss 部分进行分析, 还有些其他的具体细节也没有分析… 理清整个流程后一定要回来看 一、前言 上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 F">
   <link rel="canonical" href="http://suilin.top/2019/11/23/四-、简单总结mmdetection源码TwoStageDetector的流程细节-三-解析RPN处理部分以及RPN-Loss/">
 
 
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-11-23 22:01:26 / Modified: 22:01:45" itemprop="dateCreated datePublished" datetime="2019-11-23T22:01:26+08:00">2019-11-23</time>
+              <time title="Created: 2019-11-23 22:01:26 / Modified: 22:18:22" itemprop="dateCreated datePublished" datetime="2019-11-23T22:01:26+08:00">2019-11-23</time>
             </span>
           
             
@@ -292,6 +292,7 @@
 
       
         <h2 id="简单总结mmdetection源码TwoStageDetector的流程细节-三-–-解析RPN处理部分以及RPN-Loss"><a href="#简单总结mmdetection源码TwoStageDetector的流程细节-三-–-解析RPN处理部分以及RPN-Loss" class="headerlink" title="简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss"></a>简单总结mmdetection源码TwoStageDetector的流程细节(三) – 解析RPN处理部分以及RPN Loss</h2><hr>
+<p>PS: 有好多部分还是有坑没有看, 比如 <code>anchor_target_single</code> 这个部分, 以及没有对 <code>loss</code> 部分进行分析, 还有些其他的具体细节也没有分析… 理清整个流程后一定要回来看</p>
 <h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><ol>
 <li>上一篇总结就 FPN 是如何进行处理的进行了总结, 我们知道了 FPN 得到的输出结果是一个 tuple, 其包含的 entry(各个 stage ouput) 数目是按照 config 文件中设置的 <code>num_outs</code> 所决定的 等的流程以及细节问题.</li>
 <li>本文将会对 mmdet.models.detectors.two_stage.py 中的 TwoStageDetector 的 forward_train 函数的 rpn 相关部分 以及 rpn_loss 相关部分进行分析.</li>
