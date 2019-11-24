@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample 一、前言 上一篇总结了 RPN 以及根据结果进行 proposal 的初步提取, 剩下的部分不多了, 胜利的曙光在向我挥手 这篇文章会接着对 proposal 进行分析, 去进行 GT assign 以及 Proposal Sample进行分析 PS:">
+<meta name="keywords" content="Codes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(五)、简单总结mmdetection源码TwoStageDetector的流程细节(四) -- 解析GT assign以及Proposal Sample">
+<meta property="og:url" content="http://suilin.top/2019/11/24/五-、简单总结mmdetection源码TwoStageDetector的流程细节-四-解析GT-assign以及Proposal-Sample/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample 一、前言 上一篇总结了 RPN 以及根据结果进行 proposal 的初步提取, 剩下的部分不多了, 胜利的曙光在向我挥手 这篇文章会接着对 proposal 进行分析, 去进行 GT assign 以及 Proposal Sample进行分析 PS:">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-11-24T07:43:56.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(五)、简单总结mmdetection源码TwoStageDetector的流程细节(四) -- 解析GT assign以及Proposal Sample">
+<meta name="twitter:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample 一、前言 上一篇总结了 RPN 以及根据结果进行 proposal 的初步提取, 剩下的部分不多了, 胜利的曙光在向我挥手 这篇文章会接着对 proposal 进行分析, 去进行 GT assign 以及 Proposal Sample进行分析 PS:">
+  <link rel="canonical" href="http://suilin.top/2019/11/24/五-、简单总结mmdetection源码TwoStageDetector的流程细节-四-解析GT-assign以及Proposal-Sample/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>(五)、简单总结mmdetection源码TwoStageDetector的流程细节(四) -- 解析GT assign以及Proposal Sample | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/24/五-、简单总结mmdetection源码TwoStageDetector的流程细节-四-解析GT-assign以及Proposal-Sample/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            (五)、简单总结mmdetection源码TwoStageDetector的流程细节(四) -- 解析GT assign以及Proposal Sample
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-24 15:43:42 / Modified: 15:43:56" itemprop="dateCreated datePublished" datetime="2019-11-24T15:43:42+08:00">2019-11-24</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简单总结mmdetection源码TwoStageDetector的流程细节-四-–-解析GT-assign以及Proposal-Sample"><a href="#简单总结mmdetection源码TwoStageDetector的流程细节-四-–-解析GT-assign以及Proposal-Sample" class="headerlink" title="简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample"></a>简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample</h2><hr>
+<h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><ol>
+<li>上一篇总结了 RPN 以及根据结果进行 proposal 的初步提取, 剩下的部分不多了, 胜利的曙光在向我挥手</li>
+<li>这篇文章会接着对 proposal 进行分析, 去进行 GT assign 以及 Proposal Sample进行分析</li>
+<li>PS: 但是上一个阶段的处理留下了一个疑问 -&gt; 按照代码来看, 上一个阶段最后的返回值是按照每张图片将所有尺度的 proposal 信息进行了拼接. 那么之后我们对于各个 proposal 还要怎么去进行区分其是属于哪个尺度的??? <ul>
+<li>可以发现 <code>base_anchor</code> 是已经使用 stride 信息进行放大的了, 然后进行的 predict 的位移进行了操作, 但是并没有指定尺度啊, 依靠坐标去判定尺度也不太正确… 所以??? (PS: one-stage的方法是可以不用在意这个细节, 但是 two-stage的方法不是还要去决定在哪个 stage 的 feature map 上去进行采样吗???)</li>
+<li>这个问题暂时存疑, 希望这个部分的代码能够给出一定的解答…</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="二、该部分的总体流程"><a href="#二、该部分的总体流程" class="headerlink" title="二、该部分的总体流程"></a>二、该部分的总体流程</h3><p>PS: 虽然在上一个阶段 RPN 相关部分就已经涉及到了 <code>assigner</code> 以及 <code>sampler</code> 的使用, 但是没有进行分析, 给忽略掉了… (在 <code>anchor_target</code> 部分中使用的), 本文尽量对这两个东西进行一下分析, RPN 以及 RCNN 中使用的 <code>assigner</code> 以及 <code>sampler</code> 的配置除了参数设置稍微不同之外都是相同的.</p>
+<ol>
+<li>根据 <code>cfg.train_cfg.rcnn.assigner</code> 进行 <code>bbox_assigner</code> 的构建</li>
+<li>进行 <code>cfg.train_cfg.rcnn.sampler</code> 进行 <code>bbox_sampler</code> 的构建</li>
+<li>对 batch 中的每个 image 使用 <code>bbox_assigner</code> 进行 <code>assign</code> 操作</li>
+<li>继续对 <code>assign</code> 操作得到的结果使用 <code>bbox_sampler</code> 进行 <code>sample</code> 操作 得到这个阶段的最后的结果</li>
+</ol>
+<p>PS: <code>assigner</code> 以及 <code>sampler</code> 的部分分别在: <code>mmdet.core.bbox.assigner</code> 以及 <code>mmdet.core.bbox.sampler</code> 两个 module 中</p>
+<p>PS: 该部分正常的整体思路描述</p>
+<ol>
+<li>每个 proposal 先赋值为 -1 (-1 表示不会care这些anchor)</li>
+<li>某个候选框和所有 GT bbox 的 IoU 阈值都小于 negative IoU 阈值, 赋值为 0</li>
+<li>对某个候选框, 如果与其有最大阈值的 GT bbox 的 IoU 阈值大于 positive IoU 的时候, 会将这个 proposal 的值赋值为这个 GT bbox 的编号</li>
+<li>因为前三步是对每个 proposal 进行与 GT bbox 的匹配以及进行编号安排, 所以仍然可能存在 GT bbox 没有被匹配到, 所以要对 所有 GT bbox 再进行一次判断, 与其 IoU 最大的 proposal 将会被赋值为这个 GT bbox 的编号.</li>
+<li>匹配完毕之后进行采样, 会按照一定的比例进行采样(due to the positive-negative imbalance problem)</li>
+</ol>
+<hr>
+<h3 id="三、各步骤细节"><a href="#三、各步骤细节" class="headerlink" title="三、各步骤细节"></a>三、各步骤细节</h3><p>PS: 无论是 assign 还是 sample 都是分别针对单张图片进行的</p>
+<ol>
+<li>首先对 Faster-RCNN 中使用的 <code>assigner</code> – <code>MaxIoUAssigner</code> 进行分析<ul>
+<li>PS: 首先看到了其有父类 <code>BaseAssigner</code>, 但是看到了父类只是一个虚类, 并且只有一个并没有实现的抽象方法, 所以不用看 <code>BaseAssigner</code> 了</li>
+<li>(1). 首先还是看 <code>MaxIoUAssigner</code> 的 <code>__init__</code> 函数:</li>
+<li><code>__init__(self, pos_iou_thr, neg_iou_thr, min_pos_iou=.0, gt_max_assign_all=True, ignore_iof_thr=-1, ignore_wrt_candidates=True):</code><ul>
+<li>1). <code>pos_iou_thr</code>: 看做正样本所需要的 IoU 大小阈值</li>
+<li>2). <code>neg_iou_thr</code>: 小于这个值的被看做为负样本</li>
+<li>3). <code>min_pos_iou</code>: 看做正样本所需的最小的 IoU 大小阈值</li>
+<li>4). <code>gt_max_assign_all</code>: 对于一个 GT 有多个 bbox 都与其有最高的 IoU 的时候, 是否将这些 bbox 都 assign 给这个 GT bbox.</li>
+<li>5). <code>ignore_iof_thr</code>: 忽略 GT bbox 的 iof 阈值(???什么阈值???), 当取负值的时候不会忽略任何 GT bbox</li>
+<li>6). <code>ignore_wrt_candidates</code>:  是否去计算 <code>bboxes</code> 与 <code>gt_bboxes_ignore</code> 之间的 iof</li>
+<li><code>__init__</code> 函数中就是简简单单的进行 这些参数在类内的赋值</li>
+</ul>
+</li>
+<li>(2). <code>assign</code> 函数: <code>assign(self, bboxes, gt_bboxes, gt_bboxes_ignore=None, gt_labels=None)</code>:<ul>
+<li>1). <code>bboxes</code>: 就是所有在上一阶段整合处理之后的 proposals, (n, 4)的 Tensor</li>
+<li>2). <code>gt_bboxes</code>: 就是 GT bboxes信息, (k, 4)的 Tensor</li>
+<li>3). <code>gt_bboxes_ignore</code>: 忽略掉的 gt bbox</li>
+<li>4). <code>gt_labels</code>: GT bboxes的 Label</li>
+<li>首先会通过 <code>bbox_overlaps</code> 函数计算 <code>overlaps</code></li>
+<li>然后会针对是否忽略框进行判断, 如果忽略的话进行一些操作(PS: 主要是筛选掉一些overlap项, 因为暂时用不到, 先跳过 233)</li>
+<li>之后就会使用得到的 overlaps 去进行 <code>assign_wrt_overlaps</code> 操作, 然后将得到的结果进行返回, 这部分结束, 继续看 <code>assign_wrt_overlaps</code> 函数…</li>
+</ul>
+</li>
+<li>(3). <code>assign_wrt_overlaps</code> 函数: <code>assign_wrt_overlaps(self, overlaps, gt_labels=None)</code> <ul>
+<li>PS: 这个就是真的按照上面的流程说的处理的了</li>
+<li>1). 首先就是使用 <code>torch.Tensor.new_full</code> 创建了一个 size 为 <code>(num_bboxes, )</code> 的用 -1 填充的 Tensor, 其 dtype 为 torch.long</li>
+<li>2). 对每个 proposal 获取到有最大 overlap 的 GT IoU 值以及对应的 index -&gt; <code>max_overlaps, argmax_overlaps</code> 分别代表着 最大的 overlap 值以及 index</li>
+<li>3). 对每个 GT bbox 获取到有最大 overlap 的 GT IoU 值以及对应的 index -&gt; <code>gt_max_overlaps, gt_argmax_overlaps</code></li>
+<li>4). 利用上面的到的参数 <code>max_overlaps</code> 对应 index 处的值如果小于 neg Iou threshold 那么就会赋值为 0 (PS: neg IoU threshold 也可以设置为一个 tuple 代表阈值在这个范围内的视为 negative sample)</li>
+<li>5). 进行 positive sample assign, 对所有 proposal 最大 overlap 的 GT IoU 大于 pos IoU threshold 的赋值为 对应的 GT bbox 编号</li>
+<li>6). 然后会对所有的 GT bbox 去找最大的 IoU bbox, 这个 IoU 如果没有超过 pos IoU threshold 的时候就放弃, 超过了就根据设置如果对所有相同 IoU 的都进行 assign 就对所有的对应的进行当前 GT bbox 编号的 assign, 否则就针对一个进行 (PS: 按照 torch.max 的逻辑, 这个通常都是最后一个…)</li>
+<li>7). 当传入的参数 <code>gt_labels</code> 非空的时候, 在这里就直接把 对应的 GT bbox 编号换成了类别 label.</li>
+<li>8). 最后返回的值会封装在 AssignResult 中</li>
+<li>PS: em… 7)…</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>接下来对使用的 <code>RandomSampler</code> 进行分析:<ul>
+<li>(1). 首先对 <code>__init__</code> 函数进行分析: 其会调用父类 <code>BaseSampler</code> 中的 <code>__init__</code> 函数: <code>__init__(self,num,pos_fraction,neg_pos_ub=-1,add_gt_as_proposals=True,**kwargs)</code><ul>
+<li>1). <code>num</code>: 提取正负样本数量</li>
+<li>2). <code>pos_fraction</code>: 正样本比例</li>
+<li>3). <code>neg_pos_ub</code>: 最大负样本比例, 大于该比例的负样本会被忽略, -1 表示不忽略</li>
+<li>4). <code>add_gt_as_proposals</code>: 是否将 GT 加入 proposal 作为正样本</li>
+<li>操作: 只是简单的将参数进行赋值而已</li>
+</ul>
+</li>
+<li>(2). 那么接下来就对 <code>forward_train</code> 中使用的 <code>sample</code> 函数进行分析就可以了: 仍然是在父类 <code>BaseSample</code> 中实现的<ul>
+<li><code>sample(self, assign_result, bboxes, gt_bboxes, gt_labels=None, **kwargs):</code></li>
+<li>1). <code>assign_result</code>: 上一步进行 proposal 与 GT BBox assign 的结果</li>
+<li>2). <code>bboxes</code>: rpn forward 之后的 proposal 结果</li>
+<li>3). <code>gt_bboxes</code>: GT bboxes 信息</li>
+<li>4). <code>gt_labels</code>: GT labels 信息</li>
+<li>流程: </li>
+<li>1). 首先还是会从 proposal 中提取前四个维度(也就是 bbox 的信息, 不包含 score)</li>
+<li>2). 创建了一个 <code>gt_flags</code> Tensor, 暂时将所有的 bbox 对应位置都设置为 0 (表示不是 GT)</li>
+<li>3). 如果选择将 GT bbox 作为 proposal (即 <code>add_gt_as_proposals == True</code>), 那么会将 GT BBox cat进入, 并且会在 assigner 中加入这些, 然后将这些的 <code>gt_flags</code> 设置为 1 (表示是 GT) 拼接进去</li>
+<li>4). 使用 <code>_sample_pos</code> sample 出按照设置中数量的 positive samples, 代码中提到可能会有重复的 index 被 sample 出来(代码认为可能是 pytorch 的 bug), 所以要进行去重复的操作, 然后剩下的 samples 数量都是暂时需要的 negative samples 的数量了</li>
+<li>5). 如果在 config 中设置的 <code>neg_pos_ub</code> 非负, 按照这个比例设置 negative samples 数量的上限</li>
+<li>6). 使用 <code>_sample_neg</code> sample negative samples, 并且进行去重</li>
+<li>7). 将 <code>pos_ind, neg_ind, bbox, gt_bboxes, assign_result, gt_flag</code> 使用 <code>SamplingResult</code> 进行封装, 然后返回</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>最后我们将每个图片得到的 <code>SamplingResult</code> 实例放入 <code>sampling_results</code> 中, 这个阶段就暂时结束了. </li>
+</ol>
+<hr>
+<h3 id="代码片段"><a href="#代码片段" class="headerlink" title="代码片段"></a>代码片段</h3><blockquote>
+<ol>
+<li>关于 <code>TwoStageDetector.forward_train</code> 中这部分的代码:</li>
+</ol>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> self.with_bbox <span class="keyword">or</span> self.with_mask:</span><br><span class="line">    bbox_assigner = build_assigner(self.train_cfg.rcnn.assigner)</span><br><span class="line">    bbox_sampler = build_sampler(</span><br><span class="line">        self.train_cfg.rcnn.sampler, context=self)</span><br><span class="line">    num_imgs = img.size(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">if</span> gt_bboxes_ignore <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">        gt_bboxes_ignore = [<span class="keyword">None</span> <span class="keyword">for</span> _ <span class="keyword">in</span> range(num_imgs)]</span><br><span class="line">    sampling_results = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_imgs):</span><br><span class="line">        assign_result = bbox_assigner.assign(proposal_list[i],</span><br><span class="line">                                             gt_bboxes[i],</span><br><span class="line">                                             gt_bboxes_ignore[i],</span><br><span class="line">                                             gt_labels[i])</span><br><span class="line">        sampling_result = bbox_sampler.sample(</span><br><span class="line">            assign_result,</span><br><span class="line">            proposal_list[i],</span><br><span class="line">            gt_bboxes[i],</span><br><span class="line">            gt_labels[i],</span><br><span class="line">            feats=[lvl_feat[i][<span class="keyword">None</span>] <span class="keyword">for</span> lvl_feat <span class="keyword">in</span> x])</span><br><span class="line">        sampling_results.append(sampling_result)</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> MetaClass:</span><br><span class="line">从代码中可以看到, 在 BaseAssigner 的定义中, 使用的是 class BaseAssigner(metaclass=ABCMeta), 其中就使用了 metaclass 这个东西</span><br><span class="line"><span class="comment">## 开始分析</span></span><br><span class="line">在Python中, 类也可以看做是对象, 虽然我们常见的是类的实例即通过:</span><br><span class="line">a = Cls()</span><br><span class="line">来进行实例化, 但是 Cls 本身也是进行类的操作的, 比如可以打印, 直接向Cls添加属性, eg:</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cls</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="keyword">pass</span></span><br><span class="line">a = Cls()</span><br><span class="line">Cls.b = <span class="number">200</span></span><br><span class="line">print(a.b)  <span class="comment"># 结果就是输出200</span></span><br><span class="line"></span><br><span class="line">提到了, 解释器进行类的创建是通过 type 进行的, 因为可以发现 type(a) 是 __main__.Cls</span><br><span class="line">但是 type(Cls) 是 type</span><br><span class="line"></span><br><span class="line">并且我们也可以直接通过 type 进行类的创建</span><br><span class="line">Cls = type(<span class="string">"Cls"</span>, (), &#123;<span class="string">"b"</span>:<span class="number">1</span>, <span class="string">"c"</span>:<span class="string">"sd"</span>&#125;)</span><br><span class="line">就可以获取到 Cls 类了, 其参数是 dict 中对应的键值对</span><br><span class="line"></span><br><span class="line">元类的定义: 创建类的类</span><br><span class="line">所以 type 就是所有类的元类</span><br><span class="line">因此可以定义自己的元类, 通过继承 type 去进行元类的实现, 同时当进行类的创建的时候, 会查找类中是否有 __metaclass__ 这个属性, 如果有的话就会通过这个 __metaclass__ 去进行类的创建, 没有的话就向父类进行查找 直到 最顶层 这时候解释器就会使用内置的 type 去进行创建.</span><br><span class="line"></span><br><span class="line">元类的具体信息就先不提及了, 简单的看一下 abc.ABCMeta 这个元类是干什么的:</span><br><span class="line">	ABCMeta这个元类的用途是将类变成一个纯虚类, 子类必须实现某些特定的方法, 这些特定的方法需要使用 @abc.abstractmethod 进行装饰.</span><br><span class="line">	所以可以明白了就是, BaseAssigner 类是一个虚类, 其中的 assign 方法其子类是必须要进行实现的.</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> torch.Tensor.new_full(size, fill_value, dtype=<span class="keyword">None</span>, device=<span class="keyword">None</span>, requires_grad=<span class="keyword">False</span>): 返回一个 size 尺寸的, 使用 fill_value 进行填充的 Tensor</span><br></pre></td></tr></table></figure>
+<hr>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Codes/" rel="tag"># Codes</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/23/四-、简单总结mmdetection源码TwoStageDetector的流程细节-三-解析RPN处理部分以及RPN-Loss/" rel="next" title="(四)、简单总结mmdetection源码TwoStageDetector的流程细节(三) -- 解析RPN处理部分以及RPN Loss">
+                  <i class="fa fa-chevron-left"></i> (四)、简单总结mmdetection源码TwoStageDetector的流程细节(三) -- 解析RPN处理部分以及RPN Loss
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结mmdetection源码TwoStageDetector的流程细节-四-–-解析GT-assign以及Proposal-Sample"><span class="nav-number">1.</span> <span class="nav-text">简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、前言"><span class="nav-number">1.1.</span> <span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、该部分的总体流程"><span class="nav-number">1.2.</span> <span class="nav-text">二、该部分的总体流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、各步骤细节"><span class="nav-number">1.3.</span> <span class="nav-text">三、各步骤细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码片段"><span class="nav-number">1.4.</span> <span class="nav-text">代码片段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知识点"><span class="nav-number">1.5.</span> <span class="nav-text">知识点</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
