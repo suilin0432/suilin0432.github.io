@@ -64,7 +64,7 @@
 <meta property="og:site_name" content="Suilin&#39;s Blog">
 <meta property="og:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample 一、前言 上一篇总结了 RPN 以及根据结果进行 proposal 的初步提取, 剩下的部分不多了, 胜利的曙光在向我挥手 这篇文章会接着对 proposal 进行分析, 去进行 GT assign 以及 Proposal Sample进行分析 PS:">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-24T07:43:56.488Z">
+<meta property="og:updated_time" content="2019-11-25T06:22:39.798Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="(五)、简单总结mmdetection源码TwoStageDetector的流程细节(四) -- 解析GT assign以及Proposal Sample">
 <meta name="twitter:description" content="简单总结mmdetection源码TwoStageDetector的流程细节(四) – 解析GT assign以及Proposal Sample 一、前言 上一篇总结了 RPN 以及根据结果进行 proposal 的初步提取, 剩下的部分不多了, 胜利的曙光在向我挥手 这篇文章会接着对 proposal 进行分析, 去进行 GT assign 以及 Proposal Sample进行分析 PS:">
@@ -272,11 +272,19 @@
                 
               
 
-              <time title="Created: 2019-11-24 15:43:42 / Modified: 15:43:56" itemprop="dateCreated datePublished" datetime="2019-11-24T15:43:42+08:00">2019-11-24</time>
+              <time title="Created: 2019-11-24 15:43:42" itemprop="dateCreated datePublished" datetime="2019-11-24T15:43:42+08:00">2019-11-24</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-11-25 14:22:39" itemprop="dateModified" datetime="2019-11-25T14:22:39+08:00">2019-11-25</time>
+              </span>
             
           
 
@@ -352,7 +360,7 @@
 <li>4). 利用上面的到的参数 <code>max_overlaps</code> 对应 index 处的值如果小于 neg Iou threshold 那么就会赋值为 0 (PS: neg IoU threshold 也可以设置为一个 tuple 代表阈值在这个范围内的视为 negative sample)</li>
 <li>5). 进行 positive sample assign, 对所有 proposal 最大 overlap 的 GT IoU 大于 pos IoU threshold 的赋值为 对应的 GT bbox 编号</li>
 <li>6). 然后会对所有的 GT bbox 去找最大的 IoU bbox, 这个 IoU 如果没有超过 pos IoU threshold 的时候就放弃, 超过了就根据设置如果对所有相同 IoU 的都进行 assign 就对所有的对应的进行当前 GT bbox 编号的 assign, 否则就针对一个进行 (PS: 按照 torch.max 的逻辑, 这个通常都是最后一个…)</li>
-<li>7). 当传入的参数 <code>gt_labels</code> 非空的时候, 在这里就直接把 对应的 GT bbox 编号换成了类别 label.</li>
+<li>7). 当传入的参数 <code>gt_labels</code> 非空的时候, 在这里就会 添加一个 <code>assigned_labels</code> 对应于该 proposal 对应的 GT bbox 编号类别 label.</li>
 <li>8). 最后返回的值会封装在 AssignResult 中</li>
 <li>PS: em… 7)…</li>
 </ul>
