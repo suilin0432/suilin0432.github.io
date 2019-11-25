@@ -56,19 +56,14 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Weaving Multi-scale Context for Single Shot Detector》 PS: 颜水成组作品喲  文章出发点: feature fusion(mulit-scale context fusion)确实能够提升SSD的物体检测的效果, 但是现在的fusion technique实在是计算量太大了, 消除了SSD的速度上的优势 本文方法是: 迭代的从相邻的">
-<meta name="keywords" content="Paper Summary">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Weaving Multi-scale Context for Single Shot Detector">
-<meta property="og:url" content="http://suilin.top/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Suilin&#39;s Blog">
+<meta property="og:url" content="http://suilin.top/archives/2019/page/6/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Weaving Multi-scale Context for Single Shot Detector》 PS: 颜水成组作品喲  文章出发点: feature fusion(mulit-scale context fusion)确实能够提升SSD的物体检测的效果, 但是现在的fusion technique实在是计算量太大了, 消除了SSD的速度上的优势 本文方法是: 迭代的从相邻的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-19T09:11:18.158Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Weaving Multi-scale Context for Single Shot Detector">
-<meta name="twitter:description" content="简单总结《Weaving Multi-scale Context for Single Shot Detector》 PS: 颜水成组作品喲  文章出发点: feature fusion(mulit-scale context fusion)确实能够提升SSD的物体检测的效果, 但是现在的fusion technique实在是计算量太大了, 消除了SSD的速度上的优势 本文方法是: 迭代的从相邻的">
-  <link rel="canonical" href="http://suilin.top/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/">
+<meta name="twitter:title" content="Suilin&#39;s Blog">
+  <link rel="canonical" href="http://suilin.top/archives/2019/page/6/">
 
 
 <script id="page-configurations">
@@ -76,13 +71,13 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: true,
+    isPost: false,
     isPage: false,
-    isArchive: false
+    isArchive: true
   };
 </script>
 
-  <title>Simple Summary for Weaving Multi-scale Context for Single Shot Detector | Suilin's Blog</title>
+  <title>Archive | Suilin's Blog</title>
   
 
 
@@ -219,6 +214,24 @@
 
     
 
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+
 </nav>
 </div>
     </header>
@@ -236,126 +249,68 @@
           <div id="content" class="content">
             
 
-  <div class="posts-expand">
-      
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        
+        
+         
           
-            Simple Summary for Weaving Multi-scale Context for Single Shot Detector
-            
-
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 17:11:01 / Modified: 17:11:18" itemprop="dateCreated datePublished" datetime="2019-10-19T17:11:01+08:00">2019-10-19</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+        <span class="collection-header">Nice! 51 posts in total. Keep on posting.</span>
+      </div>
+      
 
       
-        <h2 id="简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》"><a href="#简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》" class="headerlink" title="简单总结《Weaving Multi-scale Context for Single Shot Detector》"></a>简单总结《Weaving Multi-scale Context for Single Shot Detector》</h2><hr>
-<p>PS: 颜水成组作品喲</p>
-<ol>
-<li>文章出发点: feature fusion(mulit-scale context fusion)确实能够提升SSD的物体检测的效果, 但是现在的fusion technique实在是计算量太大了, 消除了SSD的速度上的优势</li>
-<li>本文方法是: 迭代的从相邻的scale中进行context information的weave, 同时因为堆叠的是light-weight blocks, WeaveNet可以简单的不用batch normalization训练, 并且可以使用文章提出的结构简化进行加速</li>
-<li>认为高层次的信息是丢失了精确位置信息的</li>
-<li>具体设计:<br> (1). 将相邻两层进行融合, 然后下一阶段同样如此, 低分辨feature map使用双线性插值(后面又说用channel-wise的deconv…)进行放大操作, 高分辨feature map用max pool进行下采样<br> (2). 融合先进行简单的concate, 然后输入到文章设计的block中进行处理, 产生下一个阶段需要的输入<br> (3). block结构是两个conv+一个直接传递的分支, conv处理后的两个分支会给上一层和下一层进行处理, 直接传递的就是当层的作为下一个scale的数据 </li>
-<li>文章没有说明白… 但是看Figure3应该是给上下层的信息是16 channel的, 当层的信息为32channel. 64channel -&gt; 上下层给16中间留32层 … <ul>
-<li>但是channel怎么分的也没有说明白… 如果是固定32层原封不动的话em… 也就是一直会保留最原始的信息, 然后给上下层的信息是weave到最后的… 行吧</li>
-</ul>
-</li>
-<li>简化操作就先不看了…</li>
-<li>吐槽一下性能图… 自己用Titan X跑然后SSD不用… 没仔细看以为比SSD性能还要好</li>
-<li>性能为啥要好: em… 因为block很轻量级… 其feature channel没有明说, 但是看上去是应该小的… 所以快…</li>
-</ol>
+
+  
+  
+
+  
+    
+    <div class="collection-year">
+      <h1 class="collection-header">2019</h1>
+    </div>
+  
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2019-10-11T09:04:36+08:00"
+              content="2019-10-11">
+          10-11
+        </time>
+      </div>
+
+      <h2 class="post-title">
+        
+          <a class="post-title-link" href="/2019/10/11/testMessage/" itemprop="url">
+            <span itemprop="name">testMessage</span>
+          </a>
+        
+      </h2>
+
+    </header>
+  </article>
+
+
+
 
     </div>
-
-    
-    
-    
-        
-      
-
-      <footer class="post-footer">
-          
-            
-          
-          <div class="post-tags">
-            
-              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
-            
-          </div>
-        
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-next post-nav-item">
-              
-                <a href="/2019/10/19/Simple-Summary-for-Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection/" rel="next" title="Simple Summary for Enhancement of SSD by concatenating feature maps for object detection">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Enhancement of SSD by concatenating feature maps for object detection
-                </a>
-              
-            </div>
-
-            <span class="post-nav-divider"></span>
-
-            <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/" rel="prev" title="Simple Summary for Single-Shot Refinement Neural Network for Object Detection">
-                  Simple Summary for Single-Shot Refinement Neural Network for Object Detection <i class="fa fa-chevron-right"></i>
-                </a>
-              
-            </div>
-          </div>
-        
-      </footer>
-    
-  </article>
-  
-  
-  
-
   </div>
+  
+  
+  
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/archives/2019/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/archives/2019/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2019/page/5/">5</a><span class="page-number current">6</span>
+  </nav>
+
 
 
           </div>
@@ -372,11 +327,6 @@
 
   <aside class="sidebar">
     <div class="sidebar-inner">
-        
-        
-        
-        
-      
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
@@ -389,8 +339,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Weaving Multi-scale Context for Single Shot Detector》</span></a></li></ol></div>
-        
       </div>
       <!--/noindex-->
 

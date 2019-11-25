@@ -236,6 +236,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-18 19:59:26" itemprop="dateCreated datePublished" datetime="2019-10-18T19:59:26+08:00">2019-10-18</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-10-23 22:44:09" itemprop="dateModified" datetime="2019-10-23T22:44:09+08:00">2019-10-23</time>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》"><a href="#重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》" class="headerlink" title="重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》"></a>重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》</h2><hr>
+<p><strong><em>一、文章思路</em></strong></p>
+<ol>
+<li>希望能够根据feature/context去对instances进行特定层次的指定以及分配, 而不是按照传统的启发式的认为浅层(小size)就是小物体, 深层(大size)是大物体</li>
+</ol>
+<p><strong><em>二、引用观点与具体细节</em></strong></p>
+<ol>
+<li>陈述当前传统anchor-based detector的问题<ul>
+<li>(1). 启发式的特征选择(确实很玄学)</li>
+<li>(2). overlap方式的anchor sampling</li>
+</ul>
+</li>
+<li>提到了FSAF模块可以自己工作进行anchor-free的detection, 也可以和anchor-based method结合去达到更好的效果</li>
+<li><a href="http://openaccess.thecvf.com/content_cvpr_2018/papers/Zhu_Seeing_Small_Faces_CVPR_2018_paper.pdf" target="_blank" rel="noopener">[Seeing Small Faces from Robust Anchor’s Perspective]</a><ul>
+<li>(1). <a href="https://suilin0432.github.io/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor%E2%80%99s-Perspective/" target="_blank" rel="noopener">点击这里见总结</a></li>
+<li>(2). <strong>文章引用主要观点: 改进设计了针对小物体的anchor (文章主要思想是认为小物体不容易与anchor overlap, 所以导致了regression到GT的困难, 基于这个观点进行了一系列tricks的引入, 个人觉得前两个(1. 改变feature stride 2.增加非中心的anchor)比较靠谱)</strong></li>
+</ul>
+</li>
+<li><a href="http://openaccess.thecvf.com/content_CVPR_2019/papers/He_Bounding_Box_Regression_With_Uncertainty_for_Accurate_Object_Detection_CVPR_2019_paper.pdf" target="_blank" rel="noopener">[Bounding box regression with uncertainty for accurate object detection.]</a><ul>
+<li>(1). <a href="https://suilin0432.github.io/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/" target="_blank" rel="noopener">点击这里见总结</a></li>
+<li>(2). <strong>文章引用主要观点: 说将bounding box的分布视为高斯分布去更好的进行定位 (是利用对Loss的改进使得anchor更加准确同时在NMS中引入了一些信息的一篇文章)</strong></li>
+</ul>
+</li>
+<li>Ground-truth 和 loss的设计<ul>
+<li>(1). 对bbox划分了有效区域和忽略区域</li>
+<li>(2). classification输出的是K个map, 每个instance根据bbox划分的有效区, 忽略区, 无效区域产生的贡献不同: 有效区域视为positive, 无效区视为negative, 忽略取则不进行梯度的回传. 同时相近尺度上的忽略区域(这个区域包含了有效区域)也不进行梯度回传</li>
+<li>(3). regression输出是4个MAP, 分别代表四个偏移量(距离中心上、下、左、右的距离), 都是类别无关的 输出时除以一个常数, inference的时候再乘上… </li>
+<li>(4). loss的使用方面: 对分类结果使用focal loss, 对box regression结果使用IoU loss.</li>
+</ul>
+</li>
+<li>Online Feature Selection<ul>
+<li>(1). 根据给出的loss 算最小的那个scale作为训练的scale</li>
+<li>(2). 为什么选取loss 最小的思想是… 认为最小的是当前feature loss的lower bound, 进行feature 参数的调整, 可以降低这个lower bound</li>
+<li>(3). 认为在推理的时候, 我们不用选择feature level, 因为认为适合的层会输出最高的置信度</li>
+</ul>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1085,99 +1201,11 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/11/testMessage/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/11/testMessage/" class="post-title-link" itemprop="url">testMessage</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-11 09:04:36 / Modified: 09:10:51" itemprop="dateCreated datePublished" datetime="2019-10-11T09:04:36+08:00">2019-10-11</time>
-            </span>
-          
-            
-
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/测试分类/" itemprop="url" rel="index">
-                    <span itemprop="name">测试分类</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1222,7 +1250,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
