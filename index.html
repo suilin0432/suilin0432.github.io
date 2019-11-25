@@ -251,7 +251,7 @@
         <h1 class="post-title" itemprop="name headline">
           
             
-            <a href="/2019/11/25/六-、简单总结mmdetection源码TwoStageDetector-的流程细节-五-解析BBox-head-forward-以及相关-Loss/" class="post-title-link" itemprop="url">六-、简单总结mmdetection源码TwoStageDetector 的流程细节-五-解析BBox-head-forward-以及相关-Loss</a>
+            <a href="/2019/11/25/六-、简单总结mmdetection源码TwoStageDetector-的流程细节-五-解析BBox-head-forward-以及相关-Loss/" class="post-title-link" itemprop="url">(六)、简单总结mmdetection源码TwoStageDetector的流程细节(五) -- 解析BBox head forward 以及相关 Loss</a>
           
         </h1>
 
@@ -266,7 +266,7 @@
                 
               
 
-              <time title="Created: 2019-11-25 15:40:10 / Modified: 15:40:26" itemprop="dateCreated datePublished" datetime="2019-11-25T15:40:10+08:00">2019-11-25</time>
+              <time title="Created: 2019-11-25 15:40:10 / Modified: 15:43:40" itemprop="dateCreated datePublished" datetime="2019-11-25T15:40:10+08:00">2019-11-25</time>
             </span>
           
             
@@ -285,7 +285,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="简单总结mmdetection源码TwoStageDetector的流程细节-五-–-解析BBox-head-forward-以及相关-Loss"><a href="#简单总结mmdetection源码TwoStageDetector的流程细节-五-–-解析BBox-head-forward-以及相关-Loss" class="headerlink" title="简单总结mmdetection源码TwoStageDetector的流程细节(五) – 解析BBox head forward 以及相关 Loss"></a>简单总结mmdetection源码TwoStageDetector的流程细节(五) – 解析BBox head forward 以及相关 Loss</h2><hr>
+          <h2 id="六-、简单总结mmdetection源码TwoStageDetector的流程细节-五-–-解析BBox-head-forward-以及相关-Loss"><a href="#六-、简单总结mmdetection源码TwoStageDetector的流程细节-五-–-解析BBox-head-forward-以及相关-Loss" class="headerlink" title="(六)、简单总结mmdetection源码TwoStageDetector的流程细节(五) – 解析BBox head forward 以及相关 Loss"></a>(六)、简单总结mmdetection源码TwoStageDetector的流程细节(五) – 解析BBox head forward 以及相关 Loss</h2><hr>
 <h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><ol>
 <li>上一篇总结介绍了关于 GT assign 以及 Proposal Sample 的整体流程, 这个部分就是 <code>TwoStageDetector.forward_train</code> 的最后的部分了(不考虑 mask 相关部分), 但是到这里还是有疑问没有解决的, 具体疑问看 3.</li>
 <li>本篇总结将会对 BBox head forward 以及相关 Loss 部分(mmdetection代码的注释是这么写的)进行解析.</li>
