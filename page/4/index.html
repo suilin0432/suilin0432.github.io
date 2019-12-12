@@ -236,6 +236,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/25/Simple-Summary-for-Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/25/Simple-Summary-for-Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Receptive Field Block Net for Accurate and Fast Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-25 20:37:27 / Modified: 20:37:47" itemprop="dateCreated datePublished" datetime="2019-10-25T20:37:27+08:00">2019-10-25</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection》"><a href="#简单总结《Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection》" class="headerlink" title="简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》"></a>简单总结《Receptive Field Block Net for Accurate and Fast Object Detection》</h2><hr>
+<p>###Introduction:</p>
+<ol>
+<li>文章主要就是设计了RFB block, 说是考虑到了人的感受野的设计</li>
+<li>木历史能够从lightweight CNN模型中加强特征的学习, 从而构建一个快速且准确的detector.</li>
+<li>RFB模块使用多路具有不同尺度空洞卷积进行操作使得对应不同的RF然后进行reshape产生最终输出</li>
+<li>提到了关于感受野的一些工作:<ul>
+<li>(1). Inception block: 使用不同kernel size的分支去捕捉multi-scale的information. 但是认为所有kernel都从同一中心进行sample, 需要更多的kernel去达到一个比较大的尺度, 并且会因此失去一些重要细节(指的是相同的关注可能会使网络失去对不同视野的重要程度的辨别能力).</li>
+<li>(2). ASPP: 空洞卷积使得sample点和中心的距离不同, 但是feature和前一阶段conv layer因为有相同大小的kernel size而有一个同样的resolution, 对所有位置的信息同等程度对待, 可能会导致object和context信息的混淆</li>
+<li>(3). Deformable CNN: 虽然是可变的, 但是仍然在其RF内各个pixel是同等程度对待的(指的是, 本文的模块中因为会不同的分支考虑不同的采样范围感受野是有重叠的, 且中心是关注最多的, 越向外关注越少)</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>###Method:</p>
+<ol>
+<li>Visual Cortex Revisit: 认为RF和偏心度(在network中对应的就是采样点到中心的距离)应该是正相关的</li>
+<li>设计看图吧… 整个文章的总体思想就是很明确的针对感受野以及偏心率作文章</li>
+</ol>
+<hr>
+<p>###想法:<br>实验结果很nice 模型很干净 图很漂亮 文章主题很明确… 我要是能发现这么一个idea就好了 -_-</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/25/Simple-Summary-for-Feature-Selective-Networks-for-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1158,91 +1250,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Context-Aware-Single-Shot-Detector-CSSD-DiCSSD-DeCSSD/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/19/Simple-Summary-for-Context-Aware-Single-Shot-Detector-CSSD-DiCSSD-DeCSSD/" class="post-title-link" itemprop="url">Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD)</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 10:45:37 / Modified: 10:45:56" itemprop="dateCreated datePublished" datetime="2019-10-19T10:45:37+08:00">2019-10-19</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Context-Aware-Single-Shot-Detector》-CSSD-DiCSSD-DeCSSD"><a href="#简单总结《Context-Aware-Single-Shot-Detector》-CSSD-DiCSSD-DeCSSD" class="headerlink" title="简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD)"></a>简单总结《Context-Aware Single-Shot Detector》(CSSD, DiCSSD, DeCSSD)</h2><ol>
-<li>文章想要解决的目的是: SSD没有很好的利用proposal box之外的context</li>
-<li>所谓的DiCSSD, DeCSSD分别指的是使用Dilated convolution和Deconvolution的CSSD</li>
-<li>实际有效感受野实际上远远小于理论感受野, 所以提出我们需要更多的context去判断</li>
-<li>两种CSSD实现方法都是先扩大ERF到一定的scale上, 然后将这些fuses到一起产生新的feature map 或者复用高层次的feature map去产生不同感受野的feature map</li>
-<li>强调了感受野对小物体检测的作用(也引用了finding tiny faces那篇文章的观点)</li>
-<li>DeCSSD就是将高层的feature通过deconv以及后续接上conv后和resolution最大的那个feature map进行fusion然后fusion到一起形成一个新的feature map, 其余的高层feature map保持不变</li>
-<li>DiCSSD就是每层通过dilated conv将各层的feature map的感受野扩大, 然后层内进行weighted-sum fusion, 产生一系列的feature map去进行predict<ul>
-<li>这个思想引用自<a href="https://arxiv.gg363.site/pdf/1511.07122.pdf" target="_blank" rel="noopener">Multi-scale context aggregation by dilated convolutions</a> </li>
-</ul>
-</li>
-<li>后面的对感受野的描述先略过了… 有时间回头看</li>
-<li>PS: 文章用DeCSSD的时候感受野(context引入)的设计不知道是否考虑到了文章所分析的内容… 看看源码应该就知道了</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1292,7 +1299,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">52</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
