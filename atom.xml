@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-12-12T13:48:56.257Z</updated>
+  <updated>2019-12-13T07:49:12.585Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for Soft Anchor-Point Object Detection (SAPD)</title>
+    <link href="http://suilin.top/2019/12/13/Simple-Summary-for-Soft-Anchor-Point-Object-Detection-SAPD/"/>
+    <id>http://suilin.top/2019/12/13/Simple-Summary-for-Soft-Anchor-Point-Object-Detection-SAPD/</id>
+    <published>2019-12-13T07:48:46.000Z</published>
+    <updated>2019-12-13T07:49:12.585Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结-Soft-Anchor-Point-Object-Detection-SAPD"><a href="#简单总结-Soft-Anchor-Point-Object-Detection-SAPD" class="headerlink" title="简单总结 Soft Anchor-Point Object Detection (SAPD)"></a>简单总结 Soft Anchor-Point Object Detection (SAPD)</h2><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p>PS: 本文是 FSAF (Feature Selective Anchor Free) 那篇文章的大佬的作品… 本文效果超级好 再一次拉高了标准(难受) 膜</p><ol><li>提及了最近的 anchor-free 方法在精读和速度上都大幅超过了 anchor-based 方法. 本文的目的是去寻找 anchor-free detector 的 speed 和 accuracy 的 trade-off/平衡点</li><li>关注于两个问题: <ul><li>(1). 如何能够使得 anchor-free detection head 更好</li><li>(2). 如何能够更好的利用 feature pyramid (继续深挖feature selective)</li></ul></li><li>解决这两个问题的角度: (1). attention bias  (2). feature selection</li><li>本文提出的是训练策略(果然…) -&gt; 包含了两个 soften optimization techniques<ul><li>(1). soft-weighted anchor points</li><li>(2). soft-selected pyramid levels</li></ul></li><li>精度-速度的trade-off达到了一个更高的高度 -&gt; 同等精度下, 可以达到 5 倍以上的速度</li><li>再次强调了 anchor-free detector 的优势:<ul><li>(1). 不需要手动的调整 anchor configuration 的 hyperparameters</li><li>(2). 通常来说有着更加简单的 detection head 的形式</li><li>(3). 在精读和速度上都超过了 anchor-based 方法</li></ul></li><li>同时分析了两类的 anchor-free detector (1). Anchor-point detector (2). Key-point detector<ul><li>(1). 提到了对于 Key-point detector: 来说其通常能够在 small input image size 的时候达到一个相对来说较高的 AP. 但是其通常依赖于单一的 high-resolution feature map, 并且重复 bottom-up top-down inference -&gt; 导致了高 FLOPs 以及 计算量、训练以及测试时间. 并且与主流的预训练 backbone 相对是低兼容性的.</li><li>(2). Anchor-point detector: 通常有着简单的网络结构, 快速的训练速度和推理速度, 鞠永送feature pyramid更好的受益的潜力(应该是因为key-point based detector通常都是基于Hourglass-101的单scale), 灵活的 feature level selection. 但是在特定的image scale testing情况下是没有key-point-based methods准确的, 尤其是定位准确性上.</li></ul></li><li>强调一个问题就是 -&gt; 是否一个简单的 anchor-point detector 可以达到和 key-point detector 相似的精读. -&gt; 本文提出 SAPD<ul><li>(1). 将低效的训练策略看做最主要的阻碍 anchor-point detector 性能的因素</li><li>(2). 两个没有被关注过的问题: 1). attention bias 2). feature selection</li><li>(3). attention bias -&gt; 有着很好的 views 的物体将会倾向于获得到 detector 的更多的关注, 使得其他的物体容易被忽略(因为训练过程中的anchor-points misalignment).</li><li>(4). feature selection -&gt; 自适应的去调整 instances 在指定的 pyramid level上训练 -&gt; 更好的挖掘利用 feature map</li></ul></li><li>本文的两个做法的大概描述:<ul><li>(1). 基于到object center的距离去reweight positive anchor point的对 loss 产生贡献的权重</li><li>(2). soft feature selection weights去进行层次的分配 (用 meta-selection network 去进行分配)</li></ul></li><li></li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol><li>Preliminary on Anchor-Point Detectors: 首先对 anchor-point-based baseline(作者上一个作品FSAF) 进行了回顾: 这部分回去看 FSAF 就好</li><li>Soft-Weighted Anchor Points:<ul><li>(1). Attention bias: 强调了当面临着类似于 occlusion, cluttered background 等具有挑战的情况下, vanilla anchor-point detector 会存在 attention bias 问题. -&gt; 有着很清晰的表现或者引人注目的表现的物体通常来说都是会产生一个很高的分数, 抑制了周围的物体, 甚至可能覆盖掉周围物体的表达. -&gt; 导致了过分关注 foreground instances 抑制了 background instances.</li><li>(2). 问题的原因: 认为是因为 在靠近物体instance边界的位置上因为feature misalignment所导致的位置不确定使得边界周围的值 不必要的过高 所导致的. -&gt; 所以在物体边界的其他的 anchor-point 会因为没有足够的与其对应的 instance 所以导致效果不好.</li><li>(3). 认为是因为 instance 感受野包含了太多的 background 信息, 所以导致了 representation power 的缺失</li><li>(4). 因此不应该将物体 center 附近和 boundary 附近同等程度的对待 -&gt; 走 CenterNet 的思路了… 看上去好像没什么区别… (PS: 细说的话还是有的, 其自由度相比来说更强, 但是可能会牺牲一些东西…)</li><li>(5). <strong><em>解决方法: soft-weighting scheme</em></strong><ul><li>1). 主要思想: 对每个 anchor point 都给一个权重, 对每个 positive anchor point, 这个权重将会依赖于 其 image space location 与 instance 中心 的距离.</li><li>2). 这个距离越长, 权重越低</li><li>3). 对于 negative anchor point 来说, 所有权重都还是 1 不会变化</li><li>4). 对于 soft-weighting scheme 会有几种选择. 本文选择… 看论文吧</li></ul></li></ul></li><li>Soft-Selected Pyramid Levels:<ul><li>(1). Feature selection: 提到了与 anchor-based detector 不同, anchor-free module 并不会通过约束 anchor matching 去进行 instance feature level 的选择 -&gt; 可以将每个 instance assign 到任意的 feature level</li><li>(2). 首先其对 feature maps 进行了观察, 发现了不同层次的 feature map 是相似的, 尤其是相邻层次上的 feature map. 如果一个区域在某一个 feature map 上被激活了, 那么在相邻层次上的该区域也应该是被激活的, 但是随着层次的变远, 相似程度会下降 -&gt; 多个层次的 feature map 可以一起去对检测一个特定的 instance 产生贡献, 但是不同层次贡献肯定不同, 要加权.</li><li>(3). pyramid level selection 应该有的两个原则:<ul><li>1). 首先要根据 feautre response 的 pattern 进行选择. -&gt; 认为instance-dependent loss 是一个很好的反应一个物体应该属于哪一个层次的东西.(FSAF思路就是这个样子)</li><li>2). 我们应该允许来自于多个尺度的 feautres 在训练和测试中对每个 instance 产生作用. (PS: FoveaBox表明了将instance分配给多个 feautre level 是有利于提升性能的.)但是强调了如果将物体分配到了太多的层次也是会严重影响性能的. -&gt; 作者认为是 hard feature level selection 所导致的. -&gt; 作者提出的就是能够根据 instance 去进行每个 pyramid levels 的 reweight. </li></ul></li><li>(4). 解决办法: 选择去训练一个 meta-selection 网络去预测 soft feature selection.<ul><li>1). 首先模块的输入是从各个 pyramid levels 中提取出来的 instance-dependent feature responses (文章中是通过 RoIAlign layer 进行提取的) (PS: 我之前也想过这么干, 但是对于anchor-based one-stage detector来说那个东西真的叫做detector吗…)</li><li>2). 然后提取出来的 feature 经过 meta-selection network 然后产生一个 vector. 使用这个权重作为 soft feature selection.</li><li>3). meta-selection模块 -&gt; 3 个 3 * 3 conv层(无padding, 跟ReLU). 然后跟上一个 FC 层做 softmax(输出与通道数相同). 使用 cross entropy loss 去进行优化, label是根据 FSAF 最小的 loss 分支决定的 one-hot vector 进行优化的. </li><li>4). 因此每个 instance B 都会有一个 权重(meta-selection的输出) 再结合上上一个的 soft-weight anchor-point, 就可以得到对应最终的该instance的权重.</li><li>5). 网络的总Loss会包含两个部分, meta-net 部分的 loss 的 weight 是会调整的.</li></ul></li></ul></li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol><li>这个soft feature map是不是要好好想一下…<ul><li>(1). 相当于一个二次的 feature selective, 但是好坏信号是靠 anchor-free 分支所决定的, 这个是不是有一些更好的想法(PS: 为什么要靠 anchor-free 分支去进行决定而不能考 anchor-based 分支(虽然本文是完全anchor-free的))</li><li>(2). 层次的 soft 怎么都觉得奇怪…</li></ul></li><li>soft label 相比于 centerNet 来说只是多了一下 anchor-point 并不是中心, 多了自由度. (PS: 这其实就是相当于向 centerNet 进行了靠拢… 因为标注的anchor还是那个anchor范围)</li><li>为什么相比于 FSAF 的 anchor-free 分支能有这么大的提升, 本质上的原因在什么??? FSAF 纯粹靠 anchor-free 分支的时候性能可是不太好的啊</li><li>加上 anchor-based 分支是会影响性能吗? 为什么? -&gt; 如果是的话 猜测就是近期提出的那个 sample 策略上存在一定冲突.</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结-Soft-Anchor-Point-Object-Detection-SAPD&quot;&gt;&lt;a href=&quot;#简单总结-Soft-Anchor-Point-Object-Detection-SAPD&quot; class=&quot;headerlink&quot; title=&quot;简单总结
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>(Chapter15--Exercise) Simple Summary for Very Deep Convolutional Networks For Large-Scale Image Recognition(VGG)</title>
@@ -231,30 +255,6 @@
     
     
       <category term="问题" scheme="http://suilin.top/tags/%E9%97%AE%E9%A2%98/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for Representation Learning by Learning to Count</title>
-    <link href="http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/"/>
-    <id>http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/</id>
-    <published>2019-11-19T01:26:49.000Z</published>
-    <updated>2019-11-19T01:27:29.050Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="简单总结《Representation-Learning-by-Learning-to-Count》"><a href="#简单总结《Representation-Learning-by-Learning-to-Count》" class="headerlink" title="简单总结《Representation Learning by Learning to Count》"></a>简单总结《Representation Learning by Learning to Count》</h2><hr><p>PS: 在论文总结中说的是本文学习在downsampled images与tiled images中数features数目并且使其在两者中满足等价关系.<br>PS: 另一个论文总结中说实质上本文受益的是: 在高层次上, 通常语义信息丰富、纹理信息复杂的norm都大</p><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol><li>本文目的: 提出一个基于视觉原语的使用artificial supervision signal的方法(这里的artificial指的应该是人去定义的而不是人工标注的)去进行<strong><em>representation learning.</em></strong></li><li>supervised signal是通过equicariance relation获取的, 不需要人工的标注. 文章将transformations of image和transformations of representations相联系起来. 但是文章强调自己关注的找到满足这种关系的representation而不是针对特定representation的transformations. 本文在context of counting中使用两种transformations: scaling &amp;&amp; tiling. 强调scaling利用的是visual primitives的珊瑚粮应该是与scale无关的, tiling则允许我们去同等看待整个图片中没个tile的visual primitives的总数. 提到了这两个transformations会被结合到一个约束中, 并用来使用一个contrastive loss去进行neural network的训练. 本文提出的方法在迁移学习中有很好的效果.</li><li>本文认为先前的自监督的工作表明了, 自监督学习的本质与最终要解决的问题最相关的自监督任务(pretext task)更可能构建出来好的representations. -&gt; 本文的pretext task: counting visual primitives (这个自监督信号需要有辨别力的feature, 对分类是有帮助的, 同时其可以通过detection任务进行formulated). </li><li>为了获取对counting有利的supervision信号, 利用了如下的性质: 如果我们将image分割成了不重叠的regions的时候, 每个regions 中 visual primitives的数量加起来就是整个图片中visual primitives的数量 </li><li>同时本文做出的假设是: 模型需要能够将image分离处high-level factors of variation,从而将orginal image与其regions之间的复杂关系转变为简单的算数关系(本文就是counting).</li><li>强调了虽然本文使用的是特定的两种变换的组合, 但是可以使用其他的变换的组合作为vision signals. 同样可以用于更大范围的任务之中.</li><li>本文贡献: (1). 引入了一个新的不使用手工标记数据的特征学习方法 (2). 提出利用counting作为自监督任务, 同时证明了其与counting visual primitives之间的联系(???) (3). SOTA效果</li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol><li>Transforming Images to Transform Features: <ul><li>(1). 提及到characterize a feature of interest的一种方式就是描述其是如何作为function随着input data的变化而变化的. eg: visual primitives的计数不应该被scale, 2D translation, 2D rotation变化所影响. 整体的magnitude of feautres应该大于region的.</li><li>(2). 本文, 作者会使用已知的input与output之间的关系作为superisory signal 去进行representation的学习.</li><li>(3). 首先定义了图片为 $x ∈ R^{m<em>n</em>3}$ 定义了一组image transformations $G={G_1, …, G_J}$ 每个变换 $G_j : R^{m<em>n</em>3}-&gt;R^{p<em>q</em>3}$ 将image作为输入, 并且将其映射到 p <em> q大小的image上. 之后定义一个feature $φ:R^{p</em>q<em>3}-&gt;R^k$ 将transformed image映射到一个 k 维度的vector上. 最后, 定义一个feature transformation $g:R^k</em>···*R^k-&gt;R^k$ 将J个features作为输入, 并将其映射到另外的一个feature中. 因此给定了image transformation family G 和 g, 通过后面的公式所定义的artificial supervisory signal学习feature φ: $g(φ(G_1◦x), …, φ(G_j◦x)) = 0$</li><li>(4). 在本作中, transformation family由downsampling operator D(下采样系数为2), tiling operation operator $T_j, j = 1, …, 4 $组成. 因此 $G={D, T_1, … ,T_4}$. 同样定义了 $g(d, t_1, …, t_4) = d - Σ_{j=1}^4t_j$ 这个公式可以被写成 $φ(D◦x)=Σ_{j=1}^4φ(T_j◦x)$</li><li>(5). 说这个关联也和equivariance(同变性, 指的是不要求CNN所强调的invariance不变性, 而是要考虑到坐标之类的信息的)有所关联. Equivariance通常被定义为一个给定feature的性质. 本文中通过固定transformations并寻找一个满足这些变换的representation来将上面的定义的逻辑反过来. 同时, equivariance被约束在应用在inputs和features的transforamtions上.  (???有点迷)</li></ul></li><li>Learning to Count: <ul><li>PS: 使用CNN去获取representations. </li><li>(1). 原则上可以去用一个large database中的图片进行训练, 使用基于上面counting公式的 l2 loss作为损失函数. 即: $l(x)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|^2$  但是认为loss总是会有 φ(z) = 0 的这个平凡解的. 为了避免这个情况的出现, 选择使用<a href="https://zhuanlan.zhihu.com/p/82199561" target="_blank" rel="noopener">contrastive loss, 连接是知乎一个描述</a> 本文中的 loss形式为: $l_{con}(x,y)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|^2 + max{0, M-|φ(D◦y)-Σ_{j=1}^4φ(T_j◦x)|^2} , x\not=y$ 目的是希望能够强迫两个随机选择的不同的image的counting feature尽可能的不同. M取经验值为10.</li><li>(2). 结合结构图食用可以明白: 整个流程是: 1). 选取两张不同的图 2). 将一张图只进行downsample, 将另外一张图做downsample并且进行tiling 3). 使用共享参数的AlexNet进行2).中得到的图的处理 4). 每个后续接上几组全连接层进行处理, 得到对应的最后的vector 5). 进行Loss的计算, Loss分为两个部分 1. 进行了downsample以及tiling的图片中: 计算正常的counting loss的计算 2. 只进行downsample图片的最后结果和另外image的tiling计算结果进行max(0, M - counting loss)的计算(希望两个不同的image 的 intra-image 差异尽可能的大)</li><li>(3). Least effort bias: a bias of the system是: 可以通过学习尽可能少的对visual primitives进行count来达到基本loss(指的是$l(x)=|φ(D◦x)-Σ_{j=1}^4φ(T_j◦x)|$)的目标  因此很多的feature mapping会坍塌到0, 在imageNet、COCO等数据集上已经发现了1000个entry中只有几十个非零, 特征因此是稀疏的. 此外本文的transfer learning实验表明了hidden layers在一些benchmarks上表现很好. 但是本文的contrastive loss限制了least effort bias. 因为counting feature当可数的visual primitives很少的时候并不能很好的和其他图像进行区分. 因此contrastive项也可以看做是将不同图像(intra-)区分开来的作用.</li></ul></li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;简单总结《Representation-Learning-by-Learning-to-Count》&quot;&gt;&lt;a href=&quot;#简单总结《Representation-Learning-by-Learning-to-Count》&quot; class=&quot;headerlink&quot;
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
     
   </entry>
   

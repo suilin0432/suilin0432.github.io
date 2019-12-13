@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="简单总结 Soft Anchor-Point Object Detection (SAPD) Introduction:PS: 本文是 FSAF (Feature Selective Anchor Free) 那篇文章的大佬的作品… 本文效果超级好 再一次拉高了标准(难受) 膜  提及了最近的 anchor-free 方法在精读和速度上都大幅超过了 anchor-based 方法. 本文的目的是去">
+<meta name="keywords" content="Paper Summary">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simple Summary for Soft Anchor-Point Object Detection (SAPD)">
+<meta property="og:url" content="http://suilin.top/2019/12/13/Simple-Summary-for-Soft-Anchor-Point-Object-Detection-SAPD/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="简单总结 Soft Anchor-Point Object Detection (SAPD) Introduction:PS: 本文是 FSAF (Feature Selective Anchor Free) 那篇文章的大佬的作品… 本文效果超级好 再一次拉高了标准(难受) 膜  提及了最近的 anchor-free 方法在精读和速度上都大幅超过了 anchor-based 方法. 本文的目的是去">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-12-13T07:49:12.585Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Simple Summary for Soft Anchor-Point Object Detection (SAPD)">
+<meta name="twitter:description" content="简单总结 Soft Anchor-Point Object Detection (SAPD) Introduction:PS: 本文是 FSAF (Feature Selective Anchor Free) 那篇文章的大佬的作品… 本文效果超级好 再一次拉高了标准(难受) 膜  提及了最近的 anchor-free 方法在精读和速度上都大幅超过了 anchor-based 方法. 本文的目的是去">
+  <link rel="canonical" href="http://suilin.top/2019/12/13/Simple-Summary-for-Soft-Anchor-Point-Object-Detection-SAPD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Simple Summary for Soft Anchor-Point Object Detection (SAPD) | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/13/Simple-Summary-for-Soft-Anchor-Point-Object-Detection-SAPD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            Simple Summary for Soft Anchor-Point Object Detection (SAPD)
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-12-13 15:48:46 / Modified: 15:49:12" itemprop="dateCreated datePublished" datetime="2019-12-13T15:48:46+08:00">2019-12-13</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简单总结-Soft-Anchor-Point-Object-Detection-SAPD"><a href="#简单总结-Soft-Anchor-Point-Object-Detection-SAPD" class="headerlink" title="简单总结 Soft Anchor-Point Object Detection (SAPD)"></a>简单总结 Soft Anchor-Point Object Detection (SAPD)</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p>PS: 本文是 FSAF (Feature Selective Anchor Free) 那篇文章的大佬的作品… 本文效果超级好 再一次拉高了标准(难受) 膜</p>
+<ol>
+<li>提及了最近的 anchor-free 方法在精读和速度上都大幅超过了 anchor-based 方法. 本文的目的是去寻找 anchor-free detector 的 speed 和 accuracy 的 trade-off/平衡点</li>
+<li>关注于两个问题: <ul>
+<li>(1). 如何能够使得 anchor-free detection head 更好</li>
+<li>(2). 如何能够更好的利用 feature pyramid (继续深挖feature selective)</li>
+</ul>
+</li>
+<li>解决这两个问题的角度: (1). attention bias  (2). feature selection</li>
+<li>本文提出的是训练策略(果然…) -&gt; 包含了两个 soften optimization techniques<ul>
+<li>(1). soft-weighted anchor points</li>
+<li>(2). soft-selected pyramid levels</li>
+</ul>
+</li>
+<li>精度-速度的trade-off达到了一个更高的高度 -&gt; 同等精度下, 可以达到 5 倍以上的速度</li>
+<li>再次强调了 anchor-free detector 的优势:<ul>
+<li>(1). 不需要手动的调整 anchor configuration 的 hyperparameters</li>
+<li>(2). 通常来说有着更加简单的 detection head 的形式</li>
+<li>(3). 在精读和速度上都超过了 anchor-based 方法</li>
+</ul>
+</li>
+<li>同时分析了两类的 anchor-free detector (1). Anchor-point detector (2). Key-point detector<ul>
+<li>(1). 提到了对于 Key-point detector: 来说其通常能够在 small input image size 的时候达到一个相对来说较高的 AP. 但是其通常依赖于单一的 high-resolution feature map, 并且重复 bottom-up top-down inference -&gt; 导致了高 FLOPs 以及 计算量、训练以及测试时间. 并且与主流的预训练 backbone 相对是低兼容性的.</li>
+<li>(2). Anchor-point detector: 通常有着简单的网络结构, 快速的训练速度和推理速度, 鞠永送feature pyramid更好的受益的潜力(应该是因为key-point based detector通常都是基于Hourglass-101的单scale), 灵活的 feature level selection. 但是在特定的image scale testing情况下是没有key-point-based methods准确的, 尤其是定位准确性上.</li>
+</ul>
+</li>
+<li>强调一个问题就是 -&gt; 是否一个简单的 anchor-point detector 可以达到和 key-point detector 相似的精读. -&gt; 本文提出 SAPD<ul>
+<li>(1). 将低效的训练策略看做最主要的阻碍 anchor-point detector 性能的因素</li>
+<li>(2). 两个没有被关注过的问题: 1). attention bias 2). feature selection</li>
+<li>(3). attention bias -&gt; 有着很好的 views 的物体将会倾向于获得到 detector 的更多的关注, 使得其他的物体容易被忽略(因为训练过程中的anchor-points misalignment).</li>
+<li>(4). feature selection -&gt; 自适应的去调整 instances 在指定的 pyramid level上训练 -&gt; 更好的挖掘利用 feature map</li>
+</ul>
+</li>
+<li>本文的两个做法的大概描述:<ul>
+<li>(1). 基于到object center的距离去reweight positive anchor point的对 loss 产生贡献的权重</li>
+<li>(2). soft feature selection weights去进行层次的分配 (用 meta-selection network 去进行分配)</li>
+</ul>
+</li>
+<li></li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>Preliminary on Anchor-Point Detectors: 首先对 anchor-point-based baseline(作者上一个作品FSAF) 进行了回顾: 这部分回去看 FSAF 就好</li>
+<li>Soft-Weighted Anchor Points:<ul>
+<li>(1). Attention bias: 强调了当面临着类似于 occlusion, cluttered background 等具有挑战的情况下, vanilla anchor-point detector 会存在 attention bias 问题. -&gt; 有着很清晰的表现或者引人注目的表现的物体通常来说都是会产生一个很高的分数, 抑制了周围的物体, 甚至可能覆盖掉周围物体的表达. -&gt; 导致了过分关注 foreground instances 抑制了 background instances.</li>
+<li>(2). 问题的原因: 认为是因为 在靠近物体instance边界的位置上因为feature misalignment所导致的位置不确定使得边界周围的值 不必要的过高 所导致的. -&gt; 所以在物体边界的其他的 anchor-point 会因为没有足够的与其对应的 instance 所以导致效果不好.</li>
+<li>(3). 认为是因为 instance 感受野包含了太多的 background 信息, 所以导致了 representation power 的缺失</li>
+<li>(4). 因此不应该将物体 center 附近和 boundary 附近同等程度的对待 -&gt; 走 CenterNet 的思路了… 看上去好像没什么区别… (PS: 细说的话还是有的, 其自由度相比来说更强, 但是可能会牺牲一些东西…)</li>
+<li>(5). <strong><em>解决方法: soft-weighting scheme</em></strong><ul>
+<li>1). 主要思想: 对每个 anchor point 都给一个权重, 对每个 positive anchor point, 这个权重将会依赖于 其 image space location 与 instance 中心 的距离.</li>
+<li>2). 这个距离越长, 权重越低</li>
+<li>3). 对于 negative anchor point 来说, 所有权重都还是 1 不会变化</li>
+<li>4). 对于 soft-weighting scheme 会有几种选择. 本文选择… 看论文吧</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Soft-Selected Pyramid Levels:<ul>
+<li>(1). Feature selection: 提到了与 anchor-based detector 不同, anchor-free module 并不会通过约束 anchor matching 去进行 instance feature level 的选择 -&gt; 可以将每个 instance assign 到任意的 feature level</li>
+<li>(2). 首先其对 feature maps 进行了观察, 发现了不同层次的 feature map 是相似的, 尤其是相邻层次上的 feature map. 如果一个区域在某一个 feature map 上被激活了, 那么在相邻层次上的该区域也应该是被激活的, 但是随着层次的变远, 相似程度会下降 -&gt; 多个层次的 feature map 可以一起去对检测一个特定的 instance 产生贡献, 但是不同层次贡献肯定不同, 要加权.</li>
+<li>(3). pyramid level selection 应该有的两个原则:<ul>
+<li>1). 首先要根据 feautre response 的 pattern 进行选择. -&gt; 认为instance-dependent loss 是一个很好的反应一个物体应该属于哪一个层次的东西.(FSAF思路就是这个样子)</li>
+<li>2). 我们应该允许来自于多个尺度的 feautres 在训练和测试中对每个 instance 产生作用. (PS: FoveaBox表明了将instance分配给多个 feautre level 是有利于提升性能的.)但是强调了如果将物体分配到了太多的层次也是会严重影响性能的. -&gt; 作者认为是 hard feature level selection 所导致的. -&gt; 作者提出的就是能够根据 instance 去进行每个 pyramid levels 的 reweight. </li>
+</ul>
+</li>
+<li>(4). 解决办法: 选择去训练一个 meta-selection 网络去预测 soft feature selection.<ul>
+<li>1). 首先模块的输入是从各个 pyramid levels 中提取出来的 instance-dependent feature responses (文章中是通过 RoIAlign layer 进行提取的) (PS: 我之前也想过这么干, 但是对于anchor-based one-stage detector来说那个东西真的叫做detector吗…)</li>
+<li>2). 然后提取出来的 feature 经过 meta-selection network 然后产生一个 vector. 使用这个权重作为 soft feature selection.</li>
+<li>3). meta-selection模块 -&gt; 3 个 3 * 3 conv层(无padding, 跟ReLU). 然后跟上一个 FC 层做 softmax(输出与通道数相同). 使用 cross entropy loss 去进行优化, label是根据 FSAF 最小的 loss 分支决定的 one-hot vector 进行优化的. </li>
+<li>4). 因此每个 instance B 都会有一个 权重(meta-selection的输出) 再结合上上一个的 soft-weight anchor-point, 就可以得到对应最终的该instance的权重.</li>
+<li>5). 网络的总Loss会包含两个部分, meta-net 部分的 loss 的 weight 是会调整的.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol>
+<li>这个soft feature map是不是要好好想一下…<ul>
+<li>(1). 相当于一个二次的 feature selective, 但是好坏信号是靠 anchor-free 分支所决定的, 这个是不是有一些更好的想法(PS: 为什么要靠 anchor-free 分支去进行决定而不能考 anchor-based 分支(虽然本文是完全anchor-free的))</li>
+<li>(2). 层次的 soft 怎么都觉得奇怪…</li>
+</ul>
+</li>
+<li>soft label 相比于 centerNet 来说只是多了一下 anchor-point 并不是中心, 多了自由度. (PS: 这其实就是相当于向 centerNet 进行了靠拢… 因为标注的anchor还是那个anchor范围)</li>
+<li>为什么相比于 FSAF 的 anchor-free 分支能有这么大的提升, 本质上的原因在什么??? FSAF 纯粹靠 anchor-free 分支的时候性能可是不太好的啊</li>
+<li>加上 anchor-based 分支是会影响性能吗? 为什么? -&gt; 如果是的话 猜测就是近期提出的那个 sample 策略上存在一定冲突.</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/12/12/Chapter15-Exercise-Simple-Summary-for-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition-VGG/" rel="next" title="(Chapter15--Exercise) Simple Summary for Very Deep Convolutional Networks For Large-Scale Image Recognition(VGG)">
+                  <i class="fa fa-chevron-left"></i> (Chapter15--Exercise) Simple Summary for Very Deep Convolutional Networks For Large-Scale Image Recognition(VGG)
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结-Soft-Anchor-Point-Object-Detection-SAPD"><span class="nav-number">1.</span> <span class="nav-text">简单总结 Soft Anchor-Point Object Detection (SAPD)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.3.</span> <span class="nav-text">问题:</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

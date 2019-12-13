@@ -236,6 +236,129 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/" class="post-title-link" itemprop="url">Simple Summary for Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-27 10:50:39 / Modified: 11:21:14" itemprop="dateCreated datePublished" datetime="2019-10-27T10:50:39+08:00">2019-10-27</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution》"><a href="#简单总结《Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution》" class="headerlink" title="简单总结《Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution》"></a>简单总结《Cascade RPN: Delving into High-Quality Region Proposal Network with Adaptive Convolution》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p>PS: 对cascaded rcnn的做法本文称之为iterative rpn, 总结中还是叫做cascaded rcnn</p>
+<ol>
+<li>本文是对RPN模块进行改进的, 目的是为了解决启发式的定义anchor以及启发式的将feature与anchor对准的问题</li>
+<li>原本的RCNN 是使用预先设定好的一组anchor以及使用RoIPool层进行特征的对齐, 做出的假设是, anhcor是均匀初始化分布的 -&gt; 产生了一个矛盾: anchor是初始化按照stride均匀分布的, 但是GT box的分布实际上是任意的, 导致了RPN需要去学习具有很高的变化性, 而在Cascaded RCNN中, 如果在第一个阶段中能够很好的学习到这个回归, 那么在第二个阶段, 分布就会逐渐向狄拉克分布靠拢, 但是, 其还是因为anchor初始化分布的问题与GT存在着IoU很小的问题. (也就是认为确实在cascaded rcnn中stage2确实减小了anchor的可能分布范围, 使得正确的anchor更为靠近GT, 但是因为初始设定的anchor关系, 还是使得IoU比较小… PS: 作者实验图是证明了这个问题)</li>
+<li>认为IoU很小打破了对准的问题</li>
+<li>本文贡献:<ul>
+<li>(1). 提出了Cascade RPN, 不再heuristically的定义anchor并将feature去与anchor进行对齐. 首先: 不再去定义一组不同大小的anchor, 而是依赖于一个anchor, 并且使用anchor-based和anchor-free的标准去定义positive box以达到一个高的性能. 其次: 在对准feature与box的同时, 进行multi-stage的refinement.</li>
+<li>(2). Cascaded RPN提出了自适应的卷积, 去在每个阶段进行anchor的refine. 其是light-weighted的</li>
+</ul>
+</li>
+<li>Mulit——stage RPN相关研究<ul>
+<li>(1). 认为传统的cascaded RPN通常是一阶段一阶段的refine RPN, 将上一阶段的输出当做输入进行refine. 忽略了上一阶段得到的anchor与feature仍然是不对齐的这一特征, 打破了对准这一隐式的原则. 为了消除这个问题, 通常会使用deformable conv相关去处理这个问题, 希望能够通过deformable conv进行特征的对准</li>
+<li>(2). 认为使用conv的做法使得无法进行分辨是align带来的好处 还是 deformable conv带来的好处.</li>
+</ul>
+</li>
+<li>Anchor-based vs. Anchor-free Criterion for Sample Discrimination相关:<ul>
+<li>(1). 认为bbox通常包含了物体以及周围的一定量的信息, 很难去决定这个box是positive的还是negative的sample. 通常我们通过比较IoU来确定, 但是因为anchor是均匀分布的</li>
+<li>(2). 提到了不依赖于anchor进行positive/negative的判断, 一些工作通过预测点和物体center的距离去定义positive还是negative. 认为这种做法更加简单, 而且不用设定那么多的超参数, 但是对与复杂的场景来说有局限性.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>Region Proposal Network and Variants<ul>
+<li>(1). RPN: 回顾了一下原始的RPN网络anchor定义 以及损失函数的计算</li>
+<li>(2). Interative RPN and Variants: <ul>
+<li>1). iterative RPN: 叠了两个RPN以及后续分类预测过程, 上一阶段的输入作为下一阶段的输出, 但是认为仍然存在着feature与anchor之间的对齐问题</li>
+<li>2). iterative RPN+: 使用deformable conv去一定程度上将feature进行对齐, 然后再到下一阶段去进行进一步处理</li>
+<li>3). GA-RPN: 相比于iterative RPN+ 不直接利用backbone的特征去进行offset的预测, 而是从第一个RPN的输出去进行offset的预测, 然后进行deformable conv的偏置后到下一个阶段</li>
+<li>4). Cascade RPN: (本文), 认为deformable conv的使用不能强制对齐操作, 只是提供了对齐的可能, 所以仍然不是最好的选择… 本文使用提出的 自适应卷积保证了强制对齐.   结构是backbone后面接一个空洞卷积, 去生成类似featue map, 之后进行一个分支的卷积操作去生成anchor box, 根据这个anchor box进行 adaptive conv, 然后再进行分类, anchor box回归等操作.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Adaptive Convolution:<ul>
+<li>(1). 基本思路仍然是: 不再像传统的卷积进行固定偏置的位置的sample, 而是选择使用一个offset去调整sample的点</li>
+<li>(2). 举例了几种conv操作, 空洞卷积, deformable以及自己做法: 将卷积sample点搬到了anchor对应的9个点(4角点, 4边缘中心, anchor正中心)</li>
+<li>(3). 认为deformable对这个问题的效果不好之处在于其范围是学习到的, 可能学习不好而在anchor范围之外进行采样…</li>
+</ul>
+</li>
+<li>Simple Discrimination Metrics: <ul>
+<li>(1). 不再使用预先定义好的多重的anchors, 而是在每一个位置仅仅依赖于一个单独的anchor然后进行multi-stage的refinement(PS: 这下和one-stage的AlignDet更加相近了…)</li>
+<li>(2). 训练的时候在第一阶段使用中心在一定范围内进行判定, 第二阶段使用IoU overlap进行判定</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol>
+<li>PS: 小声哔哔一句, 你觉得deformable conv可能在anchor范围外进行采样不好… 那可以直接限制必须在anchor内部采样啊… 超过范围的直接截断处理不就可以了.</li>
+<li>PS: 再小声哔哔一句, 我觉得这篇文章整个思路就和AlignDet一毛一样, 只不过换了示意图, 换了个叙述角度…  效果还没那么好… 但是还是提出了比如训练方面的新观点的… </li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/25/Simple-Summary-for-Receptive-Field-Block-Net-for-Accurate-and-Fast-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1155,101 +1278,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/19/Simple-Summary-for-Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection/" class="post-title-link" itemprop="url">Simple Summary for Enhancement of SSD by concatenating feature maps for object detection</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 15:27:04 / Modified: 15:35:31" itemprop="dateCreated datePublished" datetime="2019-10-19T15:27:04+08:00">2019-10-19</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection》"><a href="#简单总结《Enhancement-of-SSD-by-concatenating-feature-maps-for-object-detection》" class="headerlink" title="简单总结《Enhancement of SSD by concatenating feature maps for object detection》"></a>简单总结《Enhancement of SSD by concatenating feature maps for object detection》</h2><hr>
-<ol>
-<li>提到了添加feature map可以提升效果, 但简单的仅仅添加feature map有瓶颈, 本文考虑如何高效的利用feature map去提升性能</li>
-<li>通过改变network的结构, 改变的是classifier backbone后面的部分</li>
-<li>本文考虑到了两点:<ul>
-<li>(1). 将不同层的feature map进行联合考虑</li>
-<li>(2). 增加feature pyramid中layers的channel数</li>
-</ul>
-</li>
-<li>本文实现方法:<ul>
-<li>(1). 仅仅是pooling: 除了通过卷积得到的feature map之外, 还将上一层的feature map进行一个pooling操作, 然后将二者concate到一起</li>
-<li>(2). 仅仅是deconv: 同上面操作, 只不过后面会将低层进行反卷积操作然后到高层上进行concate</li>
-<li>(3). pooling + deconv: 两种操作都要</li>
-<li>PS: 细节说了, 说了pooling+deconv时候每个feature pyramid都是2816channel的, (512, 1024, 512, 256, 256, 256)concate的</li>
-</ul>
-</li>
-</ol>
-<p>PS: 吐槽一下: COCO数据集直接就不给结果了 23333…</p>
-<hr>
-<p>问题</p>
-<ol>
-<li>em… em… 我觉得pooling这个操作对各个层次信息考量有点问题… 加个SE Attention可能更好… 或者该各层channel关系</li>
-<li>而且不觉得前面层那么厚太浪费时间了吗</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1299,7 +1327,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
