@@ -236,6 +236,104 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/27/Simple-Summary-for-Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/27/Simple-Summary-for-Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution/" class="post-title-link" itemprop="url">Simple Summary for Accurate Single Stage Detector Using Recurrent Rolling Convolution</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-27 16:04:39 / Modified: 16:04:58" itemprop="dateCreated datePublished" datetime="2019-10-27T16:04:39+08:00">2019-10-27</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution》"><a href="#简单总结《Accurate-Single-Stage-Detector-Using-Recurrent-Rolling-Convolution》" class="headerlink" title="简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》"></a>简单总结《Accurate Single Stage Detector Using Recurrent Rolling Convolution》</h2><hr>
+<p>PS: 个人认为: 为什么都说anchor set的初始设置会影响和GT的overlap导致一定问题的存在但是还是设置anchor set -&gt; 还是因为classification之后的信息仍然是位置信息不敏感的, 需要设定一个范围值去进行预先设置, 然后进行回归. 如果直接在原位置上进行center点的预测可能会导致效果的不好. PS: 可能这就是为什么cornerNet等选择使用Hourglass作为backbone而不是使用resnet做.</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文提出了一个Recurrent Rolling Convolution(RRC)的结构使得-&gt;deep in context</li>
+<li>强调定位精确度(localization quality), 本文通过循环的引入context到bounding box regression, 强调high IoU threshold条件下</li>
+<li>还是老观点: 绝大多数的低质量的bbox是因为小物体和overlap物体的错误定位导致的</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>首先强调了faster-rcnn等two-stage方法使用last layer feature map相比于原图像因为经过了几个pool的处理变得很小. 对小物体检测造成了很大的影响. 而使用multi-scale输入图片是一种解决办法, 但是相对来说效率会很低</li>
+<li>认为在SSD中强调的观点(low resolution-&gt;big obj, high resolution-&gt;small obj)是很有道理的</li>
+<li>但是说SSD性能是一直比不上two-stage方法的, 同时当对IoU要求越来越高的时候, 两者之间的差距越来越大. 认为原因是: 检测结果基于了一个太强的假设 -&gt; 每一层feature map都要独立的去对其scale所产生的output负责 -&gt; 每一层feature map都需要有足够的信息去支持detection以及object的精确定位. 即:<ul>
+<li>(1). feature map需要有足够的resolution去表示物体的细节信息</li>
+<li>(2). 将image转变为feature map的映射需要足够深使得信息能够在feature map上达到一个足够抽象化的语义信息</li>
+<li>(3). feature map需要包含适当的contextual信息</li>
+<li>强调可以发现, 在上一层和下一层相比, 深层次反而resolution要小, 而浅层次的深度不够, 认为相对来说难以训练</li>
+<li>认为Faster RCNN则不存在这个问题, 但是Faster RCNN仍然存在没有足够的resolution去表示物体的细节信息的这个问题</li>
+</ul>
+</li>
+<li>基于3中所陈述的原因, 本文提出的network本质就是尝试将各个阶段信息进行融合, 具体式子和形式见paper吧</li>
+<li>RNN for Conditional Feature Aggregation<ul>
+<li>(1). 和SSD类似, 其认为high resolution应该负责小物体的检测(对应3.(1))  对模糊物体需要有足够抽象的信息去确定(也就是模型要足够深)  等等</li>
+<li>认为中间层次要能同时追溯到浅层和深层(也就是feature fusion, 本文用concate完成的)</li>
+</ul>
+</li>
+<li>具体操作就不看了, 思路还是feature fusion, 只不过是强调的过程不太一样, 这里做的fusion真的很多…</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/27/Simple-Summary-for-Cascade-RPN-Delving-into-High-Quality-Region-Proposal-Network-with-Adaptive-Convolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1192,92 +1290,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/" class="post-title-link" itemprop="url">Simple Summary for Weaving Multi-scale Context for Single Shot Detector</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 17:11:01 / Modified: 17:11:18" itemprop="dateCreated datePublished" datetime="2019-10-19T17:11:01+08:00">2019-10-19</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》"><a href="#简单总结《Weaving-Multi-scale-Context-for-Single-Shot-Detector》" class="headerlink" title="简单总结《Weaving Multi-scale Context for Single Shot Detector》"></a>简单总结《Weaving Multi-scale Context for Single Shot Detector》</h2><hr>
-<p>PS: 颜水成组作品喲</p>
-<ol>
-<li>文章出发点: feature fusion(mulit-scale context fusion)确实能够提升SSD的物体检测的效果, 但是现在的fusion technique实在是计算量太大了, 消除了SSD的速度上的优势</li>
-<li>本文方法是: 迭代的从相邻的scale中进行context information的weave, 同时因为堆叠的是light-weight blocks, WeaveNet可以简单的不用batch normalization训练, 并且可以使用文章提出的结构简化进行加速</li>
-<li>认为高层次的信息是丢失了精确位置信息的</li>
-<li>具体设计:<br> (1). 将相邻两层进行融合, 然后下一阶段同样如此, 低分辨feature map使用双线性插值(后面又说用channel-wise的deconv…)进行放大操作, 高分辨feature map用max pool进行下采样<br> (2). 融合先进行简单的concate, 然后输入到文章设计的block中进行处理, 产生下一个阶段需要的输入<br> (3). block结构是两个conv+一个直接传递的分支, conv处理后的两个分支会给上一层和下一层进行处理, 直接传递的就是当层的作为下一个scale的数据 </li>
-<li>文章没有说明白… 但是看Figure3应该是给上下层的信息是16 channel的, 当层的信息为32channel. 64channel -&gt; 上下层给16中间留32层 … <ul>
-<li>但是channel怎么分的也没有说明白… 如果是固定32层原封不动的话em… 也就是一直会保留最原始的信息, 然后给上下层的信息是weave到最后的… 行吧</li>
-</ul>
-</li>
-<li>简化操作就先不看了…</li>
-<li>吐槽一下性能图… 自己用Titan X跑然后SSD不用… 没仔细看以为比SSD性能还要好</li>
-<li>性能为啥要好: em… 因为block很轻量级… 其feature channel没有明说, 但是看上去是应该小的… 所以快…</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1327,7 +1339,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-count">54</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

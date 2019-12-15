@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2019-12-13T07:49:12.585Z</updated>
+  <updated>2019-12-15T02:22:37.017Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for Learning Rich Features at High-Speed for Single-Shot Object Detection</title>
+    <link href="http://suilin.top/2019/12/15/Simple-Summary-for-Learning-Rich-Features-at-High-Speed-for-Single-Shot-Object-Detection/"/>
+    <id>http://suilin.top/2019/12/15/Simple-Summary-for-Learning-Rich-Features-at-High-Speed-for-Single-Shot-Object-Detection/</id>
+    <published>2019-12-15T02:21:52.000Z</published>
+    <updated>2019-12-15T02:22:37.017Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简单总结《Learning-Rich-Features-at-High-Speed-for-Single-Shot-Object-Detection》"><a href="#简单总结《Learning-Rich-Features-at-High-Speed-for-Single-Shot-Object-Detection》" class="headerlink" title="简单总结《Learning Rich Features at High-Speed for Single-Shot Object Detection》"></a>简单总结《Learning Rich Features at High-Speed for Single-Shot Object Detection》</h2><hr><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol><li>本文首先说, 最近的研究表明了, 从头训练 detection 网络是有利于减少 classification 和 localization 之间的 gap的, 尤其是在 high overlap thresholds 上. 但是从头训练 detection models 所需要的时间远远超过了使用基于预训练模型进行训练finetune的情况. -&gt; 本文作者提出了一个新的 single-stage detection framework, 其能够结合 fine-tuning pre-trained models 和 training from scratch 的好处. 本文的模型结构包含了一个使用预训练 backbone 的基本网络和一个并行的 light-weight auxiliary network (这个网络部分是 train from scratch 的).</li><li>进一步的 文章说明, 仅仅使用的 top-down pyramid representation 只能够关注于 将 high-level 语义从 top layer 传递到 bottom layer 上. 本文引入了一个 bi-direction network, 能够有效的将 low/mid level 和 high level的 语义 信息循环使用.</li><li>本文在 相比于 SSD这种上有着很大的提升 将近10个百分点. (PS: 因为基于的是 SSD 这种 small input 的… 300*300 input size) 很不错了, 主要是足够快.</li><li>对小物体的检测效果很好, 算是部分的解决了小物体检测上的痛处.</li><li>确实在 Introduction 中说明了, 目前很多性能好的 one-stage 方法在小物体的检测上的表现还是很不好的. -&gt; 强调小物体的检测需要 low-/mid-level 的信息去准确定位以及 high-level 语义信息去区分目标物体</li><li>认为当前的 object detectors 都是使用 top-down pyramid feature representation, high-level information from top layer 会与 weaker high-resolution 的 low layer feautre 进行 fuse. </li><li>强调了, 虽然传统使用的 top-down feature pyramid representation 通常都会产生一个不粗的结果, 但是其仅仅拒绝的是 high-level semantics to former layers. 本文则 两边的(高层向底层, 底层向高层) 的进行融合, 并表明了这么做对于多尺度 object detection 是十分有作用的. </li><li>本文主要贡献:<ul><li>(1). 首先是本文提出了一个轻量级的 从头训练的网络(LSN), 其使用 downsampled image 作为 input, 并且将其传递给一些 conv 层以构建 low-/mid-level features.</li><li>(2). 上面的轻量级网络 LSN 将会嵌入到整个detection中, 并且作者引入了 bi-directional network 去 circulate both low-/mid-level and high-level 语义信息. </li></ul></li><li>文章简单的描述了一下标准的 SSD, 然后说明了一下其缺陷:<ul><li>(1). 每一个层次都单独进行 detection. 对 large scale variations 来说难以处理, 尤其是针对小物体的时候. -&gt; 认为是前面的层次相比于后面的层次来说缺少语义信息</li><li>(2). 还是强调了top-down feature pyramid情况下 前面的层次不能利用到后面层次的语义信息, 语义信息不够. 而加深网络/感受野等方法在提高精度的同时引入了大量的性能消耗</li></ul></li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><p>PS: 首先放一张结构图…<br><img src="https://upload-images.jianshu.io/upload_images/13028997-c5ae985137797734.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p><ol><li>Overall Architecture:<ul><li>(1). 整体结构其实相对来说思想很简单, 首先不谈原始的 SSD Backbone. 先是引入了 一个轻量级的从头训练的网络(个人认为 1. 参数量少, 好从头训练 2. 轻量级, 速度快). 这个分支提取出来的小的 feature map主要是用来和原本的 pipeline 的 feature map 进行融合(bottom-up融合)  之后会通过 top-down 结构再次进行信息融合(这一个 top-down 一个 bottom-up 就是所谓的 bi-derectional network 了)</li><li>(2). 对比了一下 bi-directional network 和 FPN: <ul><li>1). 首先强调自己的 bottom-up feature pyramid 的生成是 cascaded 式的, 而不是像 SSD/FPN 一样只是简单的 forward 获得的</li><li>2). 然后表明了自己 top-down pyramid 不是像 FPN 一样 layer-by-layer 进行fusion的, 而是并行连接(指的是每个 top level feature map 都会直接提供自己的信息去给低层进行 feature fusion)</li></ul></li></ul></li><li>Light-Weight Scratch Network:<ul><li>(1). 首先提到了 detection frameworks 中常用的 feature extraction strategy -&gt; 从 backbone 中提取 features. 又是强调了一下这个做法的不妥之处. -&gt; 本文提出的 LSN 网络结构就是为了解决这个问题的</li><li>(2). LSN 网络的几个特点: 1). input image 是通过 pooling 操作 downsample 下来成 SSD 第一个 prediction layer size的.  2). downsampled image 会通过一系列轻量级的操作进行处理  3). LSN 是随机初始化去进行from scratch训练的. 然后可以得到对应的小的 feature pyramid 4). feature pyramid的每一层的尺寸都是和 SSD feautre pyramid 相同的(为啥轻量级就是因为这个是直接从很小的原图进行特征提取什么的…)</li><li>(3). 网络的具体结构什么的看图就大概可以明白了.</li></ul></li><li>Bi-directional Network: 同样没什么特别的地方… 除非要仔细的研究一下结构是怎么设计的.</li></ol><hr><h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol><li>所以总的来说文章想要解决的就是: 同时使用 top-down &amp;&amp; bottom-up 的 feature fusion, 同时保证计算量不怎么变化. 引入的 轻量级结构实际上是用来进行 feature fusion 轻量级化的…… 感觉什么从头训练只是一个噱头…</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;简单总结《Learning-Rich-Features-at-High-Speed-for-Single-Shot-Object-Detection》&quot;&gt;&lt;a href=&quot;#简单总结《Learning-Rich-Features-at-High-Speed-for
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Soft Anchor-Point Object Detection (SAPD)</title>
@@ -222,32 +246,6 @@
       
       
         &lt;p&gt;进行 &lt;figure class=&quot;highlight plain&quot;&gt;&lt;figcaption&gt;&lt;span&gt;install mmcv``` 的时候出现了错误&lt;/span&gt;&lt;/figcaption&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span
-      
-    
-    </summary>
-    
-    
-    
-      <category term="问题" scheme="http://suilin.top/tags/%E9%97%AE%E9%A2%98/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>import torch Error1</title>
-    <link href="http://suilin.top/2019/11/19/import-torch-Error1/"/>
-    <id>http://suilin.top/2019/11/19/import-torch-Error1/</id>
-    <published>2019-11-19T07:11:15.000Z</published>
-    <updated>2019-11-19T07:14:39.559Z</updated>
-    
-    <content type="html"><![CDATA[<p>import torch时候出现报错</p><p>torch版本: torch-1.1.0<br>python版本: python-3.6.2</p><p>出现问题:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ImportError: dlopen(/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/torch/_C.cpython-36m-darwin.so, 9): Library not loaded: /usr/local/opt/libomp/lib/libomp.dylib</span><br><span class="line">Referenced from: /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/torch/lib/libshm.dylib</span><br><span class="line">Reason: image not found</span><br></pre></td></tr></table></figure></p><p>解决办法: <a href="https://github.com/pytorch/pytorch/issues/20030" target="_blank" rel="noopener">官方项目issue链接</a><br>具体方法: brew install libomp</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;import torch时候出现报错&lt;/p&gt;
-&lt;p&gt;torch版本: torch-1.1.0&lt;br&gt;python版本: python-3.6.2&lt;/p&gt;
-&lt;p&gt;出现问题:&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td c
       
     
     </summary>
