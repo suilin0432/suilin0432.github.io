@@ -236,6 +236,99 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/09/Simple-Summary-for-Learning-Deconvolution-Network-for-Semantic-Segmentation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/11/09/Simple-Summary-for-Learning-Deconvolution-Network-for-Semantic-Segmentation/" class="post-title-link" itemprop="url">Simple Summary for Learning Deconvolution Network for Semantic Segmentation</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-09 11:42:49 / Modified: 11:43:13" itemprop="dateCreated datePublished" datetime="2019-11-09T11:42:49+08:00">2019-11-09</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Learning-Deconvolution-Network-for-Semantic-Segmentation》"><a href="#简单总结《Learning-Deconvolution-Network-for-Semantic-Segmentation》" class="headerlink" title="简单总结《Learning Deconvolution Network for Semantic Segmentation》"></a>简单总结《Learning Deconvolution Network for Semantic Segmentation》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文主要思想就是学习一个深的deconv network. </li>
+<li>强调了传统方法会出现的一些问题: 对待极端大物体会出现属于同一个物体pixels的不一致lable(就是物体太大了, 不能完全辨认, 被network辨别成了多个不同的物体), 对待小的物体可能会被忽略掉. 以及物体的细节结构很容易被丢失或者平滑掉, 因为输入到deconv层的label map相对来说太粗粒度了, deconv过程也相对太简单. 强调了FCN在得到16<em>16的label map之后直接就deconv到原图尺寸, 而没有用大规模数据集去训练一个deep deconv network, 也因此使得重建一个关于物体边界的highly non-linear structure 变得十分困难, 因此当前很多工作使用CRF去解决这个问题.  **</em>PS:总结起来就是 目标的细节结构容易缺失, 边缘信息保留不够好 认为原因就是 -&gt; FCN得到的label map过于粗糙, deconv过程太过简单(所以本文基于这个观点进行了问题的解决)***</li>
+<li>本文使用了不同的策略, 贡献如下:<br> (1). 学习deep deconv network, 包括了deconvoluiton, unpooling以及rectified linear unit layers.<br> (2). 训练的网络被应用在individual object proposals上去获取instance-wise segmentations, 与最终的final semantic segmentation相结合.<br> (3). 达到了一个很好的效果</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>architecture: 整个网络就是由 (1). convolution part (2). deconvolution part 两部分构成的. 强调conv part就是将原图像进行特征提取, deconv part就是将提取到的信息用来进行object segmentation的生成. 最终的输出是和原图像相同尺度的probability map.</li>
+<li>conv part使用 VGG 16, deconv part是 conv part的镜像结构, 但是操作就取而代之的使用deconv, unpooling, rectification layers等.</li>
+<li>unpooling: <ul>
+<li>(1). 关于pooling, 强调了虽然是为了过滤掉没有必要的多余的”噪音”从而对classification任务引入了鲁棒性所以达到了很好的效果, 但是pooling过程中, 空间语义是丢失了的, 可能会对精确地定位产生了大的影响. 所以本文提出了在deconv part 中的 unpooling layers, 其记录了当时pool的过程中选择了留下了各个感受野中的哪个元素的坐标, 然后在unpooling过程中在那个记录的位置进行信息的填充.</li>
+</ul>
+</li>
+<li>deconv: <ul>
+<li>PS: 本文所指的deconv部分, 并不是传统意义上的反卷积结构, 而是将unpooling得到的系数的activations值通过类似convlution的方法去进行处理.</li>
+<li>(1). 文章认为在deconv layers中学习到的filters是用作还原input object shape的. 因此进行了一系列的deconv layers去捕捉不通过level的shape details.</li>
+<li>(2). 发现低层次的filtrs倾向于去捕捉一个物体的总体的形状, 在深层次的filter中倾向于encodeclass-specific fine-details -&gt; 网络可以直接用class-specific shape information去进行semantic segmentation.</li>
+</ul>
+</li>
+<li>后面部分内容暂时无关… 略过…</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/06/Simple-Summary-for-Stacked-Hourglass-Networks-for-Human-Pose-Estimation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1311,117 +1404,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/28/Simple-Summary-for-Grid-R-CNN/" class="post-title-link" itemprop="url">Simple Summary for Grid R-CNN</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-28 15:34:36 / Modified: 15:34:55" itemprop="dateCreated datePublished" datetime="2019-10-28T15:34:36+08:00">2019-10-28</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简答总结《Grid-R-CNN》"><a href="#简答总结《Grid-R-CNN》" class="headerlink" title="简答总结《Grid R-CNN》"></a>简答总结《Grid R-CNN》</h2><hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>本文提出了一个新的obj detection framework, 通过grid guided localization 机制去进行accurate object detection. </li>
-<li>Gride R-CNN能够准确的捕捉到空间信息, 并且能够通过全卷机结构捕捉到位置敏感的特征</li>
-<li>不再像cornerNet通过两个角点进行物体的定位, 而是设计了多个点以encode更多的clues去减少不准确的点带来的敏感性</li>
-<li>提到为了能够充分利用在一个grid中的点之间的关系, 提出了一个two-stage的information fusion strategy去将neighbor grid points的feature map进行fuse.  对每个grid point 都设计一组feature map, 对于一个grid point, 其neighbor grid points的feature maps都会被collected并且fuse到一个整体的feature map中, 并且会被用作相应grid point的location prediction(是类似refine一下的意思吗).</li>
-<li>提到的cornerNet的缺点仍然是, 当背景很简单同时角点其实是在物体范围之外的时候, 我们很难去定位一个obj -&gt; 因此希望能够通过设计一个多点的supervision formulation进行解决.</li>
-<li>本文的主要贡献:<ul>
-<li>(1). 提出了Grid R-CNN, 其能够通过全卷积的有效保留空间信息的network代替传统的基于anchor回归的network</li>
-<li>(2). 设计了一个multi-point supervision去进行grid中的points的预测, 从而减少不准确点带来的影响. 而且本文进一步的移除了feature map层次的information fusion机制, 使得spatially related grid points能够获取聚集周边grid point的特征信息, 从而能够更加准确的校准点的位置</li>
-<li>(3). 进行实验, 表明了其具有很好的效果</li>
-</ul>
-</li>
-<li>提到了最近的工作: R-FCN使用region-based的全卷机网络替代原来的包含FC的网络(其目的是解决location的不敏感性问题), FPN进行feature fusion融合了多尺度的feature map, Mask R-CNN从增加精度(roi align)以及联合分割的多任务loss出发.</li>
-<li>LocNet提出了boundary-based方法以进行object detection的准确定位(通过物体边的概率分布去计算物体的位置), 其依赖于region boundaries的条件概率, 而本文的方法是基于grid points prediction的. 同时认为LocNet是用来进行proposal generation的, 而Grid R-CNN是用来bbox prediction的.</li>
-<li>CornerNet: 具体思路见<a href="https://suilin0432.github.io/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/" target="_blank" rel="noopener">总结</a>, 认为其是bottom-up的方法, 也就是直接从整张图片去生成关键点而不定义像anchor之类的实体. 认为cornernet的一个关键部分就是keypoints的识别与正确分组. 而本文方法则是top-down的, 先在第一个阶段定义instance, 关注的是怎么准确的定位grid point. 后面又重复了一遍贡献</li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>总体结构框架: 前部分仍然是Faster RCNN的标准结构, 将RoI替换为RoIAlign之后, 不再像原来一样进行bbox的regression, 而是使用grid guided机制去进行定位(PS: 但是分类还是分类的), grid prediction使用的是一个全卷积结构, 输出heatmap(文章中说采用的是FCN结构), 通过这个heatmap我们可以定位与obj对准的bbox的grid points. 然后通过这些grid point, 我们最终就能够从feature map层次的information fusion中判断决定obj bbox的准确性.</li>
-<li>Grid Guided Localization: <ul>
-<li>(1). 提到了自己全卷积进行object localization的方式: 设计了一个N<em>N的grid, 每个grid point的feature map都与proposal的bbox对齐, 文章以一个3</em>3为例子就是传统的9个点的选择位置. 也就是按照R-FCN的思路, 针对不同的位置设计不同的feature map(在这里叫做heatmap可能更好), 仍然通过mask rcnn的roi align生成固定的14<em>14大小的从原始图像中提取出来的feature map, 然后经过8个3</em>3的空洞卷积(说是为了更大的感受野), 之后接上两个反卷积去进行放大, 将这 N<em>N 个feature maps放大到56</em>56的大小, 然后跟上一个sigmoid函数, 每个heatmap都进行这个操作得到了各个grid point的概率图(目标区域5*5的cross shape 都被看做是positive 的location -&gt; 应该是为了减少训练难度以及鲁棒性)</li>
-<li>(2). 之后在推断阶段会从每个heatmap中选取最高的confidence的pixel, 并且使用原图像相应的位置作为一个grid point.</li>
-<li>(3). 然后我们会利用这些点去决定bbox的boundary. B=(x_l, y_u, x_r, y_b), 每个值都通过在这条边上的点的位置乘以其概率分布进行加权求和去进行确定(PS: 那中间点的点的意义何在?)</li>
-<li>PS: 这就是之前所说的不再像cornerNet一样仅仅根据两个点去确定bbox, 而选用更加稳定的方式进行的做法了</li>
-</ul>
-</li>
-<li>Grid Poitns Feature Fusion:<ul>
-<li>(1). 认为grid points之间是有内部关联的, 其位置可以通过其他的grid points去进行校准以减少总体上的偏差, 因此作者提出了一个空间信息融合module</li>
-<li>(2). 认为最直觉上的做法就是进行坐标的average, 但是feature map中的丰富信息就因此被丢弃了. 所以作者认为进一步可以来提取grid points的local features去进行进一步的fusion操作. 但是仍然认为会丢失不同feature map 响应位置的信息. eg: 以3*3的grid为例, 对左上角如果只是用左上角的feature map的左上角region信息可能会丢失掉比如中间点的feature map的左上角region所能够带来的信息贡献. 因此, 作者希望能够设计feature map level的information fusion机制去完全的利用信息</li>
-<li>(3). 对N<em>N个grid point的feature map 使用不同的filter去提取信息, 可以得到新的N</em>N个feature map</li>
-<li>(4). 对每个grid point, 邻近的grid point(L1距离为1的grid point)都会在fusion中产生贡献, 然后这个过程也需要进行卷积, 每个j gridpoint对i gridpoint产生贡献前需要进行三个5*5卷积(说是进行information transfer). 然后相关的grid point的feature map将会fuse一下产生新的feature map.</li>
-<li>(5). 之后还会再加上一轮feature fusion操作, 并且参数也不是共享的, 这一轮操作认为可以汇聚L1距离为2的gride point的信息, 认为是更加可靠的</li>
-</ul>
-</li>
-<li>Extended Region Mapping<ul>
-<li>(1). Grid prediction module输出的具有固定空间尺度的heatmap代表了grid points的分布置信度. 的那还是可能存在GT grid point的位置并不在roi中, 所以natural idea是放大proposal area.</li>
-</ul>
-</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1471,7 +1453,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
