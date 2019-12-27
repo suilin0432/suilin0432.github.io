@@ -236,6 +236,78 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/09/Simple-Summary-for-Deep-Reflectance-Maps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/11/09/Simple-Summary-for-Deep-Reflectance-Maps/" class="post-title-link" itemprop="url">Simple Summary for Deep Reflectance Maps</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-09 15:47:52 / Modified: 15:49:28" itemprop="dateCreated datePublished" datetime="2019-11-09T15:47:52+08:00">2019-11-09</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对该领域了解过少, 总结的有点惨不忍睹… 主要是因为stacked hourglass论文中提到的使用encoder-decoder结构才看的.</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/09/Simple-Summary-for-Learning-Deconvolution-Network-for-Semantic-Segmentation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1304,106 +1376,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN-Plus-Faster-and-Better/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/28/Simple-Summary-for-Grid-R-CNN-Plus-Faster-and-Better/" class="post-title-link" itemprop="url">Simple Summary for Grid R-CNN Plus: Faster and Better</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-28 17:03:48 / Modified: 17:04:07" itemprop="dateCreated datePublished" datetime="2019-10-28T17:03:48+08:00">2019-10-28</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Grid-R-CNN-Plus-Faster-and-Better》"><a href="#简单总结《Grid-R-CNN-Plus-Faster-and-Better》" class="headerlink" title="简单总结《Grid R-CNN Plus: Faster and Better》"></a>简单总结《Grid R-CNN Plus: Faster and Better》</h2><hr>
-<p>PS: 是对Grid R-CNN的改进, 作者都没有变化, 但是这篇文章把代码开源了, 文章也很短只有4页, 主要讲述改进的方面.<br>PS: 部分描述来源于 <a href="https://zhuanlan.zhihu.com/p/70489673" target="_blank" rel="noopener">知乎这篇文章</a></p>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>出发点: Grid R-CNN虽然精度高, 但是相比于faster rcnn要慢.</li>
-<li>问题1: Grid R-CNN对所有的grid-points都使用相同的representation region去生成supervision maps(就是N*N个grid point feature map使用同一个完整的feature map去生成heatmap), 认为这是很低效的(eg: top-left grid point不应该在right或者bottom的区域出现) -&gt; Grid R-CNN Plus将会只使用1/4的最可能的区域去进行supervision. -&gt; 从而减小grid branch上的feature map的size, 同时认为能够集中关注区域而带来grid location准确性上的提升.</li>
-<li>同样, 文章对sampling strategy, normalization method, NMS stategy, hyper-parameters进行了一定的分析 -&gt; 使得模型能够和faster rcnn速度相当.</li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>Grid Point Specific Representation Region<ul>
-<li>因为只有positive sample(IoU &gt; 0.5)才会被选择送给Grid branch, 所以在supervision map(GT点)上只可能出现在一个有限的区域中, 所以我们不应该使用全部大小的feature map去进行每个grid point的feature map的提取, 这么做是十分没有效率的, 同时也不是很稳定.  -&gt; 56<em>56变为28</em>28 只用可能的区域去进行提取 并且这么做作者视为一个normalization… 因为其原来分布是不normal distribution的 而在局部是normal distribution的</li>
-</ul>
-</li>
-<li>Light Grid Head:<ul>
-<li>由于最后的输出尺度降低了一半，所以也可以同时将grid branch中的其他特征图分辨率也降低，eg:14x14-&gt;7x7。前面的RPN+ROI Align产生一个固定的feature map 14x14，接着使用一个步长为2的3x3卷积核，然后再使用7个步长为1的3x3卷积核从而产生7x7分辨率的特征图。紧接着我们将这个特征分成N组（默认为9）,每一组关联一个grid point，接着使用两个组反卷积将特征图尺度变为28x28，强调了group deconvolution可以加速上采样的过程。另外一个好处是，由于我们对每个grid point的表达进行了归一化，因此他们变得更加closer,导致在特征融合时不需要使用很多的卷积层来覆盖这个间隙。在Plus版本，只使用了一个5x5 depth-wise卷积层来代替原来的3个连续的卷积层。</li>
-</ul>
-</li>
-<li>Image-across Sampling Strategy:<ul>
-<li>提到了因为grid branch只是用了positive proposal去训练, 导致了在不同sample batch中positive samples的数量上的不平衡. (eg: 一些图片上可能有很多个positive samples, 然而其他的可能仅仅有几个positive samples) 这种情况可能会导致grid branch上的feature distribution不稳定.</li>
-<li>因此选用了image-across的sampling策略, positive proposals会几张图片中进行sample, 当一个image中sample出来了少量的positive proposals的时候, 会从其他的包含多的positive proposal的图片进行batch的构成. 因此不再规定在一个图片上sample多少, 而是限制两张图片sample数量</li>
-<li>PS: 个人认为一可以减少单张图片的positive-negative imbalance问题, 同时batch之间的positive也是可以相对保证的</li>
-</ul>
-</li>
-<li>Non-Maximum Suppression Only Once<ul>
-<li>原来的Grid RCNN需要两次NMS，第一次是proposal的生成，只选择Top 125个样本进行边框矫正，第二次是做最后的classification，作者发现，尽管只是一小部分的proposal，进行80类的NMS还是很慢，所以在Plus版本，直接移除了第二个NMS，同时将第一个NMS的IOU阈值设置为0.3，分类阈值设置为0.03，只选择100个proposal进行进一步的分类和回归。</li>
-</ul>
-</li>
-</ol>
-<p>PS: 个人认为值得强调的一点是: 每个grid point的feature map虽然变小了, 但是仍然是使用整个RoI Align的feature map得到的, 只是经过处理后得到的对应grid point的feature map变小了. 这个feature map是对应着缩小范围了的可能的分布的.</p>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1453,7 +1425,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
