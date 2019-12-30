@@ -236,6 +236,146 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-22 21:39:51 / Modified: 21:40:24" itemprop="dateCreated datePublished" datetime="2019-10-22T21:39:51+08:00">2019-10-22</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》"><a href="#简单总结《Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection》" class="headerlink" title="简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》"></a>简单总结《Libra R-CNN: Towards Balanced Learning for Object Detection》</h2><hr>
+<p>###Introduction:</p>
+<ol>
+<li>本文关注与训练过程, 提到关于模型结构有很多研究, 但是对于训练过程很少有人研究</li>
+<li>认为训练效果不好有很大一部分原因是因为training process中的不平衡造成的<ul>
+<li>(1). sample level</li>
+<li>(2). feature level</li>
+<li>(3). objective level</li>
+</ul>
+</li>
+<li>本文为了解决上述的imbalance问题, 使用<ul>
+<li>(1). IoU-balanced sampling</li>
+<li>(2). balanced feature pyramid</li>
+<li>(3). balanced L1 loss</li>
+</ul>
+</li>
+<li>提到了目前的one-stage还是two-stage两者只是模型结构的pipeline不同, 其训练方法是一致的, 而训练的关键方面包括<ul>
+<li>(1). 选择的region是否有代表性</li>
+<li>(2). 是否提取的特征被充分利用了</li>
+<li>(3). 定义的目标函数(损失函数)是否合理</li>
+<li>文章通过表明传统的训练过程在这三方面上都存在着显著的不平衡去进行训练过程的改进</li>
+</ul>
+</li>
+<li>sample level imbalance<ul>
+<li>(1). 认为在训练中, hard samples更加有用, 因为其对提升detection性能有很大的作用, 但是ramdom sampling通常会导致sample的结果被easy samples所充斥</li>
+<li>(2). 提到了OHEM可以帮助关注hard examples, 但是其对noise labels比较敏感, 而且会造成存储和计算上的损失</li>
+<li>(3). 提到focal-loss确实在one-stage方法上有一定效果, 但是在two-stage模型中基本上没有效果, 认为是two-stage过程将大部分的easy negative去除掉了</li>
+</ul>
+</li>
+<li>feature level imbalance:<ul>
+<li>(1). 深层次的信息具有的是更多的语义信息, 浅层的信息描述了更多的内容信息. 认为两者是互补的</li>
+<li>(2). 本文认为从各个resolution中提取平衡的信息效果更好, 但是之前的方法通常会过度关注与当前的信息而较少关注其他的信息</li>
+<li>(3). 认为非相邻的语义信息在信息流动的过程中, 每次经过fusion之后都会被稀释一次</li>
+</ul>
+</li>
+<li>objective level imbalance<ul>
+<li>(1). 目标检测通常融合了两个任务 -&gt; classification 和 localization. 认为两种目标应该平衡, 不平衡将会导致性能的损失</li>
+<li>(2). 认为如果不平衡, easy samples的小梯度会在hard samples的大梯度中被淹没, 因此会限制进一步的优化</li>
+</ul>
+</li>
+<li>Libra RCNN: 在上述的三个方面中去尽可能的达到平衡<ul>
+<li>(1). IoU-balanced sampling: 根据与GT的IoU挖掘hard samples</li>
+<li>(2). balanced feature pyramid: strengthens the multi-level features using the same deeply integrated balanced semantic features</li>
+<li>(3). balanced L1 loss: 加强关键的梯度, 对classification, overalllocalization, accurate localization的loss 进行再平衡</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>###Details:</p>
+<ol>
+<li>IoU-balanced Sampling<ul>
+<li>(1). 作者通过实验发现, 有超过60%的hard negatives与GT的overlap超过了0.05, 但是随机sampling只能提供30%超过0.05IoU的samples, 认为这会导致hard sample被easy sample淹没造成了急剧的不平衡</li>
+<li>(2). 原本的算法中, 我们会从M个candidates anchor中选取N个negative sample, 每个anchor被选中的概率为 N/M</li>
+<li>(3). 本文选择将anchor通过IoU划分为K个bins中, N个需要的anchor均匀的分布在其中, 就是每个中放 N/K个hard negatives, 这样每个anchor被选中的概率为: p_k = N/K * (1/M_k)</li>
+<li>PS: 实际上就是按照概率去进行采样…</li>
+</ul>
+</li>
+<li>Balanced Feature Pyramid<ul>
+<li>(1). 将信息不断的向前汇集去到分辨率最高的层之后(FPN做法), 将multi-scale的feature resize到一个中间的size(比如{C2,C3,C4,C5}中将其余的feature都resize到C4上, 分别使用插值和max-pooling)</li>
+<li>(2). 然后将这几个信息进行加权求和, C2, C3, C4, C5分别加权1/2 1/3 1/4 1/5</li>
+<li>(3). 然后特征还可以进一步的refine, 通过conv或者non-local模块进行refine, 认为使用non-local更加稳定, 文章中使用了embedded Gaussian non-local attention模块进行refine处理, 然后将图像rescale到金字塔尺度和原本的金字塔相加 (后续仍然可以按照FPN进行处理)</li>
+</ul>
+</li>
+<li>Balanced L1 Loss<ul>
+<li>(1). 作者提到直接增加localization loss会使得模型对outliers更加敏感, 也就是hard examples会产生很大的梯度, 远超过inliers(easy samples)所贡献的梯度, 对训练造成不好的影响.</li>
+<li>(2). Loss增加了对inliers的权重</li>
+</ul>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/22/Simple-Summary-for-DSSD-Deconvolutional-Single-Shot-Detector/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1088,156 +1228,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/" class="post-title-link" itemprop="url">Simple Summary for Seeing Small Faces from Robust Anchor’s Perspective</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-17 22:47:22 / Modified: 22:47:43" itemprop="dateCreated datePublished" datetime="2019-10-17T22:47:22+08:00">2019-10-17</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》"><a href="#简单总结《Seeing-Small-Faces-from-Robust-Anchor’s-Perspective》" class="headerlink" title="简单总结《Seeing Small Faces from Robust Anchor’s Perspective》"></a>简单总结《Seeing Small Faces from Robust Anchor’s Perspective》</h2><hr>
-<p>PS: 阐述了一个很有意思的观点, 用一个我觉得不算严谨的EMO Score说明了为什么, 然后用一些方法去改进anchor. 个人觉得算是a bag of tricks吧 而且好像tricks都是旧的…</p>
-<ol>
-<li>本文主要内容: (1). 设计了新的anchor设计想法去支持很大程度的尺度不平衡的人脸检测问题(尤其是小人脸)  (2). 提出新的Expected Max Overlapping score -&gt; 理论上解释low overlap问题(就是为什么小脸不容易被anchor overlap)并且能用一些有效的anchor design策略去达到更高的face overlaps</li>
-<li>本文定义小脸-&gt;less than 16*16</li>
-<li>因为发现, 当前的anchor设计不能保证小脸和anchor boxes的high overlap</li>
-<li>1.(2). 中策略包括了<ul>
-<li>(1). anchor stride reduction with new network architectures</li>
-<li>(2). extra shifted anchors</li>
-<li>(3). stochastic face shifting</li>
-</ul>
-</li>
-<li>提到了anchor-based detectors在shape与appearance invariance上有好的表现, 但是在scale invariance上表现不是很好</li>
-<li>前面提到的low overlap问题是当进行分类以及对anchor box进行bbox regression之后高confidence的box并不和tiny faceoverlap的问题<ul>
-<li>在训练前对每个face计算overlap最高的IoU -&gt; 然后将faces分到几个不同scale的组中 -&gt; 在每个scale的组中计算平均最高IoU score</li>
-<li>得到结果: average IoU与recall rates成正相关 -&gt; 也就是本来的box就和小脸overlap很小和大脸overlap大</li>
-<li>认为与small faces有小的overlap的anchor难以调整到GT上所以使得小脸的难以检测</li>
-</ul>
-</li>
-<li>提到了<ul>
-<li>(1). 减小anchor stride(看上去就不是一个feature map 对应pixel对应一组anchor了)</li>
-<li>(2). 同时对anchor进行shifted, 而不是原本的中心以使得anchor变得更加密集化</li>
-<li>(3). stochastically shift the faces in order to increase the chance of getting higher IoU overlaps(这是啥操作…)</li>
-<li>(4). 用多个anchor去match low-overlappedfaces</li>
-</ul>
-</li>
-<li>EMO scores<ul>
-<li>(1). 首先提及传统的anchor-based的设定: <ul>
-<li>原先anchor被视为GT的原则: 当anchor与obj overlap超过了一定的threshold或者anchor是和该物体overlap最大的anchor</li>
-<li>anchor stride指的就是 feature map 尺度相比于原图的stride</li>
-</ul>
-</li>
-<li>(2). 计算EMO Score:<ul>
-<li>假设一张脸可以随机的出现在图片的任意位置处, 我们去这张脸可能存在的点为(x, y) 那么这张脸在全局出现的概率就可以看做为一个概率分布函数 p(x, y)</li>
-<li>EMO Score = maxIoU*p(x, y)对x和y的二重积分</li>
-<li>我们一般假设脸是均匀概率出现在各个位置的, 所以积分就变成了对 maxIoU 在不同位置的积分, 这个值是与anchor set的设置等有关的</li>
-<li>因为每个anchor都是在空间上平移的, 所以对每个位置进行积分和对一个anchor stride大小的patch中积分是等价的</li>
-<li>同时因为anchor关于patch的中心对称, 所以我们只要关注 1/4 个patch即可</li>
-<li>计算方便这里假设用和某一个anchor大小设置相同的face进行计算得到最后的结果作为EMO Score</li>
-<li>可以看出Face Scale与anchor越大, stride越小EMO越大</li>
-<li>PS: em… 设定大小和anchor一样大 em… 能概括大部分情况吗? 而且其设定的一组anchor值即使是和anchor重叠最小的时候都保证和这个anchor重合…</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Anchor Design的策略<ul>
-<li>(1). Stride Reduction with Enlarged Feature Maps:<ul>
-<li>因为anchor stride和feature stride相同, 所以认为扩大feature map可以帮助, 三种upsample方式</li>
-<li><ol>
-<li>双线性插值upsample</li>
-</ol>
-</li>
-<li><ol start="2">
-<li>双线性插值+skip connection </li>
-</ol>
-</li>
-<li><ol start="3">
-<li>空洞卷积代替down Sample</li>
-</ol>
-</li>
-</ul>
-</li>
-<li>(2). Extra Shifted Anchors<ul>
-<li>我们不去改变feature stride的大小, 我们改变anchor stride与feature stride的关系, 使得anchor stride &lt; feature stride</li>
-<li>很简单的多添加anchor, 只是中心位置发生变化</li>
-</ul>
-</li>
-<li>(3). Face Shift Jittering<ul>
-<li>对图像去进行shift -&gt; 使得每个脸和anchor的overlap都可能增加</li>
-</ul>
-</li>
-<li>(4). Hard Face Compensation<ul>
-<li>当一个脸和一个anchor大于一个threshold的时候会被当做positive, 当所有的anchor都小于这个阈值的时候会将几个anchor作为positive em…</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>空洞卷积效果很好</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1287,7 +1277,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">59</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

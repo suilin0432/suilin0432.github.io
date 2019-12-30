@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="FSAF源码简单阅读(基于SingleStageDetector的修改部分) PS: 阅读代码下载地址: github下载地址 PS: 这个代码实现是基于 mmdetection 实现的 PS: 这个代码的实现使用的 img 大小是 (640, 400) 同时使用的 backbone 是 res50-fpn 这种轻量级的backbone, 进行训练的 epoch 也只有 6 个… (这一套组合下来">
+<meta name="keywords" content="Codes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FSAF源码简单阅读(基于SingleStageDetector的修改部分)">
+<meta property="og:url" content="http://suilin.top/2019/12/30/FSAF源码简单阅读-基于SingleStageDetector的修改部分/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="FSAF源码简单阅读(基于SingleStageDetector的修改部分) PS: 阅读代码下载地址: github下载地址 PS: 这个代码实现是基于 mmdetection 实现的 PS: 这个代码的实现使用的 img 大小是 (640, 400) 同时使用的 backbone 是 res50-fpn 这种轻量级的backbone, 进行训练的 epoch 也只有 6 个… (这一套组合下来">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-12-30T11:38:44.593Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FSAF源码简单阅读(基于SingleStageDetector的修改部分)">
+<meta name="twitter:description" content="FSAF源码简单阅读(基于SingleStageDetector的修改部分) PS: 阅读代码下载地址: github下载地址 PS: 这个代码实现是基于 mmdetection 实现的 PS: 这个代码的实现使用的 img 大小是 (640, 400) 同时使用的 backbone 是 res50-fpn 这种轻量级的backbone, 进行训练的 epoch 也只有 6 个… (这一套组合下来">
+  <link rel="canonical" href="http://suilin.top/2019/12/30/FSAF源码简单阅读-基于SingleStageDetector的修改部分/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>FSAF源码简单阅读(基于SingleStageDetector的修改部分) | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/30/FSAF源码简单阅读-基于SingleStageDetector的修改部分/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            FSAF源码简单阅读(基于SingleStageDetector的修改部分)
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-12-30 19:38:16 / Modified: 19:38:44" itemprop="dateCreated datePublished" datetime="2019-12-30T19:38:16+08:00">2019-12-30</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="FSAF源码简单阅读-基于SingleStageDetector的修改部分"><a href="#FSAF源码简单阅读-基于SingleStageDetector的修改部分" class="headerlink" title="FSAF源码简单阅读(基于SingleStageDetector的修改部分)"></a>FSAF源码简单阅读(基于SingleStageDetector的修改部分)</h2><hr>
+<p>PS: 阅读代码下载地址: <a href="https://github.com/hdjang/Feature-Selective-Anchor-Free-Module-or-Single-Shot-Object-Detection" target="_blank" rel="noopener">github下载地址</a></p>
+<p>PS: 这个代码实现是基于 mmdetection 实现的</p>
+<p>PS: 这个代码的实现使用的 img 大小是 (640, 400) 同时使用的 backbone 是 res50-fpn 这种轻量级的backbone, 进行训练的 epoch 也只有 6 个… (这一套组合下来阉割的有点厉害…) 所以复现达到的效果并不高, 只有 26.2 左右的样子(w/o anchor-based branch) 但是作者做了个对比相比于 retinaNet 的同等下高了那么一点点. 考虑到 anchor-based 分支应该还是能再高一些的.</p>
+<p>PS: 话说 One-stage 的方法实现起来好简单啊…</p>
+<p>PS: One-stage 方法的主要逻辑都在 anchor-head 上, 没有什么别的瞎操作</p>
+<hr>
+<p>PS: 训练使用 4 卡, 没卡 8 imgs, 也就是 32 batch_size 进行的训练, 训练了 6 个 epoch 而已…</p>
+<ol>
+<li>首先作者在项目中已经说明了训练使用 <code>./tools/dist_train_retinanet_r50_400_050x.sh</code> 进行, 所以, 看一下这个文件找使用的 cfg 文件</li>
+<li>使用的 cfg 文件是 <code>./configs/fsaf_r50_400_050x.py</code><ul>
+<li>查看 cfg 文件发现包含的新增的 module 有:</li>
+<li>(1). detector 使用的是 FSAF</li>
+<li>(2). bbox_head 使用的是 FSAFHead</li>
+<li>(3). (误, 我错怪了… 使用的是 IoU Loss, 是在 fsaf_head 的 single_loss 中使用的)em… 训练的loss使用的是 Focal-loss 和 SmoothL1-loss (paper 中明明用的 IoU Loss)</li>
+</ul>
+</li>
+<li>接下来看一下 FSAF 类: 只是简单的继承了一下 SingleStageDetector, 简单的重新实现了一个 foward_train 还是和 SingleStageDetector 一毛一样… </li>
+<li>重点就在这个 fsaf_head 上了, 接下来对 fsaf_head 进行全部的分析就好了. 在源代码中用注释进行分析.</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br><span class="line">507</span><br><span class="line">508</span><br><span class="line">509</span><br><span class="line">510</span><br><span class="line">511</span><br><span class="line">512</span><br><span class="line">513</span><br><span class="line">514</span><br><span class="line">515</span><br><span class="line">516</span><br><span class="line">517</span><br><span class="line">518</span><br><span class="line">519</span><br><span class="line">520</span><br><span class="line">521</span><br><span class="line">522</span><br><span class="line">523</span><br><span class="line">524</span><br><span class="line">525</span><br><span class="line">526</span><br><span class="line">527</span><br><span class="line">528</span><br><span class="line">529</span><br><span class="line">530</span><br><span class="line">531</span><br><span class="line">532</span><br><span class="line">533</span><br><span class="line">534</span><br><span class="line">535</span><br><span class="line">536</span><br><span class="line">537</span><br><span class="line">538</span><br><span class="line">539</span><br><span class="line">540</span><br><span class="line">541</span><br><span class="line">542</span><br><span class="line">543</span><br><span class="line">544</span><br><span class="line">545</span><br><span class="line">546</span><br><span class="line">547</span><br><span class="line">548</span><br><span class="line">549</span><br><span class="line">550</span><br><span class="line">551</span><br><span class="line">552</span><br><span class="line">553</span><br><span class="line">554</span><br><span class="line">555</span><br><span class="line">556</span><br><span class="line">557</span><br><span class="line">558</span><br><span class="line">559</span><br><span class="line">560</span><br><span class="line">561</span><br><span class="line">562</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">import torch.nn as nn</span><br><span class="line">from mmcv.cnn import normal_init</span><br><span class="line"></span><br><span class="line">from ..registry import HEADS</span><br><span class="line">from ..utils import ConvModule, bias_init_with_prob</span><br><span class="line">from .anchor_head import AnchorHead</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import torch</span><br><span class="line">import torch.nn as nn</span><br><span class="line">import torch.nn.functional as F</span><br><span class="line">from ..losses import sigmoid_focal_loss, FocalLoss, iou_loss</span><br><span class="line">from mmdet.core import (AnchorGenerator, anchor_target, delta2bbox, force_fp32,</span><br><span class="line">                        multi_apply, multiclass_nms)</span><br><span class="line">import pdb</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@HEADS.register_module</span><br><span class="line">class FSAFHead(AnchorHead):</span><br><span class="line"></span><br><span class="line">    def __init__(self,</span><br><span class="line">                 num_classes,</span><br><span class="line">                 in_channels,</span><br><span class="line">                 stacked_convs=4,</span><br><span class="line">                 octave_base_scale=4,</span><br><span class="line">                 scales_per_octave=3,</span><br><span class="line">                 conv_cfg=None,</span><br><span class="line">                 norm_cfg=None,</span><br><span class="line">                 feat_strides=[8, 16, 32, 64, 128],</span><br><span class="line">                 eps_e=0.2,</span><br><span class="line">                 eps_i=0.5,</span><br><span class="line">                 FL_alpha=0.25,</span><br><span class="line">                 FL_gamma=2.0,</span><br><span class="line">                 bbox_offset_norm=4,</span><br><span class="line">                 **kwargs):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        :param num_classes: 物体分类类别</span><br><span class="line">        :param in_channels: 输入进来的特征图的 channel 大小</span><br><span class="line">        :param stacked_convs: (根据retinaNet论文) 指的是 分类 和 bbox regression 分支中堆叠了的 conv 的数量</span><br><span class="line">        :param octave_base_scale: (根据retinaNet论文) 指的是每个位置或设置多少个 正方形的 anchor</span><br><span class="line">        :param scales_per_octave: (根据retinaNet论文)是每个anchor的aspect ratio个数</span><br><span class="line">        :param conv_cfg: 卷积层的配置信息</span><br><span class="line">        :param norm_cfg: 正则化层的信息</span><br><span class="line">        :param feat_strides: feature pyramid 的各层次相对于原图的步长</span><br><span class="line">        # 上面的参数全部都是 retina_head 中使用了的参数, 下面的参数是针对于 FSAF 的</span><br><span class="line">        :param eps_e: 论文中提到了的类别分类的那个 作为positive类别的范围的参数</span><br><span class="line">        :param eps_i: 论文中提到的忽略部分的参数</span><br><span class="line">        :param FL_alpha: focal loss的 alpha 参数</span><br><span class="line">        :param FL_gamma: focal loss的 gamma 参数</span><br><span class="line">        :param bbox_offset_norm: bbox regression 过程中要除以的那个 S 参数</span><br><span class="line">        :param kwargs:</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        self.stacked_convs = stacked_convs</span><br><span class="line">        self.octave_base_scale = octave_base_scale</span><br><span class="line">        self.scales_per_octave = scales_per_octave</span><br><span class="line">        self.conv_cfg = conv_cfg</span><br><span class="line">        self.norm_cfg = norm_cfg</span><br><span class="line">        # 按照 retinaNet 论文的描述, 每个位置会设置 4 个正方形 anchor, 大小分别是 2^0, 2^(1/4), 2^(1/2), 2^(3/4) 单位大小</span><br><span class="line">        # PS: 这是 FSAF 的复现啊, 每个点的位置只会产生一个 &quot;anchor&quot;(引号表明实际上没有anchor...) 啊</span><br><span class="line">        # 所以这个值的设置是没用的... 只是复制时候复制过来的...</span><br><span class="line">        octave_scales = np.array(</span><br><span class="line">            [2**(i / scales_per_octave) for i in range(scales_per_octave)])</span><br><span class="line">        # anchor 一共的数量</span><br><span class="line">        anchor_scales = octave_scales * octave_base_scale</span><br><span class="line"></span><br><span class="line">        # 下面还是各种FSAF新增参数的简单赋值</span><br><span class="line">        self.feat_strides = feat_strides</span><br><span class="line">        self.eps_e = eps_e</span><br><span class="line">        self.eps_i = eps_i</span><br><span class="line">        self.FL_alpha = FL_alpha</span><br><span class="line">        self.FL_gamma = FL_gamma</span><br><span class="line">        self.bbox_offset_norm = bbox_offset_norm</span><br><span class="line">        </span><br><span class="line">        super(FSAFHead, self).__init__(</span><br><span class="line">            num_classes, in_channels, anchor_scales=anchor_scales, **kwargs)</span><br><span class="line">    # FSAF Head 层次的构建</span><br><span class="line">    def _init_layers(self):</span><br><span class="line">        self.relu = nn.ReLU(inplace=True)</span><br><span class="line">        self.cls_convs = nn.ModuleList()</span><br><span class="line">        self.reg_convs = nn.ModuleList()</span><br><span class="line">        # cls 和 reg 分支都堆叠了 4 个 conv 层</span><br><span class="line">        for i in range(self.stacked_convs):</span><br><span class="line">            chn = self.in_channels if i == 0 else self.feat_channels</span><br><span class="line">            self.cls_convs.append(</span><br><span class="line">                ConvModule(</span><br><span class="line">                    chn,</span><br><span class="line">                    self.feat_channels,</span><br><span class="line">                    3,</span><br><span class="line">                    stride=1,</span><br><span class="line">                    padding=1,</span><br><span class="line">                    conv_cfg=self.conv_cfg,</span><br><span class="line">                    norm_cfg=self.norm_cfg))</span><br><span class="line">            self.reg_convs.append(</span><br><span class="line">                ConvModule(</span><br><span class="line">                    chn,</span><br><span class="line">                    self.feat_channels,</span><br><span class="line">                    3,</span><br><span class="line">                    stride=1,</span><br><span class="line">                    padding=1,</span><br><span class="line">                    conv_cfg=self.conv_cfg,</span><br><span class="line">                    norm_cfg=self.norm_cfg))</span><br><span class="line">        # 两个 branch 的最后一层</span><br><span class="line">        # cls_out_channel 是在 AnchorHead 类中进行赋值的, 其值是和类别相关的</span><br><span class="line">        # 因为 FSAF 的 feature map 的每个 pixel 只有一个对应的 &quot;anchor&quot;, 所以输出通道并不需要乘以 anchor 数目</span><br><span class="line">        self.fsaf_cls = nn.Conv2d(</span><br><span class="line">            self.feat_channels, self.cls_out_channels, 3, padding=1)</span><br><span class="line">        # FSAF 的预测的 output 是 top, left, bottom, right 的距离, 是 class-agnostic 的</span><br><span class="line">        self.fsaf_reg = nn.Conv2d(</span><br><span class="line">            self.feat_channels, 4, 3, padding=1)</span><br><span class="line"></span><br><span class="line">    # 进行参数的初始化</span><br><span class="line">    def init_weights(self):</span><br><span class="line">        for m in self.cls_convs:</span><br><span class="line">            normal_init(m.conv, std=0.01)</span><br><span class="line">        for m in self.reg_convs:</span><br><span class="line">            normal_init(m.conv, std=0.01)</span><br><span class="line">        bias_cls = bias_init_with_prob(0.01)</span><br><span class="line">        normal_init(self.fsaf_cls, std=0.01, bias=bias_cls)</span><br><span class="line">        normal_init(self.fsaf_reg, std=0.1)</span><br><span class="line">        </span><br><span class="line">    # 前向过程, 就是简单的两个分支走一遍就好了, 注意这个是 forward_single, 因为 原本的 x 因为多尺度的 feature map 实际上是一个 tuple</span><br><span class="line">    # 会用 forward 函数进行分发到 forward_single 中</span><br><span class="line">    def forward_single(self, x):</span><br><span class="line">        cls_feat = x</span><br><span class="line">        reg_feat = x</span><br><span class="line">        for cls_conv in self.cls_convs:</span><br><span class="line">            cls_feat = cls_conv(cls_feat)</span><br><span class="line">        for reg_conv in self.reg_convs:</span><br><span class="line">            reg_feat = reg_conv(reg_feat)</span><br><span class="line">        </span><br><span class="line">        cls_score = self.fsaf_cls(cls_feat)</span><br><span class="line">        bbox_pred = self.relu(self.fsaf_reg(reg_feat))</span><br><span class="line">        </span><br><span class="line">        return cls_score, bbox_pred</span><br><span class="line">    </span><br><span class="line">    # per-level loss operation</span><br><span class="line">    # 这个部分是核心部分 2333, 后面着重看一下</span><br><span class="line">    def loss_single(self,</span><br><span class="line">             cls_scores,</span><br><span class="line">             bbox_preds,</span><br><span class="line">             cls_targets_list,</span><br><span class="line">             reg_targets_list,</span><br><span class="line">             level,</span><br><span class="line">             img_metas,</span><br><span class="line">             cfg,</span><br><span class="line">             gt_bboxes_ignore=None):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        :param cls_scores: classification map</span><br><span class="line">        :param bbox_preds: bbox regression map</span><br><span class="line">        :param cls_targets_list: target classificaion map</span><br><span class="line">        :param reg_targets_list: target bbox regression map</span><br><span class="line">        :param level: current heatmap stage level</span><br><span class="line">        :param img_metas: 图像的 img_metas 信息 (这里没啥用)</span><br><span class="line">        :param cfg: 配置 dict (这里没啥用)</span><br><span class="line">        :param gt_bboxes_ignore: 忽略的 gt bbox (这里没啥用)</span><br><span class="line">        :return:</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        device = cls_scores[0].device</span><br><span class="line">        # 获取 图片的数量</span><br><span class="line">        num_imgs = cls_targets_list.shape[0]</span><br><span class="line">        </span><br><span class="line">        # loss-cls</span><br><span class="line">        # 调整 channel -&gt; 最后一个维度, 然后 reshape -&gt; (imgNum * height * width, channelNum)</span><br><span class="line">        # PS: 好像其实并不用后面的 reshape 就可以...</span><br><span class="line">        scores = cls_scores.permute(0,2,3,1).reshape(-1,1)</span><br><span class="line">        labels = cls_targets_list.permute(0,2,3,1).reshape(-1)</span><br><span class="line">        # 提取出所有非 ignore 的部分</span><br><span class="line">        valid_cls_idx = labels != -1</span><br><span class="line">        # 提取出这个非 ignore 的部分进行 focal_loss 的计算</span><br><span class="line">        loss_cls = sigmoid_focal_loss(scores[valid_cls_idx], labels[valid_cls_idx],</span><br><span class="line">                           gamma=self.FL_gamma, alpha=self.FL_alpha, reduction=&apos;sum&apos;)</span><br><span class="line">        # 进行所有 label 为 1(即非ignore) 的数量 (后续作为加权平均的参数吧应该)</span><br><span class="line">        norm_cls = (labels == 1).long().sum()</span><br><span class="line">        </span><br><span class="line">        # loss-reg</span><br><span class="line">        # 进行 loss-reg 的计算</span><br><span class="line">        offsets = bbox_preds.permute(0,2,3,1).reshape(-1,4)</span><br><span class="line">        gtboxes = reg_targets_list.permute(0,2,3,1).reshape(-1,4)</span><br><span class="line">        valid_reg_idx = (gtboxes[:,0] != -1)</span><br><span class="line">        if valid_reg_idx.long().sum() != 0:</span><br><span class="line">            offsets = offsets[valid_reg_idx]</span><br><span class="line">            gtboxes = gtboxes[valid_reg_idx]</span><br><span class="line">            </span><br><span class="line">            H,W = bbox_preds.shape[2:]</span><br><span class="line">            y,x = torch.meshgrid([torch.arange(0,H), torch.arange(0,W)])</span><br><span class="line">            y = (y.float() + 0.5) * self.feat_strides[level]</span><br><span class="line">            x = (x.float() + 0.5) * self.feat_strides[level]</span><br><span class="line">            xy = torch.cat([x.unsqueeze(2),y.unsqueeze(2)], dim=2).float().to(device)</span><br><span class="line">            xy = xy.permute(2,0,1).unsqueeze(0).repeat(num_imgs,1,1,1)</span><br><span class="line">            xy = xy.permute(0,2,3,1).reshape(-1,2)</span><br><span class="line">            xy = xy[valid_reg_idx]</span><br><span class="line">            </span><br><span class="line">            dist_pred = offsets * self.feat_strides[level]</span><br><span class="line">            bboxes = self.dist2bbox(xy, dist_pred, self.bbox_offset_norm)</span><br><span class="line">            </span><br><span class="line">            loss_reg = iou_loss(bboxes, gtboxes, reduction=&apos;sum&apos;)</span><br><span class="line">            norm_reg = valid_reg_idx.long().sum()</span><br><span class="line">        else:</span><br><span class="line">            loss_reg = torch.tensor(0).float().to(device)</span><br><span class="line">            norm_reg = torch.tensor(0).float().to(device)</span><br><span class="line">            </span><br><span class="line">        return loss_cls, loss_reg, norm_cls, norm_reg</span><br><span class="line"></span><br><span class="line">    # 进行 loss 计算的分支, 核心步骤会在 single_loss 中完成</span><br><span class="line">    def loss(self,</span><br><span class="line">             cls_scores,</span><br><span class="line">             bbox_preds,</span><br><span class="line">             gt_bboxes,</span><br><span class="line">             gt_labels,</span><br><span class="line">             img_metas,</span><br><span class="line">             cfg,</span><br><span class="line">             gt_bboxes_ignore=None):</span><br><span class="line">        # PS: 这里的 cls_scores 什么的都是 多 stage 的信息</span><br><span class="line"></span><br><span class="line">        # 首先会调用 fsaf_target 函数去进行 cls_reg_targets 的获取</span><br><span class="line">        # cls_reg_targets 的作用是 获取到 classification 与 bbox_regression 的 训练的 target</span><br><span class="line">        cls_reg_targets = self.fsaf_target(</span><br><span class="line">            cls_scores,</span><br><span class="line">            bbox_preds,</span><br><span class="line">            gt_bboxes,</span><br><span class="line">            gt_labels,</span><br><span class="line">            img_metas,</span><br><span class="line">            cfg,</span><br><span class="line">            gt_bboxes_ignore_list=gt_bboxes_ignore)</span><br><span class="line">        # 将两个 target 拆出来</span><br><span class="line">        (cls_targets_list, reg_targets_list) = cls_reg_targets</span><br><span class="line">        # 产生一个 stage 对应表, 提供 stage_index, 方便在 single_loss 中从 self.feat_strides 中获取步长信息</span><br><span class="line">        level_list = [i for i in range(len(self.feat_strides))]</span><br><span class="line">        # 使用 self.loss_single 对每个 stage 的信息进行计算</span><br><span class="line">        loss_cls, loss_reg, norm_cls, norm_reg = multi_apply(</span><br><span class="line">             self.loss_single,</span><br><span class="line">             cls_scores,</span><br><span class="line">             bbox_preds,</span><br><span class="line">             cls_targets_list,</span><br><span class="line">             reg_targets_list,</span><br><span class="line">             level_list,</span><br><span class="line">             img_metas=img_metas,</span><br><span class="line">             cfg=cfg,</span><br><span class="line">             gt_bboxes_ignore=None)</span><br><span class="line">        </span><br><span class="line">        loss_cls = sum(loss_cls)/sum(norm_cls)</span><br><span class="line">        loss_reg = sum(loss_reg)/sum(norm_reg)</span><br><span class="line">        </span><br><span class="line">        return dict(loss_cls=loss_cls, loss_bbox=loss_reg)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def fsaf_target(self,</span><br><span class="line">                     cls_scores,</span><br><span class="line">                     bbox_preds,</span><br><span class="line">                     gt_bboxes,</span><br><span class="line">                     gt_labels,</span><br><span class="line">                     img_metas,</span><br><span class="line">                     cfg,</span><br><span class="line">                     gt_bboxes_ignore_list=None):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        :param cls_scores: 多个 stage 中 bbox forward 得到的分类的分数, 每个entry对应的 shape : classNum * height * width</span><br><span class="line">        :param bbox_preds: 多个 stage 中 bbox forward 得到的bbox regression的结果, 每个entry对应的 shape : 4 * height * width</span><br><span class="line">        :param gt_bboxes: GT bboxes 的信息</span><br><span class="line">        :param gt_labels: GT label 的信息</span><br><span class="line">        # 下面的参数都没有用到... 不做说明了</span><br><span class="line">        :param img_metas:</span><br><span class="line">        :param cfg:</span><br><span class="line">        :param gt_bboxes_ignore_list:</span><br><span class="line">        :return:</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        # 首先获取设备类型a, 方便后续进行计算的时候设备类型的统一</span><br><span class="line">        device = cls_scores[0].device</span><br><span class="line">        </span><br><span class="line">        # target placeholder(记录target的两个list)</span><br><span class="line">        num_levels = len(cls_scores)</span><br><span class="line">        cls_targets_list = []</span><br><span class="line">        reg_targets_list = []</span><br><span class="line">        # 首先进行初始化 对每个阶段都进行一下初始化, 每个阶段都用其形状的全 0/1 Tensor 进行初始化</span><br><span class="line">        for level in range(num_levels):</span><br><span class="line">            cls_targets_list.append(torch.zeros_like(cls_scores[level]).long()) #  0 init</span><br><span class="line">            reg_targets_list.append(torch.ones_like(bbox_preds[level]) * -1)    # -1 init</span><br><span class="line">        </span><br><span class="line">        # detached network prediction for online GT generation</span><br><span class="line">        # 获取 图片长度(每个img 的 bboxes 对应 gt_bboxes 中的一个维度)</span><br><span class="line">        num_imgs = len(gt_bboxes)</span><br><span class="line">        # 获取 进行了 detach 的 cls_scores 与 bbox_preds</span><br><span class="line">        cls_scores_list = []</span><br><span class="line">        bbox_preds_list = []</span><br><span class="line">        for img in range(num_imgs):</span><br><span class="line">            # detached prediction for online pyramid level selection</span><br><span class="line">            cls_scores_list.append([lvl[img].detach() for lvl in cls_scores])</span><br><span class="line">            bbox_preds_list.append([lvl[img].detach() for lvl in bbox_preds])</span><br><span class="line"></span><br><span class="line">        # 开始进行 GT 匹配</span><br><span class="line">        # generate online GT</span><br><span class="line">        num_imgs = len(gt_bboxes)</span><br><span class="line">        for img in range(num_imgs):</span><br><span class="line">            # sort objects according to their size</span><br><span class="line">            # 取出来所有的 gt_bboxes 信息, 这个时候取出来的是 (x1, y1, x2, y2) 的形式</span><br><span class="line">            gt_bboxes_img_xyxy = gt_bboxes[img]</span><br><span class="line">            # 将 (x1, y1, x2, y2) 形式转化为 (x_center, y_center, width, height) 的形式 em... 直接给变成 int 类型的结果了...</span><br><span class="line">            # 同时这步转换会将 gt_bboxes_img_xywh 转变为 Tensor 类型</span><br><span class="line">            gt_bboxes_img_xywh = self.xyxy2xywh(gt_bboxes_img_xyxy)</span><br><span class="line">            # 获取 GT Bbox 的 size</span><br><span class="line">            gt_bboxes_img_size = gt_bboxes_img_xywh[:,-2] * gt_bboxes_img_xywh[:,-1]</span><br><span class="line">            # 获取 gt_bboxes_img_size 的排序后顺序对应的 index, 从大到小进行排序</span><br><span class="line">            _, gt_bboxes_img_idx = gt_bboxes_img_size.sort(descending=True)</span><br><span class="line">            # 对每个 GT bbox 进行一定操作</span><br><span class="line">            for obj_idx in gt_bboxes_img_idx:</span><br><span class="line">                # 因为看了配置文件, 选择使用 sigmoid 对 cls 的预测分数进行激活, 是不要 bg 这个类别的(猜测是完全依靠阈值进行排除,</span><br><span class="line">                # 因为没有 softmax 更改了其预测的比例)</span><br><span class="line">                label = gt_labels[img][obj_idx]-1</span><br><span class="line">                # 获取这个 gt bbox 的形状信息</span><br><span class="line">                gt_bbox_obj_xyxy = gt_bboxes_img_xyxy[obj_idx]</span><br><span class="line">                # get optimal online pyramid level for each object</span><br><span class="line">                # 获取这个 bbox 应该被分配的 stage level</span><br><span class="line">                # 这个传递进去的 cls_scores_list[img], bbox_preds_list[img] 是用来读取信息的... 这种传递引用过去的如果进行修改了那就真的修改了...</span><br><span class="line">                opt_level = self.get_online_pyramid_level(</span><br><span class="line">                    cls_scores_list[img], bbox_preds_list[img], gt_bbox_obj_xyxy, label)</span><br><span class="line"></span><br><span class="line">                # 获取到分类的 effective 和 ignore 区域</span><br><span class="line">                # get the effective/ignore area</span><br><span class="line">                # 获取当前 stage 的 height 和 width</span><br><span class="line">                H,W = cls_scores[opt_level].shape[2:]</span><br><span class="line">                # 获取这个 gt anchor 在分配到的 stage level 的实际大小(相对于 feature map 的 grid 的大小)</span><br><span class="line">                # 因为 gt bbox 信息都是基于原图大小的信息, 所以我们获取之后要在特定层次上放缩到对应的比例</span><br><span class="line">                b_p_xyxy = gt_bbox_obj_xyxy / self.feat_strides[opt_level]</span><br><span class="line">                # 使用 get_spatial_idx 对 b_p_xyxy 进行处理 获取到空间上 effective 和 ignore 的空间区域 的 mask</span><br><span class="line">                e_spatial_idx, i_spatial_idx = self.get_spatial_idx(b_p_xyxy,W,H,device)</span><br><span class="line">                </span><br><span class="line">                # cls-GT</span><br><span class="line">                # fill prob= 1 for the effective area</span><br><span class="line">                # cls 的 effective 区域进行赋值为 1</span><br><span class="line">                cls_targets_list[opt_level][img, label, e_spatial_idx] = 1</span><br><span class="line">                </span><br><span class="line">                # fill prob=-1 for the ignoring area</span><br><span class="line">                # 对 cls 的 ignore 区域进行赋值为 -1</span><br><span class="line">                # 这个步骤是为了防止 ignore 直接将重叠了的 gt 区域覆盖为 ignore 区域了而设置的操作</span><br><span class="line">                _i_spatial_idx = cls_targets_list[opt_level][img, label] * i_spatial_idx.long()</span><br><span class="line">                i_spatial_idx = i_spatial_idx - (_i_spatial_idx == 1)</span><br><span class="line">                cls_targets_list[opt_level][img, label, i_spatial_idx] = -1                </span><br><span class="line">                </span><br><span class="line">                # fill prob=-1 for the adjacent ignoring area; lower</span><br><span class="line">                # 向下进行邻近层次的 ignoring 区域的填充</span><br><span class="line">                if opt_level != 0:</span><br><span class="line">                    H_l,W_l = cls_scores[opt_level-1].shape[2:]</span><br><span class="line">                    b_p_xyxy_l = gt_bbox_obj_xyxy / self.feat_strides[opt_level-1]</span><br><span class="line">                    _, i_spatial_idx_l = self.get_spatial_idx(b_p_xyxy_l,W_l,H_l,device)</span><br><span class="line">                    # preserve cls-gt that is already filled as effective area</span><br><span class="line">                    _i_spatial_idx_l = cls_targets_list[opt_level-1][img, label] * i_spatial_idx_l.long()</span><br><span class="line">                    i_spatial_idx_l = i_spatial_idx_l - (_i_spatial_idx_l == 1)</span><br><span class="line">                    cls_targets_list[opt_level-1][img, label][i_spatial_idx_l] = -1</span><br><span class="line">                    </span><br><span class="line">                # fill prob=-1 for the adjacent ignoring area; upper</span><br><span class="line">                # 向上进行临近层次的 ignoring 区域的填充</span><br><span class="line">                if opt_level != num_levels-1:</span><br><span class="line">                    H_u,W_u = cls_scores[opt_level+1].shape[2:]</span><br><span class="line">                    b_p_xyxy_u = gt_bbox_obj_xyxy / self.feat_strides[opt_level+1]</span><br><span class="line">                    _, i_spatial_idx_u = self.get_spatial_idx(b_p_xyxy_u,W_u,H_u,device)</span><br><span class="line">                    # preserve cls-gt that is already filled as effective area</span><br><span class="line">                    _i_spatial_idx_u = cls_targets_list[opt_level+1][img, label] * i_spatial_idx_u.long()</span><br><span class="line">                    i_spatial_idx_u = i_spatial_idx_u - (_i_spatial_idx_u == 1)</span><br><span class="line">                    cls_targets_list[opt_level+1][img, label][i_spatial_idx_u] = -1</span><br><span class="line">                </span><br><span class="line">                # reg-GT</span><br><span class="line">                reg_targets_list[opt_level][img, :, e_spatial_idx] = gt_bbox_obj_xyxy.unsqueeze(1)</span><br><span class="line">                </span><br><span class="line">        return cls_targets_list, reg_targets_list</span><br><span class="line">        </span><br><span class="line">    def get_spatial_idx(self, b_p_xyxy, W, H, device):</span><br><span class="line">        # zero-tensor w/ (H,W)</span><br><span class="line">        # 首先进行全0的初始化</span><br><span class="line">        e_spatial_idx = torch.zeros((H,W)).byte()</span><br><span class="line">        i_spatial_idx = torch.zeros((H,W)).byte()</span><br><span class="line">        </span><br><span class="line">        # effective idx</span><br><span class="line">        # 获取到 effective 的区域范围参数</span><br><span class="line">        b_e_xyxy = self.get_prop_xyxy(b_p_xyxy, self.eps_e, W, H)</span><br><span class="line">        e_xmin = b_e_xyxy[0]</span><br><span class="line">        e_xmax = b_e_xyxy[2]+1</span><br><span class="line">        e_ymin = b_e_xyxy[1]</span><br><span class="line">        e_ymax = b_e_xyxy[3]+1</span><br><span class="line">        # 进行范围的赋值</span><br><span class="line">        e_spatial_idx[e_ymin:e_ymax, e_xmin:e_xmax] = 1</span><br><span class="line">        </span><br><span class="line">        # ignore idx</span><br><span class="line">        # 同理对 ignore 区域进行处理, 但是要排除掉 effective 的部分</span><br><span class="line">        b_i_xyxy = self.get_prop_xyxy(b_p_xyxy, self.eps_i, W, H)</span><br><span class="line">        i_xmin = b_i_xyxy[0]</span><br><span class="line">        i_xmax = b_i_xyxy[2]+1</span><br><span class="line">        i_ymin = b_i_xyxy[1]</span><br><span class="line">        i_ymax = b_i_xyxy[3]+1</span><br><span class="line">        i_spatial_idx[i_ymin:i_ymax, i_xmin:i_xmax] = 1</span><br><span class="line">        i_spatial_idx[e_ymin:e_ymax, e_xmin:e_xmax] = 0</span><br><span class="line">        </span><br><span class="line">        return e_spatial_idx.to(device), i_spatial_idx.to(device)</span><br><span class="line">        </span><br><span class="line">    def get_online_pyramid_level(self, cls_scores_img, bbox_preds_img, gt_bbox_obj_xyxy, gt_label_obj):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        :param cls_scores_img: 这个图片对应的 cls_scores 信息(也是多个 stage 的信息)</span><br><span class="line">        :param bbox_preds_img: 这个图片对应的 bbox_preds 信息(也是多个 stage 的信息)</span><br><span class="line">        :param gt_bbox_obj_xyxy: 要进行层次选择的 gt bbox 的信息 (x1, y1, x2, y2) 格式</span><br><span class="line">        :param gt_label_obj: 要进行层次选择的 gt bbox 的 label(类别) 信息</span><br><span class="line">        :return:</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        device = cls_scores_img[0].device</span><br><span class="line">        # 获取 stage 数量</span><br><span class="line">        num_levels = len(cls_scores_img)</span><br><span class="line">        # 为每个层次的 loss 创建一下统计求和的 placeholder</span><br><span class="line">        level_losses = torch.zeros(num_levels)</span><br><span class="line">        # 开始对每个层次进行统计</span><br><span class="line">        for level in range(num_levels):</span><br><span class="line">            # 获取 feature map 的 长宽</span><br><span class="line">            H,W = cls_scores_img[level].shape[1:]</span><br><span class="line">            # 获取在 feature map 上的 grid 位置</span><br><span class="line">            b_p_xyxy = gt_bbox_obj_xyxy / self.feat_strides[level]</span><br><span class="line">            # 获取 effective 的范围</span><br><span class="line">            b_e_xyxy = self.get_prop_xyxy(b_p_xyxy, self.eps_e, W, H)</span><br><span class="line">            </span><br><span class="line">            # Eqn-(1)</span><br><span class="line">            # 获取 effective 区域的计数个数</span><br><span class="line">            N = (b_e_xyxy[3]-b_e_xyxy[1]+1) * (b_e_xyxy[2]-b_e_xyxy[0]+1)</span><br><span class="line">            </span><br><span class="line">            # cls loss; FL</span><br><span class="line">            # 开始计算 focal loss -&gt; classification score loss</span><br><span class="line">            # 首先获取到 effective 区域的 cls_score 的值</span><br><span class="line">            score = cls_scores_img[level][gt_label_obj,b_e_xyxy[1]:b_e_xyxy[3]+1,b_e_xyxy[0]:b_e_xyxy[2]+1]</span><br><span class="line">            # 把score reshape -&gt; (1, N)</span><br><span class="line">            score = score.contiguous().view(-1).unsqueeze(1)</span><br><span class="line">            # 设置 label 为与 score 相同形状 (1, N) 的全 1 Tensor</span><br><span class="line">            label = torch.ones_like(score).long()</span><br><span class="line">            label = label.contiguous().view(-1)</span><br><span class="line">            # 计算 sigmoid 之后的 focal_loss</span><br><span class="line">            # label 是 weight</span><br><span class="line">            loss_cls = sigmoid_focal_loss(score, label, gamma=self.FL_gamma, alpha=self.FL_alpha, reduction=&apos;mean&apos;)</span><br><span class="line">            # 因为已经在 loss 函数中有 &quot;mean&quot; 了... 所以不用除以 N 了</span><br><span class="line">            #loss_cls /= N</span><br><span class="line"></span><br><span class="line">            # 开始计算 Bbox regression loss</span><br><span class="line">            # reg loss; IoU</span><br><span class="line">            # 获取到区域内的 bbox 信息</span><br><span class="line">            offsets = bbox_preds_img[level][:,b_e_xyxy[1]:b_e_xyxy[3]+1,b_e_xyxy[0]:b_e_xyxy[2]+1]</span><br><span class="line">            # 调整维度顺序, 从 (channel * height * width) -&gt; (height * width * channel)</span><br><span class="line">            offsets = offsets.contiguous().permute(1,2,0)  # (b_e_H,b_e_W,4)</span><br><span class="line">            # reshape -&gt; (height * width *  channel)</span><br><span class="line">            offsets = offsets.reshape(-1,4) # (#pix-e,4)</span><br><span class="line">            # PS: 上面拿到的 offsets 中每个 offset 实际上是预测的是到 上下左右四条边 的距离</span><br><span class="line">            </span><br><span class="line">            # predicted bbox</span><br><span class="line">            # 首先产生 feature map 指定区域的 网格位置信息 -&gt; 要生成目标的 &quot;anchor&quot; 区域的</span><br><span class="line">            y,x = torch.meshgrid([torch.arange(b_e_xyxy[1],b_e_xyxy[3]+1), torch.arange(b_e_xyxy[0],b_e_xyxy[2]+1)])</span><br><span class="line">            # 获取到这个位置上的中心点坐标 (相对于input的原图大小)</span><br><span class="line">            y = (y.float() + 0.5) * self.feat_strides[level]</span><br><span class="line">            x = (x.float() + 0.5) * self.feat_strides[level]</span><br><span class="line">            # 拼接中心位置</span><br><span class="line">            xy = torch.cat([x.unsqueeze(2),y.unsqueeze(2)], dim=2).float().to(device)</span><br><span class="line">            xy = xy.reshape(-1,2)</span><br><span class="line"></span><br><span class="line">            # 将 offsets -&gt; 原图的尺度上</span><br><span class="line">            dist_pred = offsets * self.feat_strides[level]</span><br><span class="line">            # 进行变换获取到 bboxes 信息</span><br><span class="line">            bboxes = self.dist2bbox(xy, dist_pred, self.bbox_offset_norm)</span><br><span class="line">            # loss_reg 通过 iou_loss 进行计算</span><br><span class="line">            loss_reg = iou_loss(bboxes, gt_bbox_obj_xyxy.unsqueeze(0).repeat(N,1), reduction=&apos;mean&apos;)</span><br><span class="line">            # 同样是因为 reduction = mean 所以不需要 /= N</span><br><span class="line">            # PS: /= 操作好像是不行的... pytorch 要 loss_reg = loss_reg / N 这样的操作</span><br><span class="line">            #loss_reg /= N</span><br><span class="line">            # 计算当前的 stage 的 loss</span><br><span class="line">            loss = loss_cls + loss_reg</span><br><span class="line"></span><br><span class="line">            level_losses[level] = loss</span><br><span class="line">        # 找到最小的 loss 的区域, 然后返回这个维度的 loss 信息</span><br><span class="line">        min_level_idx = torch.argmin(level_losses)</span><br><span class="line">        #print(level_losses, min_level_idx)</span><br><span class="line">        return min_level_idx</span><br><span class="line">            </span><br><span class="line">    def get_prop_xyxy(self, xyxy, scale, w, h):</span><br><span class="line">        # scale bbox</span><br><span class="line">        xywh = self.xyxy2xywh(xyxy)</span><br><span class="line">        xywh[2:] *= scale</span><br><span class="line">        xyxy = self.xywh2xyxy(xywh)</span><br><span class="line">        # clamp bbox</span><br><span class="line">        xyxy[0] = xyxy[0].floor().clamp(0, w-2).int() # x1</span><br><span class="line">        xyxy[1] = xyxy[1].floor().clamp(0, h-2).int() # y1</span><br><span class="line">        xyxy[2] = xyxy[2].ceil().clamp(1, w-1).int()  # x2</span><br><span class="line">        xyxy[3] = xyxy[3].ceil().clamp(1, h-1).int()  # y2</span><br><span class="line">        return xyxy.int()</span><br><span class="line">    </span><br><span class="line">    def xyxy2xywh(self, xyxy):</span><br><span class="line">        if xyxy.dim() == 1:</span><br><span class="line">            return torch.cat((0.5 * (xyxy[0:2] + xyxy[2:4]), xyxy[2:4] - xyxy[0:2]), dim=0)</span><br><span class="line">        else:</span><br><span class="line">            return torch.cat((0.5 * (xyxy[:, 0:2] + xyxy[:, 2:4]), xyxy[:, 2:4] - xyxy[:, 0:2]), dim=1)</span><br><span class="line">    </span><br><span class="line">    def xywh2xyxy(self, xywh):</span><br><span class="line">        if xywh.dim() == 1:</span><br><span class="line">            return torch.cat((xywh[0:2] - 0.5 * xywh[2:4], xywh[0:2] + 0.5 * xywh[2:4]), dim=0)</span><br><span class="line">        else:</span><br><span class="line">            return torch.cat((xywh[:, 0:2] - 0.5 * xywh[:, 2:4], xywh[:, 0:2] + 0.5 * xywh[:, 2:4]), dim=1)</span><br><span class="line">        </span><br><span class="line">    def dist2bbox(self, center, dist_pred, norm_const):</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">        args</span><br><span class="line">            center    ; (N,2)</span><br><span class="line">            bbox_pred ; (N,4)</span><br><span class="line">        &apos;&apos;&apos;</span><br><span class="line">        x1y1 = center - (norm_const * torch.cat([dist_pred[:,1].unsqueeze(1),dist_pred[:,0].unsqueeze(1)],dim=1))</span><br><span class="line">        x2y2 = center + (norm_const * torch.cat([dist_pred[:,3].unsqueeze(1),dist_pred[:,2].unsqueeze(1)],dim=1))</span><br><span class="line">        bbox = torch.cat([x1y1,x2y2],dim=1)</span><br><span class="line">        return bbox</span><br><span class="line">        </span><br><span class="line">    def get_bboxes(self, cls_scores, bbox_preds, img_metas, cfg,</span><br><span class="line">                   rescale=False):</span><br><span class="line">        # note: only single-img evaluation is available now</span><br><span class="line">        num_levels = len(cls_scores)</span><br><span class="line">        assert len(cls_scores) == len(bbox_preds) == num_levels</span><br><span class="line">        device = bbox_preds[0].device</span><br><span class="line">        dtype = bbox_preds[0].dtype</span><br><span class="line">        scale_factor = img_metas[0][&apos;scale_factor&apos;]</span><br><span class="line">        </span><br><span class="line">        # generate center-points</span><br><span class="line">        xy_list = []</span><br><span class="line">        for level in range(num_levels):</span><br><span class="line">            H,W = bbox_preds[level].shape[2:]</span><br><span class="line">            y,x = torch.meshgrid([torch.arange(0,H), torch.arange(0,W)])</span><br><span class="line">            y = (y.float() + 0.5) * self.feat_strides[level]</span><br><span class="line">            x = (x.float() + 0.5) * self.feat_strides[level]</span><br><span class="line">            xy = torch.cat([x.unsqueeze(2),y.unsqueeze(2)], dim=2).float().to(device)</span><br><span class="line">            xy = xy.permute(2,0,1).unsqueeze(0)</span><br><span class="line">            xy_list.append(xy)</span><br><span class="line">            </span><br><span class="line">        mlvl_bboxes = []</span><br><span class="line">        mlvl_scores = []</span><br><span class="line">        for level, (cls_score, bbox_pred, xy) in enumerate(zip(cls_scores, bbox_preds, xy_list)):</span><br><span class="line">            assert cls_score.size()[-2:] == bbox_pred.size()[-2:]</span><br><span class="line">            cls_score = cls_score[0].permute(1, 2, 0).reshape(</span><br><span class="line">                -1, self.cls_out_channels)</span><br><span class="line">            scores = cls_score.sigmoid()</span><br><span class="line">            bbox_pred = bbox_pred[0].permute(1, 2, 0).reshape(-1, 4)</span><br><span class="line">            xy = xy[0].permute(1, 2, 0).reshape(-1, 2)</span><br><span class="line">            nms_pre = cfg.get(&apos;nms_pre&apos;, -1)</span><br><span class="line">            if nms_pre &gt; 0 and scores.shape[0] &gt; nms_pre:</span><br><span class="line">                max_scores, _ = scores.max(dim=1)</span><br><span class="line">                _, topk_inds = max_scores.topk(nms_pre)</span><br><span class="line">                bbox_pred = bbox_pred[topk_inds, :]</span><br><span class="line">                scores = scores[topk_inds, :]</span><br><span class="line">                xy = xy[topk_inds, :]</span><br><span class="line">            </span><br><span class="line">            # decode predicted bbox offsets to get final bbox</span><br><span class="line">            dist_pred = bbox_pred * self.feat_strides[level]</span><br><span class="line">            bboxes = self.dist2bbox(xy, dist_pred, self.bbox_offset_norm)</span><br><span class="line">            </span><br><span class="line">            mlvl_bboxes.append(bboxes)</span><br><span class="line">            mlvl_scores.append(scores)</span><br><span class="line">        mlvl_bboxes = torch.cat(mlvl_bboxes)</span><br><span class="line">        </span><br><span class="line">        if rescale:</span><br><span class="line">            mlvl_bboxes /= mlvl_bboxes.new_tensor(scale_factor)</span><br><span class="line">        mlvl_scores = torch.cat(mlvl_scores)</span><br><span class="line">        if self.use_sigmoid_cls:</span><br><span class="line">            padding = mlvl_scores.new_zeros(mlvl_scores.shape[0], 1)</span><br><span class="line">            mlvl_scores = torch.cat([padding, mlvl_scores], dim=1)</span><br><span class="line">        det_bboxes, det_labels = multiclass_nms(mlvl_bboxes, mlvl_scores,</span><br><span class="line">                                                cfg.score_thr, cfg.nms,</span><br><span class="line">                                                cfg.max_per_img)</span><br><span class="line">        return [(det_bboxes, det_labels)]</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Codes/" rel="tag"># Codes</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/12/29/Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection/" rel="next" title="Simple Summary for Scale Match for Tiny Person Detection">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Scale Match for Tiny Person Detection
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#FSAF源码简单阅读-基于SingleStageDetector的修改部分"><span class="nav-number">1.</span> <span class="nav-text">FSAF源码简单阅读(基于SingleStageDetector的修改部分)</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
