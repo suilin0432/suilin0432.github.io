@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="(Chapter15) GoingDeeper with Convolution (GoogleNet) PS: 本文也就是所谓的 Inception v1 Introduction: 提到本文的特点(hallmark) -&amp;gt; 提高了网络内部计算资源的利用 -&amp;gt; 设计的网络加大了 深度和宽度 同时保证了计算量的相对合理.  说网络的设计是基于 (1). Hebbian principl">
+<meta name="keywords" content="Paper Summary">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet)">
+<meta property="og:url" content="http://suilin.top/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="(Chapter15) GoingDeeper with Convolution (GoogleNet) PS: 本文也就是所谓的 Inception v1 Introduction: 提到本文的特点(hallmark) -&amp;gt; 提高了网络内部计算资源的利用 -&amp;gt; 设计的网络加大了 深度和宽度 同时保证了计算量的相对合理.  说网络的设计是基于 (1). Hebbian principl">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-01-01T16:11:14.174Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet)">
+<meta name="twitter:description" content="(Chapter15) GoingDeeper with Convolution (GoogleNet) PS: 本文也就是所谓的 Inception v1 Introduction: 提到本文的特点(hallmark) -&amp;gt; 提高了网络内部计算资源的利用 -&amp;gt; 设计的网络加大了 深度和宽度 同时保证了计算量的相对合理.  说网络的设计是基于 (1). Hebbian principl">
+  <link rel="canonical" href="http://suilin.top/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet) | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet)
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-02 00:10:51 / Modified: 00:11:14" itemprop="dateCreated datePublished" datetime="2020-01-02T00:10:51+08:00">2020-01-02</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Chapter15-GoingDeeper-with-Convolution-GoogleNet"><a href="#Chapter15-GoingDeeper-with-Convolution-GoogleNet" class="headerlink" title="(Chapter15) GoingDeeper with Convolution (GoogleNet)"></a>(Chapter15) GoingDeeper with Convolution (GoogleNet)</h2><hr>
+<p>PS: 本文也就是所谓的 Inception v1</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>提到本文的特点(hallmark) -&gt; 提高了网络内部计算资源的利用 -&gt; 设计的网络加大了 深度和宽度 同时保证了计算量的相对合理. </li>
+<li>说网络的设计是基于 (1). Hebbian principle(两个神经元或者神经元系统，如果总是同时兴奋，就会形成一种‘组合’，其中一个神经元的兴奋会促进另一个的兴奋), 以及 (2). multi-scale processing. </li>
+<li>提到了目前的一个现象, 性能的提升并不是仅仅依靠于 算力更好的硬件, 更大的数据集或者更大的模型, 而是靠一系列的 idea 与 算法 以及 对网络结构的改进带来的. 比如在 object detection 领域中, 最大的 gain 不是通过更大的 deep network 所带来的, 而是 deep architecture 和 classical computer vision 一起带来的(eg: R-CNN).</li>
+<li>强调了移动设备的发展使得神经网络对 power&amp;&amp;memory use – gains 的 trade-off 变得更加重要了. -&gt; 所以本文不仅仅关注与网络带来的精度, 同时考虑固定计算量以使得网络不仅仅是学术研究而是可以应用于 real world 的.</li>
+<li>本文的 deep: (1). 提出了新的模块快 Inception module (2). 构成的网络更深了</li>
+<li>Related Work 中提到了 -&gt; 最近的针对大型数据集的趋势就是: (1). 增加 layers 的数量(更深) 以及 (2). 增加 layer size(更宽?)  (3). 使用 dropout 去避免过拟合</li>
+<li>Related Work 中提到了 Network in Network 也是通过 1 <em> 1 conv 带来了网络的审图的增加提高了网络的表达能力. 本文使用 1 </em> 1conv -&gt; (1). 减少通道数减少计算量 (2). 提高深度 同时 提高网络宽度而不带来任何的惩罚</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><h4 id="Motivation-and-High-Level-Considerations"><a href="#Motivation-and-High-Level-Considerations" class="headerlink" title="Motivation and High Level Considerations"></a>Motivation and High Level Considerations</h4><ol>
+<li>最直观的提高 deep neural networks 的性能的方式就是提高 size. (-&gt; (1). 增加深度 (2). 增加宽度) -&gt; 两个 drawback (-&gt; (1). overfitting (2). 计算资源的需求的提升)</li>
+<li>提到了解决这两个问题的方式 -&gt; 使用稀疏化的结构去代替 FC layers</li>
+<li>提到了当今的计算设施对于 non-uniform 的稀疏数据结构的数值计算是非常低效的, 即使计算量可以成百倍的下降, 但是 lookups 和 cache misses 将会占据主导地位, 使用稀疏数据结构进行计算将会是没有什么用处的. 尤其是现在的针对 dense matrix multiplication 的计算的库更是拉大了稀疏计算与dense matrix的差距 -&gt; 目前使用的空间域上的系数仅仅是使用 convolution 所带来的良好的特性</li>
+<li>提到了上面的问题产生了下一个问题 -&gt; 设计一个结构, 其使用 filter-level 的 sparsity, 但是又利用 dense matrices 的计算的速度. 同时提到了大量的稀疏计算的文献提到了将稀疏矩阵通过聚类形成相对稠密的子矩阵可以为稀疏矩阵计算带来好的性能 -&gt; 同样想将这一个特点应用到文章中 -&gt; non-uniform deep-learning architectures(个人认为这一点带来的文章的思考是 -&gt; 将不同的 conv 模块视为 sparsity matrix, 然后使用不同结构(也就是 non-uniform)的 conv 模块在一个 branch 上进行组合 就是所谓的 稀疏矩阵 -&gt; 相对稠密的矩阵)</li>
+<li>基于上面的思想 -&gt; 设计了 Inception architecture</li>
+</ol>
+<h4 id="Architectural-Details"><a href="#Architectural-Details" class="headerlink" title="Architectural Details"></a>Architectural Details</h4><ol>
+<li>(main idea)又提到了文章的 Inception architecture 的核心思想: 找到最优的局部的稀疏结构的卷积网络, 其能够通过简单可行的 dense components 进行近似与覆盖.(说人话就是: 用conv找到一个合适的结构有很好的性能, 稀疏指的是conv, dense指的是加宽网络module 使得sparse 的 conv -&gt; relative dense, 局部指的就是想要找的模块可以反复的在网络中进行堆叠-&gt;简化网络的总体设计)</li>
+<li>提到了另外一篇文章的思想: layer-by-layer 的构建应该对关联进行统计, 然后进行聚类, 分成一组 units(后一阶段). -&gt; CNN 就是这么干的, 只是限制在了局部, 前面层次是对局部进行, conv 之后我们在 single region 中有一系列的信息, 后续通过 1 * 1 conv 进行这个区域信息的利用之后再到下一层.</li>
+<li>提到了为了避免 patch-alignment issues, 本文的 Inception architecture 将会使用 1 <em> 1, 3 </em> 3, 5 * 5 的 filter size. </li>
+<li>同时提到了因为 pooling 在目前阶段的CNN中会很有效, 所以添加了一个 max pooling 分支到 Inception module 中</li>
+<li>提到了 Inception modules 会继续堆叠在其他的 Inception modules 上面, output correlation statistics 应该是不同的: features of higher abstraction 是由更高层次捕捉的, 其 spatial concentration(空间集中度?)期望去减少. 即 3 <em> 3 和 5 </em> 5 conv应该在我们到达更高层的时候增加</li>
+<li>(second idea)提到了一个问题: 即使是 5 <em> 5 的 conv 在 filter 数(channel 数) 很大的时候都会造成很昂贵的代价, 尤其是 pooling units 添加进来的时候.(因为 pooling 前后层数不变, 后续进行 concate会很惨) -&gt; 在计算量增多到无法接受的地方进行降维, 用 1 </em> 1 conv 降维 (计算量小, 在昂贵的 3 <em> 3, 5 </em> 5前进行)</li>
+<li>提到了考虑到算力问题, 最好在前面层次仍然仅仅使用 vanilla conv, 在相对较高的层次使用 Inception Module.</li>
+<li>Inception Module 的好处: 提升了每个 stage 的 units 的数量同时没有导致计算量的大幅度膨胀.</li>
+</ol>
+<h4 id="GoogleNet"><a href="#GoogleNet" class="headerlink" title="GoogleNet:"></a>GoogleNet:</h4><ol>
+<li>对于梯度反传问题: (应该是为了防止梯度小时)提到了用一个辅助结构(加载 Inception (4a) 和 Inception (4d) 上)产生 loss 在训练的过程中和 最后的常规 loss 进行比例相加去进行训练, 在 inference 的时候抛弃掉这个结构进行 forward</li>
+<li>辅助结构: <ul>
+<li>1). (4a), (4d) 后面加上一个 平均池化层(5 <em> 5 stride 3) -&gt; output -&gt; 4 </em> 4 * 512</li>
+<li>2). 一个 1 <em> 1 </em> 128 的 conv 接在后面 降维</li>
+<li>3). FC层 1024 channel(output)</li>
+<li>4). 添加了一个 dropout 层(70%)</li>
+<li>5). 再加一个 1000 output 的 FC, 后面用 softmax 进行处理</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/" rel="next" title="Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Chapter15-GoingDeeper-with-Convolution-GoogleNet"><span class="nav-number">1.</span> <span class="nav-text">(Chapter15) GoingDeeper with Convolution (GoogleNet)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Motivation-and-High-Level-Considerations"><span class="nav-number">1.2.1.</span> <span class="nav-text">Motivation and High Level Considerations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Architectural-Details"><span class="nav-number">1.2.2.</span> <span class="nav-text">Architectural Details</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GoogleNet"><span class="nav-number">1.2.3.</span> <span class="nav-text">GoogleNet:</span></a></li></ol></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

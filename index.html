@@ -236,6 +236,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/" class="post-title-link" itemprop="url">Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet)</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-02 00:10:51 / Modified: 00:11:14" itemprop="dateCreated datePublished" datetime="2020-01-02T00:10:51+08:00">2020-01-02</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Chapter15-GoingDeeper-with-Convolution-GoogleNet"><a href="#Chapter15-GoingDeeper-with-Convolution-GoogleNet" class="headerlink" title="(Chapter15) GoingDeeper with Convolution (GoogleNet)"></a>(Chapter15) GoingDeeper with Convolution (GoogleNet)</h2><hr>
+<p>PS: 本文也就是所谓的 Inception v1</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>提到本文的特点(hallmark) -&gt; 提高了网络内部计算资源的利用 -&gt; 设计的网络加大了 深度和宽度 同时保证了计算量的相对合理. </li>
+<li>说网络的设计是基于 (1). Hebbian principle(两个神经元或者神经元系统，如果总是同时兴奋，就会形成一种‘组合’，其中一个神经元的兴奋会促进另一个的兴奋), 以及 (2). multi-scale processing. </li>
+<li>提到了目前的一个现象, 性能的提升并不是仅仅依靠于 算力更好的硬件, 更大的数据集或者更大的模型, 而是靠一系列的 idea 与 算法 以及 对网络结构的改进带来的. 比如在 object detection 领域中, 最大的 gain 不是通过更大的 deep network 所带来的, 而是 deep architecture 和 classical computer vision 一起带来的(eg: R-CNN).</li>
+<li>强调了移动设备的发展使得神经网络对 power&amp;&amp;memory use – gains 的 trade-off 变得更加重要了. -&gt; 所以本文不仅仅关注与网络带来的精度, 同时考虑固定计算量以使得网络不仅仅是学术研究而是可以应用于 real world 的.</li>
+<li>本文的 deep: (1). 提出了新的模块快 Inception module (2). 构成的网络更深了</li>
+<li>Related Work 中提到了 -&gt; 最近的针对大型数据集的趋势就是: (1). 增加 layers 的数量(更深) 以及 (2). 增加 layer size(更宽?)  (3). 使用 dropout 去避免过拟合</li>
+<li>Related Work 中提到了 Network in Network 也是通过 1 <em> 1 conv 带来了网络的审图的增加提高了网络的表达能力. 本文使用 1 </em> 1conv -&gt; (1). 减少通道数减少计算量 (2). 提高深度 同时 提高网络宽度而不带来任何的惩罚</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><h4 id="Motivation-and-High-Level-Considerations"><a href="#Motivation-and-High-Level-Considerations" class="headerlink" title="Motivation and High Level Considerations"></a>Motivation and High Level Considerations</h4><ol>
+<li>最直观的提高 deep neural networks 的性能的方式就是提高 size. (-&gt; (1). 增加深度 (2). 增加宽度) -&gt; 两个 drawback (-&gt; (1). overfitting (2). 计算资源的需求的提升)</li>
+<li>提到了解决这两个问题的方式 -&gt; 使用稀疏化的结构去代替 FC layers</li>
+<li>提到了当今的计算设施对于 non-uniform 的稀疏数据结构的数值计算是非常低效的, 即使计算量可以成百倍的下降, 但是 lookups 和 cache misses 将会占据主导地位, 使用稀疏数据结构进行计算将会是没有什么用处的. 尤其是现在的针对 dense matrix multiplication 的计算的库更是拉大了稀疏计算与dense matrix的差距 -&gt; 目前使用的空间域上的系数仅仅是使用 convolution 所带来的良好的特性</li>
+<li>提到了上面的问题产生了下一个问题 -&gt; 设计一个结构, 其使用 filter-level 的 sparsity, 但是又利用 dense matrices 的计算的速度. 同时提到了大量的稀疏计算的文献提到了将稀疏矩阵通过聚类形成相对稠密的子矩阵可以为稀疏矩阵计算带来好的性能 -&gt; 同样想将这一个特点应用到文章中 -&gt; non-uniform deep-learning architectures(个人认为这一点带来的文章的思考是 -&gt; 将不同的 conv 模块视为 sparsity matrix, 然后使用不同结构(也就是 non-uniform)的 conv 模块在一个 branch 上进行组合 就是所谓的 稀疏矩阵 -&gt; 相对稠密的矩阵)</li>
+<li>基于上面的思想 -&gt; 设计了 Inception architecture</li>
+</ol>
+<h4 id="Architectural-Details"><a href="#Architectural-Details" class="headerlink" title="Architectural Details"></a>Architectural Details</h4><ol>
+<li>(main idea)又提到了文章的 Inception architecture 的核心思想: 找到最优的局部的稀疏结构的卷积网络, 其能够通过简单可行的 dense components 进行近似与覆盖.(说人话就是: 用conv找到一个合适的结构有很好的性能, 稀疏指的是conv, dense指的是加宽网络module 使得sparse 的 conv -&gt; relative dense, 局部指的就是想要找的模块可以反复的在网络中进行堆叠-&gt;简化网络的总体设计)</li>
+<li>提到了另外一篇文章的思想: layer-by-layer 的构建应该对关联进行统计, 然后进行聚类, 分成一组 units(后一阶段). -&gt; CNN 就是这么干的, 只是限制在了局部, 前面层次是对局部进行, conv 之后我们在 single region 中有一系列的信息, 后续通过 1 * 1 conv 进行这个区域信息的利用之后再到下一层.</li>
+<li>提到了为了避免 patch-alignment issues, 本文的 Inception architecture 将会使用 1 <em> 1, 3 </em> 3, 5 * 5 的 filter size. </li>
+<li>同时提到了因为 pooling 在目前阶段的CNN中会很有效, 所以添加了一个 max pooling 分支到 Inception module 中</li>
+<li>提到了 Inception modules 会继续堆叠在其他的 Inception modules 上面, output correlation statistics 应该是不同的: features of higher abstraction 是由更高层次捕捉的, 其 spatial concentration(空间集中度?)期望去减少. 即 3 <em> 3 和 5 </em> 5 conv应该在我们到达更高层的时候增加</li>
+<li>(second idea)提到了一个问题: 即使是 5 <em> 5 的 conv 在 filter 数(channel 数) 很大的时候都会造成很昂贵的代价, 尤其是 pooling units 添加进来的时候.(因为 pooling 前后层数不变, 后续进行 concate会很惨) -&gt; 在计算量增多到无法接受的地方进行降维, 用 1 </em> 1 conv 降维 (计算量小, 在昂贵的 3 <em> 3, 5 </em> 5前进行)</li>
+<li>提到了考虑到算力问题, 最好在前面层次仍然仅仅使用 vanilla conv, 在相对较高的层次使用 Inception Module.</li>
+<li>Inception Module 的好处: 提升了每个 stage 的 units 的数量同时没有导致计算量的大幅度膨胀.</li>
+</ol>
+<h4 id="GoogleNet"><a href="#GoogleNet" class="headerlink" title="GoogleNet:"></a>GoogleNet:</h4><ol>
+<li>对于梯度反传问题: (应该是为了防止梯度小时)提到了用一个辅助结构(加载 Inception (4a) 和 Inception (4d) 上)产生 loss 在训练的过程中和 最后的常规 loss 进行比例相加去进行训练, 在 inference 的时候抛弃掉这个结构进行 forward</li>
+<li>辅助结构: <ul>
+<li>1). (4a), (4d) 后面加上一个 平均池化层(5 <em> 5 stride 3) -&gt; output -&gt; 4 </em> 4 * 512</li>
+<li>2). 一个 1 <em> 1 </em> 128 的 conv 接在后面 降维</li>
+<li>3). FC层 1024 channel(output)</li>
+<li>4). 添加了一个 dropout 层(70%)</li>
+<li>5). 再加一个 1000 output 的 FC, 后面用 softmax 进行处理</li>
+</ul>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -387,128 +498,6 @@
 </li>
 </ol>
 <h4 id="Transfer-Learning"><a href="#Transfer-Learning" class="headerlink" title="Transfer Learning"></a>Transfer Learning</h4><p>只看 Object Detection 了, 详细的信息请见论文</p>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/01/Simple-Summary-for-Chapter15-Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2020/01/01/Simple-Summary-for-Chapter15-Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition/" class="post-title-link" itemprop="url">Simple Summary for (Chapter15--Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2020-01-01 10:42:44 / Modified: 10:43:28" itemprop="dateCreated datePublished" datetime="2020-01-01T10:42:44+08:00">2020-01-01</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Chapter15–Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition"><a href="#Chapter15–Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition" class="headerlink" title="(Chapter15–Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition"></a>(Chapter15–Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition</h2><hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>本文的主要贡献: 验证使用 3*3 conv 的网络结构加深达到的效果</li>
-<li>强调了之前的针对 (Krizhevsky的) Conv 网络的改进是 (1). 在第一个 conv 层使用更小的 conv 以及 stride. (2). 使用多尺度的方法进行network的训练以及测试(这里指的是 Overfeat, 和一些其他的当年的作品使用的方法)</li>
-<li>提到了本文想要解决的是ConvNet结构设计的另外一个重要的方面: 深度 -&gt; 将架构中所有的其他参数都固定, 然后仅仅去增加网络的深度, 堆叠更多的 conv layers. 认为是使用了小的 3 * 3 的卷积使这种做法变得可行.</li>
-<li>本文贡献: 提出了一个新的更加准确的SOTA的深度convnet, 具有很好的广泛应用性, 且其提取到的特征使用简单的pipeline也可以得到一个很好的效果. </li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>架构的一些设计:<ul>
-<li>(1). 224*224 RGB input image</li>
-<li>(2). preprocessing -&gt; 简单的减去平均图而已</li>
-<li>(3). 使用small RF conv(3 <em> 3甚至是1 </em> 1的)</li>
-<li>(4). 卷积前后保持尺度不变</li>
-<li>(5). 尺度大小变化通过2 * 2max-pooling来做.</li>
-<li>(6). 后续会使用3个FC层(4096-4096-1000)</li>
-<li>(7). 所有的hidden layers都会使用ReLU进行激活</li>
-</ul>
-</li>
-<li>强调和主流数据集的主流设定不同的是, 本文提出的结构没有在第一个conv层使用大的kernel或者打的stride. </li>
-<li>主张使用多个 3 <em> 3 的小的conv去在代替大的如 5 </em> 5、7 * 7 的conv. 认为好处如下:<ul>
-<li>(1). 多个卷积核后面跟上了多个激活单元, 意味着非线性的增加, 做出的决定是更加有辨别能力的.</li>
-<li>(2). 减少了模型的参数</li>
-</ul>
-</li>
-<li>提到了适量插入 1 <em> 1 conv的目的是为了增加非线性的同时并不改变 Receptive Field. (提到了 1 </em> 1 conv是在 Network in Network中广泛使用的)</li>
-<li>关于训练的一些设计:<ul>
-<li>(1). 使用带动量的mini-batch gradient descent进行训练, 动量为 0.9</li>
-<li>(2). batch-size 调整到256</li>
-<li>(3). 使用 L2 正则去进行权重约束</li>
-<li>(4). 使用dropout regularisation(对前两个FC层)</li>
-<li>learning rate 开始设置为 10^-2, 然后当在validation上的准确率不在增长的时候就减少十倍, 训练370K iteration(74 epochs)之后停止 -&gt; 文章说本文的网络深参数多, 但是能够更快的收敛的原因是因为1). 网络的深度以及小conv kernel的使用带来的隐性约束 2). 特定层的预先初始化 -&gt; 作者先使用一个比较浅的网络去进行训练, 然后提取这个网络的浅层(前4层以及后3层conv) 中间的使用随机初始化进行(PS: 同时训练的时候并不会减少对这些层的学习率) (PS: 作者提到了, 可以不按照这个方法, 而且是使用 Glorot&amp;Bengio 提出的随机初始化方法代替这个方法也可以达到好的效果)</li>
-</ul>
-</li>
-<li>Training image size: <ul>
-<li>PS: 设 S 作为各向同性放缩的最短边长度</li>
-<li>(1). 如果将crop size设置为固定的 224 * 224 的时候, S 是要不小于 224 的, 当 S = 224 的时候, crop将会crop整个image. S &gt;&gt; 224 的时候只会  crop 出来 image 的很小的一个部分, 这个部分将会包含一个小物体或者一个物体的部分.</li>
-<li>(2). 作者考虑两种进行 training scale S的设定: 1). 固定 S -&gt; single-scale training. 2). 设置 S 为多尺度训练, 将训练图片随机放缩为 [S_min, S_max]之间</li>
-</ul>
-</li>
-<li>Testing: 提到了为了不再对每个crop出来的image patch(因为之前前面是FC层)进行重复的的计算然后ensemble, 选择先对整个放缩好的 image 先进行特征的提取(7 <em> 7 conv + 2个1 </em> 1 conv) 得到一个 class score map(通道数是和类别数相等的, 并且是可变的空间分辨率的) -&gt; 为了得到一个固定大小的关于image的class scores, 会先进性spatially averaged. 然后再用FC层去进行处理.<ul>
-<li>但是后续还是会选择 crop 去提高 performance</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>Exercise 问题的一些回答:</p>
-<ol start="2">
-<li>为什么变深 -&gt; (1). VGG 中提到是看到了很多的效果好的工作的趋势都是 加深网络 然后使用 小卷积, 所以作者考虑使用 深度作为一个变量参数 通过加深网络去尝试加强网络的性能</li>
-<li>变深的问题 -&gt; (1). VGG 中: 加深会导致网络参数的增加 -&gt; 1). 使用 小卷积代替大卷积 减少参数量同时增加非线性 2). 参数难以收敛 -&gt; 小卷积减少参数&amp;&amp;对特定的层次使用初始化预训练简化训练过程(但是后面说按照后续的参数随机初始化做法就可以提高性能超过进行预训练初始化得到的结果)    (2). 参数以及时间的增加 -&gt;  1). 使用 1 <em> 1 conv 在 3 </em> 3 / 5 * 5 conv 前面降低通道数目</li>
-</ol>
 
         
       
