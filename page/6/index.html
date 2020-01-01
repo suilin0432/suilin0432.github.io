@@ -236,6 +236,93 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-18 10:40:36 / Modified: 10:40:58" itemprop="dateCreated datePublished" datetime="2019-10-18T10:40:36+08:00">2019-10-18</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》"><a href="#简单总结《Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection》" class="headerlink" title="简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》"></a>简单总结《Bounding Box Regression with Uncertainty for Accurate Object Detection》</h2><hr>
+<p>PS: 大概思想明白了, 没有仔细看为什么…</p>
+<ol>
+<li>文章的Motivation: 大规模数据集会倾向于将GT BBox定义的尽可能的clear, 但是很多情况下bbox的label是仍然模糊不清的 -&gt; 模糊不清指的是: (1). 单纯的标注不准确 (2). 遮挡带来的模糊 -&gt; 应该是因为label定义的不清楚/不是最优 导致了网络对物体边界的学习比较模糊, 所以导致了bbox在loss中占据了不应该占据的loss</li>
+<li>本文提出一个boundingBox regression loss去同时学习bbox transformation与localization variance</li>
+<li>认为传统的L1 Loss等并没有考虑到这种模糊的bbox label, 导致了有时候训练得到最高confident的anchor并不是最佳的anchor</li>
+<li>作者先将bbox prediction和GT bbox看做高斯分布与狄拉克函数, 然后loss使用预测分布和GT分布的KL divergence作为新的bbox regression loss, 认为这么做的有点有<ul>
+<li>(1). 可以捕捉到dataset中的ambiguities, bbox regressor因此会从ambiguous bbox中获得更小的loss</li>
+<li>(2). 学习到的variance在post-processing中也十分有用</li>
+<li>(3). 学习到的概率分布式可解释的</li>
+</ul>
+</li>
+<li>文章想要预测每个位置的置信度, 用一个简单的Gaussian函数去进行定义, 就是以GT中心的高斯分布函数, σ标准差与置信度有关, 越小越确定, 当=0时就是GT了此时是狄拉克函数</li>
+<li>损失函数计算 GT的狄拉克函数以及高斯分布的KL散度 然后作者将这个loss换了一个形式(具体就见文章吧)</li>
+<li>Variance Voting: 在NMS中引入了分布信息, 具体见论文吧… 前面就已经和要找的方向跑偏了… 有时间回来看  </li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor’s-Perspective/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1135,7 +1222,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">59</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1216,7 +1303,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
