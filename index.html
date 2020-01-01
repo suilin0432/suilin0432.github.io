@@ -236,6 +236,179 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/" class="post-title-link" itemprop="url">Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-02 00:05:20 / Modified: 00:05:58" itemprop="dateCreated datePublished" datetime="2020-01-02T00:05:20+08:00">2020-01-02</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks"><a href="#Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks" class="headerlink" title="Bag of Tricks for Image Classification with Convolutional Neural Networks"></a>Bag of Tricks for Image Classification with Convolutional Neural Networks</h2><hr>
+<p>PS: 调参技巧文章2333</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>提到了最近的很多的 classification 研究都可以归功于 training procedure refinements(eg: data augmentations 和 optimization methods) 但是在文献中, 他们通常将这些 refinements 放到 implementation details 或者仅仅在 源代码 中可以看到. -&gt; 本文将会其中的一些 refinements 进行验证以及通过 ablation study 对其对模型最终精度的影响. 并且进行展示将这些 refinements 进行组合之后能够显著的提升 various CNN models. 同时表明了这些在 image classification accuracy 的提升可以带来在其他领域中的(obj detection &amp;&amp; semantic segmentation)更好的 transfer learning performance</li>
+<li>Paper Outline:<ul>
+<li>Section 2: 设置 baseline training procedure</li>
+<li>Section 3: 讨论一些有利于在硬件上高效训练的 tricks</li>
+<li>Section 4: 将 ResNet 系列的三个模型技巧进行融合然后重新提出了一个新的</li>
+<li>Section 5: 提出了 四种额外的 training procedure refinements</li>
+<li>Section 6: 表明了这种性能的提升是有利于 transfer learning 的</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><h4 id="Training-Procedure-baseline过程"><a href="#Training-Procedure-baseline过程" class="headerlink" title="Training Procedure (baseline过程)"></a>Training Procedure (baseline过程)</h4><ol>
+<li>整个流程: <img src="https://upload-images.jianshu.io/upload_images/13028997-a888f62bed3b9f1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></li>
+<li>Baseline Training Procedure:<ul>
+<li>baseline 训练流程是基于 ResNet 的</li>
+<li>image preprossing pipeline(training):<ul>
+<li>(1). 随机选取 image, 然后按照 32-bit 浮点数将 image 编码</li>
+<li>(2). 从 [3/4, 4/3] 的范围随机 sample 一个 aspect ratio, 从 [8%, 100%] 范围随机 sample 一个 area, 用这两个约束从 image 中 crop 一个 长方形区域, 然后把 cropped region resize到 224 * 224 的正方形 image.</li>
+<li>(3). 以 0.5 的概率进行水平 flip</li>
+<li>(4). 均匀分布的在 [0.6, 1.4] 的范围内 sample 一个系数, 去对 hue, saturation, brightness 进行 放缩</li>
+<li>(5). 在正态分布 N(0, 0.1) 中 sample 一个系数去添加 PCA noise</li>
+<li>(6). 对 RGB 图像减去 [123.68, 116.779, 103.939], 然后除以 [58.393, 57.12, 57.375] 去对 RGB 进行正则化处理</li>
+</ul>
+</li>
+<li>在 validation 过程中, 将每个 image 的短边 resize 到 256 pixels 的时候保持 aspect ratio. 然后从中心 crop 出来一个 224 * 224 的区域并且使用与 training 过程相同的 RGB normalization 过程进行处理, 但是并不使用任何的 random augmentation 操作</li>
+<li>conv 和 FC 层都使用 Xavier 算法进行初始化. 但是设置的参数是从 [-a, a] 的均匀分布进行 sample 的 a = sqrt(6/(d_in + d_out)). biases 会被设置为 0. batch normalization layers中, γ vector 初始化为 1 向量, β vector 初始化为 0.</li>
+<li>优化方法使用的是 Nesterov Accelerated Gradient descent.</li>
+<li>模型训练 120 epochs, 在 8 块 NVIDIA V100 GPU 进行 batch size 为 56 的训练. learning rate 被初始化为 0.1 并且在 30th, 60th, 90th epochs 时候除以 10.</li>
+</ul>
+</li>
+<li>Experiment Results: 用这套流程进行训练, 可以发现确实因为 training procedure 的不同会一定程度上影响结果</li>
+</ol>
+<h4 id="Efficient-Training"><a href="#Efficient-Training" class="headerlink" title="Efficient Training:"></a>Efficient Training:</h4><ol>
+<li>提到了 GPU 的引入使得一些 optimal choice 需要考虑到 trade-off -&gt; eg: (1). 低精度计算 (2). large batch training 同时不牺牲最后的精度, 甚至可以提升精度和训练速度</li>
+<li>Large-batch training<ul>
+<li>使用 mini-batch SGD 将多个 samples 放到一个 mini-batch 有效的去提升并行程度同时减少 通信损失. large batch size -&gt; 降低了 training progress(因为收敛变慢了). 很多工作都启发式的提出了解决方案, 本节部分会对四种启发式的有助于 large batch size 的方法进行描述.</li>
+<li>(1). Linear scaling learning rate: 提到了加大 batch size 之后并没有改变梯度的期望, 但是梯度的方差变小了 -&gt; 减小了 gradient 的 noise, 所以认为放大 learning rate 有助于提高这个方差. 同时提到了另外一篇文章表明线性提高 learning rate 同时提高 batch size 基于经验上有利于 ResNet-50 的训练. 实验是将 ResNet 原本的 0.1 learning rate with 256 batch size -&gt; 0.1 * b / 256</li>
+<li>(2). Learning rate warmup: 因为考虑到训练开始所有的参数都是随机出来的, 因此离 final solution 很远. 使用一个很大的 learning rate 可能会导致数值的不稳定. <ul>
+<li>1). 一篇文章[9]使用启发式的 warmup -&gt; 先用一个 small learning rate 在开始直到 training process stable 为止. </li>
+<li>2). [7]中提出了渐进的 warmup strategy, 从 0 开始逐渐的提升 learning rate 到 initial learning rate.</li>
+<li>本文选择使用前 m batches(eg: 5 epochs) 去进行 warm up, initial learning rate 是 η, 所以 warm up 过程中的 learning rate 是 iη/m</li>
+</ul>
+</li>
+<li>(3). (暂时没有很理解)Zero γ: 一个 ResNet 中包含了很多个 residual blocks, 每个 block 都包含一系列的 conv layer. 给定 input x, block(x) 是 block 中最后一层 conv 的 output. residual block 输出是 block(x) + x. 在 residual block 之后会有一个 batch normalization layer. BN layer 首先会对其 input 进行 standardize, 设为 xˆ, 然后进行一个 scale transformation γxˆ+β. γ 和 β 都是可学习的, 并且是使用 1s 和 0s 初始化的. 在 Zero γ 策略下, 对所有 Residual Block 的最后一个 BN layer 的 γ 使用 0s 进行初始化. 也就是所有的 residual block 将会返回其 inputs, 也就是 mimics 包含更少 layer 的 network, 使得网络能够在前期能够容易训练</li>
+<li>(4). No bias decay: 传统的 weight decay 会对所有的 learnable parameters 进行(也就是包括 weights 和 bias). 认为这个等价于使用 L2 正则化… 提到了但是根据[14]指出的, 最好只对 weights 进行 regularization 去避免 overfitting. 本文的 no bias decay 就是基于这个进行提出的. 在 no bias decay 仅仅会对 conv 和 FC 层的参数进行 weightdecay. 其他的参数(biaes, BN 层的 γ 和 β)都不进行weight decay</li>
+<li>提到了 LARS[28] 提出了一个 layer-wise adaptive 的 learning rate方式, 其能在极度大的 batch size(beyond 16k) 上取得很有效的结果. 但是本文会限制为 单机训练, 所以 batch size 不能超过 2000, 但是同样能去的呀一个很好的性能.</li>
+</ul>
+</li>
+<li>Low-precision training:<ul>
+<li>提到了 Neural Network 通常来说在 32-bit 浮点精度上进行训练 -&gt; 所有的 inputs, outputs 都是 32 位浮点数, 但是新的硬件结构通常能够提供高的低精度数据类型(FP16)的效率.</li>
+<li>但是除了带来了性能上的好处之外还会有坏处 -&gt; 精度的减小使得结果超出范围的可能性更大从而中断了训练进程. [19] 中提出使用 FP16 存储所有的参数并且使用 FP16 去计算梯度, 同时使用 FP32 做一份参数的备份用来做 parameter 的更新.</li>
+</ul>
+</li>
+<li>Experiment Results: 相比于 ResNet50 的 256 batchsize 以及使用 FP32, 使用 1024 batch size 与 FP16 减少了 3 倍左右的时间消耗同时在引入所有的上面提到的 4 种策略之后会有额外的 0.5% 的 top-1 准确率的提升.</li>
+</ol>
+<h4 id="Model-Tweaks"><a href="#Model-Tweaks" class="headerlink" title="Model Tweaks"></a>Model Tweaks</h4><p>PS: Model Tweak 的定义: 对现有网络架构进行微小的调整, 比如改变特定 conv 层的 stride. 提到了这样的 tweak 通常不会怎么改变计算复杂度带来的影响, 但是可能会对性能带来很大的影响, 本 section 就对此方面进行了大量的研究.</p>
+<ol>
+<li>ResNet Architecture:<ul>
+<li>简单的描述了一下 ResNet architecture.</li>
+<li>(1). ResNet 的 总体结构: (input) -&gt; Input stem -&gt; Stage 1 -&gt; Stage 2 -&gt; Stage 3 -&gt; Stage 4 -&gt; Output -&gt; (output)</li>
+<li>(2). Input Stem: 一个 7 <em> 7 </em> 64 (stride 2)conv  -&gt; 3 * 3 (stride) max pool. (总体上减小了 长宽 4 倍, 同时增加 channel size 到 64)</li>
+<li>(3). 每个 Stage 阶段中都以一个 down sampling block 开始, 每个 down sampling block 都分两路, 一路包含三个 conv (1 <em> 1, 3 </em> 3, 1 <em> 1), 另一路包含一个 1 </em> 1 conv (PS: 具体细节见这篇论文或者原论文吧…) Residual block 和 这个模块的设置相同, 只是 downsample block 的 stride 为 2 的第一层 conv stride 改为 1 了.</li>
+</ul>
+</li>
+<li>ResNet Tweaks: 首先回顾两个 popular ResNet tweaks – ResNet-B, ResNet-C, 本文会再提出一个新的 ResNet tweak, ResNet-D<ul>
+<li>(1). ResNet-B: 针对的部分: downsampling block 中第一个 conv 是 1 * 1 的 stride 为 2 的操作会忽略掉 feature map 中 3/4 的内容, 所以 ResNet-B 选择交换前两个 conv 的 stride.</li>
+<li>(2). ResNet-C: Inception-v2 提出的, 针对的点是使用大 conv 对计算量消耗的影响太大了, 所以将 input stem 中的 7 <em> 7 conv 替换成了两个 3 </em> 3 conv.</li>
+<li>(3). ResNet-D: 在 ResNet-B 的基础上在 path B(右侧的那个单 conv 的分支) 在 conv 前加上一个 avgpool (2 * 2 stride = 2)</li>
+</ul>
+</li>
+</ol>
+<h4 id="Training-Refinements"><a href="#Training-Refinements" class="headerlink" title="Training Refinements"></a>Training Refinements</h4><p>PS: 本 section 中描述了 4 个 training refinements, 目标旨在进一步提高模型的精度</p>
+<ol>
+<li>Cosine Learning Rate Decay: <ul>
+<li>(1). 提到了 learning rate 的调整对于训练来说是至关重要的. 之前在几种基础的 learning rate warmup 中提到的设置的是 step decay, 每一定的 epoch 之后会将 learning rate 除以 一个数值(eg: [9] 每 30 epoch之后减少rate到 0.1 倍, [26] 每 2 epoch之后减少到 0.94). </li>
+<li>(2). [18]中提出了 cosine 退火策略. 一个简单的版本就是将 learning rate 从 initial value 到 0 的过程中按照 consine fuction 去进行. 设 total batch 是 T(忽略掉 warm up 的 batch), initial learning rate 为 η. 这时候有 在 batch t, learning rate η_t = 1/2*(1+cos(tπ/T))η</li>
+</ul>
+</li>
+<li>Label Smoothing(有时间手推一下…):<ul>
+<li>(1). 分类网络的最后一层通常是一个 FC 层, 其隐层层的大小是和 分类 labels 的数量 K 是相同的. 最后的分数输出是要通过 softmax 的. 最后的分数其实是一个 概率分布 (因为和是 1), 但是我们的 truth label 其实是固定的 正确分类为 1 其他分类为 0 的分布, 对这个进行优化的时候会期望得到一个 正确分数很高而其他分数 这种设置是期望过拟合的, 不太好.</li>
+<li>(2). Label Smoothing 是设置为  q_i = 1-ε if i = truth_label, q_i = ε/(K-1) (其他情况)</li>
+</ul>
+</li>
+<li>Knowledge Distillation:<ul>
+<li>(1). 使用一个 teacher model 去帮助训练当前的 model(i.e. student model). teacher model 是一个预训练的更高精度的模型(具有更好的模型特征), student model 因此可以在不增加模型复杂度的时候提高自己的精度(eg: 使用 ResNet-152 作为 teacher model 去帮助 ResNet-50 进行训练)</li>
+<li>(2). 训练的时候添加 distillation loss 去惩罚两者的 softmax outputs. 在 loss 项上进行了一定的修改 loss = l(p, softmax(z)) + T^2l(softmax(r/T), softmax(z/T))</li>
+</ul>
+</li>
+<li>Mixup Training<ul>
+<li>(1). 是对 image 进行 augmentation 的方法 – mixup.</li>
+<li>(2). 在 mixup 中, 每次都随机 sample 两个 examples (x_i, y_i) &amp;&amp; (x_j, y_j). 然后我们通过一个线性加权去得到新的 example (PS: 这方法… 真的是啥都用…) 线性组合参数权重是从 Beta(α, α) 分布采样出来的</li>
+</ul>
+</li>
+<li>Experiment Results:<ul>
+<li>实验设置 label smoothing 的参数 ε = 0.1, distillation 的参数 T = 20, 使用 pretrained ResNet-152-D model 作为 teacher model, (teacher net 使用 cosine decay, 同时使用 label smoothing.) mixup training 中的采样参数的 Beta 分布中的参数 α = 0.2. 训练的 epoch 从 120 提升到 200(提到 mixed examples 需要更长的训练过程去收敛). 实验结果在 ResNet50, InceptionV3, MobileNet 中都进行了实验, 都有较大的提升.</li>
+</ul>
+</li>
+</ol>
+<h4 id="Transfer-Learning"><a href="#Transfer-Learning" class="headerlink" title="Transfer Learning"></a>Transfer Learning</h4><p>只看 Object Detection 了, 详细的信息请见论文</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/01/Simple-Summary-for-Chapter15-Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1314,211 +1487,11 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/25/六-、简单总结mmdetection源码TwoStageDetector-的流程细节-五-解析BBox-head-forward-以及相关-Loss/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/25/六-、简单总结mmdetection源码TwoStageDetector-的流程细节-五-解析BBox-head-forward-以及相关-Loss/" class="post-title-link" itemprop="url">(六)、简单总结mmdetection源码TwoStageDetector的流程细节(五) -- 解析BBox head forward 以及相关 Loss</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-25 15:40:10 / Modified: 15:43:40" itemprop="dateCreated datePublished" datetime="2019-11-25T15:40:10+08:00">2019-11-25</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="六-、简单总结mmdetection源码TwoStageDetector的流程细节-五-–-解析BBox-head-forward-以及相关-Loss"><a href="#六-、简单总结mmdetection源码TwoStageDetector的流程细节-五-–-解析BBox-head-forward-以及相关-Loss" class="headerlink" title="(六)、简单总结mmdetection源码TwoStageDetector的流程细节(五) – 解析BBox head forward 以及相关 Loss"></a>(六)、简单总结mmdetection源码TwoStageDetector的流程细节(五) – 解析BBox head forward 以及相关 Loss</h2><hr>
-<h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><ol>
-<li>上一篇总结介绍了关于 GT assign 以及 Proposal Sample 的整体流程, 这个部分就是 <code>TwoStageDetector.forward_train</code> 的最后的部分了(不考虑 mask 相关部分), 但是到这里还是有疑问没有解决的, 具体疑问看 3.</li>
-<li>本篇总结将会对 BBox head forward 以及相关 Loss 部分(mmdetection代码的注释是这么写的)进行解析.</li>
-<li><strong>疑问就是从上一个总结就有的, 关于多尺度信息在训练的时候怎么去区分, 因为上一篇文章也注意到了, 进行 GT BBox 匹配的时候也并没有区分什么尺度问题, 都是根据 IoU 在进行的计算, 然后进行筛选, 仅由的针对多阶段的过程还是 RPN 部分的 <code>rpn_head.get_bboxes</code> 其将多尺度的信息直接并成了一个维度, 只是有一个选项是选择是否进行跨尺度的 nms 操作. 希望在本文的 <code>roi_extractor</code> 部分会涉及到如何进行尺度分配的部分</strong><ul>
-<li><strong><em>问题找到答案了: 在 <code>mmdet.models.roi_extractors.single_level.py</code> 中的 <code>SingleRoIExtractor</code> 类的 <code>forward</code> 过程中 会进行 <code>map_roi_levels</code> 函数的处理, 会根据 RoI 的大小去分配对应的 stage </em></strong></li>
-</ul>
-</li>
-<li><strong>另外的一个疑问: 从这部分的代码中已经可以看出了, 提取出来的 features 是来自于各种不同 scale 的啊, 后续的分支是公用的吗???</strong></li>
-</ol>
-<hr>
-<h3 id="二、总体流程"><a href="#二、总体流程" class="headerlink" title="二、总体流程"></a>二、总体流程</h3><ol>
-<li>首先将上一个阶段得到的 <code>sampling_results</code> 中的每一个 img 的 <code>SamplingResult</code> 对象提取出来其中的具体信息( <code>torch.cat([self.pos_bboxes, self.neg_bboxes])</code> ), 然后进行 <code>bbox2roi</code> 操作, 就是添加了一下所属图片的信息</li>
-<li><strong><em>重点: 使用 <code>bbox_roi_extractor</code> 进行每个 roi 的特征信息的提取</em></strong></li>
-<li>然后将得到的 features feed 给 <code>bbox_head</code> (这里包含了 <code>classification</code> 以及 <code>bbox regression</code>)</li>
-<li>最后将 loss 记录一下就可以了</li>
-<li>然后整个 <code>train_forward</code> 部分就结束了, 将 <code>losses</code> 返回就好了 (nice!!!)</li>
-</ol>
-<hr>
-<h3 id="三、细节描述"><a href="#三、细节描述" class="headerlink" title="三、细节描述"></a>三、细节描述</h3><p>PS: <code>bbox2roi</code> 操作就不仔细陈述了, 很简单的操作</p>
-<ol>
-<li>首先我们就应该看一下 <code>bbox_roi_extractor</code>, 这个东西在 <code>__init__</code> 中好像就已经被我们注册了, 和其他的部分一样, 都是通过 <code>build_from_cfg</code> 进行注册, 这个部分是使用 <code>ROI_EXTRACTORS</code> 这个 <code>Registry</code> 进行的. 同时根据 config 可以知道, 使用的是 <code>SingleRoIExtractor</code>, 那么就去看一下这个类: PS: 好像就只有这一个 Extractor 233<ul>
-<li>(1). 还是先分析一下其 <code>__init__</code> 函数: <code>__init__(self, roi_layer, out_channels, featmap_strides, finest_scale=56)</code>:<ul>
-<li>1). <code>roi_layer</code>: 关于 RoI layer 的 config 信息</li>
-<li>2). <code>out_channels</code>: RoI layer 输出的通道数</li>
-<li>3). <code>featmap_strides</code>: 输入进来的 feature map 的 strides list</li>
-<li>4). <code>finest_scale</code>: mapping 到 level 0 的 threshold (??? 存疑)</li>
-<li>整个函数中基本就是参数的注册, 但是有一行要注意 -&gt; 在里面注册了 RoI layer (… 禁止套娃!!!(滑稽)), 所以我们要关注 RoI Layer 了呢…</li>
-<li>根据配置, 我们可以发现, 使用的是 RoI Align (RoI Pooling 已经被抛弃了 2333)</li>
-<li>em… RoIAlign 藏在了 <code>mmdet.ops.roi_align.roi_align.RoIAlign</code>… 还是从 <code>__init__</code>进行分析: 涉及到的四个参数: 1. <code>out_size</code>: 输出尺寸(config 中设置是 7) 2. <code>spatial_scale</code>: 空间尺度 (PS: config中没有这个参数, 是在 <code>build_roi_layers</code> 中根据 <code>featmap_strides</code> 填入的, 每个 scale 都会对应一个 RoIAlign 层) 3. <code>sample_num</code>: 采样点数目 4. <code>use_torchvision</code>: 是否使用 torchvision … (默认是 False, 话说为啥不用…). 至于 <code>__init__</code> 干了什么, 就基本啥都没干, 就是进行了一下赋值操作</li>
-<li>看 <code>forward</code> 函数把: 参数是 <code>features</code> 和 <code>rois</code>, 如果 <code>use_torchvision</code> 为 True, 那么使用 <code>torchvision.ops.roi_align</code>, <code>use_torchvision</code> 为 False, 那么使用 mmdetection 定义的 <code>roi_align</code>. 看一下自定义的 <code>roi_align</code> 理清一下逻辑(应该是提供了一个 cuda 加速版本…)</li>
-<li><code>roi_align</code> 函数的定义是 <code>roi_align = RoIAlignFunction.apply</code>, 即通过自定义实现的 <code>RoIAlignFunction</code> 类进行的. 看一下这个类的 <code>forward</code>, em… 实际上是要调用 <code>roi_align_cuda</code> 也就是 cuda 加速版本… 我 mac 上没有 cuda 所以就安装不了这部分…</li>
-<li>看看 <code>torchvision.ops.roi_align</code>: 两者套路完全一致… 都是用 C 去写的核心部分 (貌似是因为涉及到了 CUDA 加速计算… 好吧 去康康, 暂时略过了… 只是大概明白了什么操作, 是要对每一个 scale 都要进行 RoIAlign 操作, 见前言的3.)</li>
-<li>这就不用再分析 ROI layer 了, 继续看 <code>SingleRoIExtractor</code></li>
-</ul>
-</li>
-<li>(2). 看看 <code>forward</code> 部分:<ul>
-<li>关于输入: <code>feats</code>: 就是 feature map  <code>rois</code>: 就是 sample 出来的 RoIs 信息  <code>roi_scale_factor</code>: (默认值是False) 表示收对 RoI 进行 Rescale</li>
-<li>1). 首先如果 <code>feats</code> (也就是各个 stage 的 feature map) channel 数目只有 1(就是不使用 FPN 的 Faster RCNN) 的时候, 就直接根据仅有的 RoILayer 进行处理然后返回即可 即 <code>return self.roi_layers[0](feats[0], rois)</code>, 但是如果使用 FPN (即 channel 数目 &gt; 1)那么就要进行下面的操作了</li>
-<li>2). 首先会获取一些维度信息, 然后使用 <code>map_roi_levels</code> 对 RoI 进行 stage 的分配 (<strong><em>就是这里, 就是这里, 这里将不同的 RoI 按照大小分配到不同的 stage 上</em></strong>), 康一康 <code>map_roi_levels</code>:<ul>
-<li><code>map_roi_levels(self, rois, num_levels)</code>: <code>rois</code> 就是所有的 RoI 框. <code>num_levels</code>: 使用的 feautre map stage 的数目</li>
-<li>具体操作就是: 先算一下每个 proposal 的面积, 然后除以 <code>finest_scale</code> 之后进行一下 log2, 取一下floor, 之后 clamp 到 0 - 3(这个 config 来看是 3) 之间. 然后返回就可以</li>
-</ul>
-</li>
-<li>3). 创建一个 <code>roi_num * out_channel * out_size * out_size</code> 的 Tensor 用来装最后的提取出来的 feature</li>
-<li>4). 对各个 stage 的 <code>roi_layers</code> 传入对应的 <code>feature map</code> 以及 进行了 assign 到当前 stage 的 <code>rois</code> 去得到提取到的 features. 得到 RoI Features, 将 RoI Features 填充到对应的地方</li>
-<li>5). 返回这个 <code>roi_feats</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li>后面涉及到了一个 <code>with_shared_head</code> 参数, 看了一下框架的代码, 只有一个 <code>shared_head</code> 还是 <code>res_layer</code> 看上去也就是这个就是用来进行额外的处理的, 就是对 提取出来的 feature map 的信息进行进一步处理之后再传递给 <code>bbox_head</code>. 根据配置文件可以看出, Faster RCNN 中使用的是 <code>SharedFCBBoxHead</code>, 查找 <code>SharedFCBBoxHead</code> 之后可以发现, 其有一个父类 <code>ConvFCBBoxHead</code>, 并且 <code>SharedFCBBoxHead</code> 的 <code>__init__</code> 函数是直接调用父类的 <code>__init__</code> 函数的, em… 也可以发现 <code>ConvFCBBoxHead</code> 也有父类 <code>BBoxHead</code>. 让我们先分析一下这两个类的 <code>__init__</code> 函数吧:<ul>
-<li>(1). <code>SharedFCBBoxHead.__init__</code>: 首先看一下这个类中的注释, 描述了这个类的流程是什么</li>
-<li>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;/-&gt; cls convs -&gt; cls fcs -&gt; cls</li>
-<li>shared convs -&gt; shared fcs</li>
-<li>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\-&gt; reg convs -&gt; reg fcs -&gt; reg</li>
-<li>也就是我们首先会经过 classfication 与 bbox regression 共同要使用的 <code>conv</code>, <code>fc</code> 层, 然后才拆分为两个分支, 分别进行两个任务的 <code>conv</code>, <code>fc</code> 层, 最后得到结果</li>
-<li>所以有了这个目的, 让我们看一下其中的参数吧, 但是还是最好先看一下其父类 <code>BBoxHead</code> 的参数:</li>
-<li>(2). <code>BBoxHead.__init__(self, with_avg_pool=False, with_cls=True, with_reg=True, roi_feat_size=7, in_channels=256, num_classes=81, target_means=[0., 0., 0., 0.], target_stds=[0.1, 0.1, 0.2, 0.2], reg_class_agnostic=False, loss_cls=dict( type=&#39;CrossEntropyLoss&#39;, use_sigmoid=False, loss_weight=1.0), loss_bbox=dict( type=&#39;SmoothL1Loss&#39;, beta=1.0, loss_weight=1.0))</code>:<ul>
-<li>PS: 在 <code>BBoxHead</code> 中的注释说明: 这个类表示的是最简单的 RoIHead, 只有两个分别用来进行 classification 以及 bbox regression 的 FC 层.</li>
-<li>1). <code>with_avg_pool</code>: 表示是否在进行 FC 前使用一个尺寸大小等于输入尺寸大小的 <code>AvgPool</code> 层先进行一次处理.</li>
-<li>2). <code>with_cls</code>: 表示是否包含 <code>classification</code> 用途的 <code>fc</code> 层</li>
-<li>3). <code>with_reg</code>: 表示是否包含 <code>bbox regression</code> 用途的 <code>fc</code> 层</li>
-<li>4). <code>roi_feat_size</code>: 表示输入进来的 <code>roi feature map</code> 的尺寸</li>
-<li>5). <code>in_channels</code>: 表示输入进来的 <code>roi feature map</code> 的通道数</li>
-<li>6). <code>num_classes</code>: 表示要分类的类别数目</li>
-<li>7). <code>target_mean</code> &amp;&amp; <code>target_stds</code>: 进行 <code>bbox_target</code> 时候使用的参数, 是 bbox 解码过程需要的参数, 印象中没有错的话 这部分应该是加速训练收敛的</li>
-<li>8). <code>reg_class_agnostic</code>: 表示是否使用类别不可知的方式进行 bbox regression (也就是 bbox regression 分支输出的就是 4, 而不是 4 * num_classes)</li>
-<li>9). <code>loss_cls</code>: classification 的 loss config</li>
-<li>10). <code>loss_reg</code>: bbox regression 的 loss config</li>
-<li>PS: 我们可以看到在 Faster RCNN 的 config 文件中, <code>bbox_head</code> 相关参数都是给 <code>BBoxHead.__init__</code> 的, 基本没有给 <code>ConvFCBBoxHead.__init__</code> 的参数, 应该是都靠其默认参数了, config 中只有 <code>num_fcs</code> 一个参数是给 <code>SharedFCBBoxHead</code> 的</li>
-<li>这个 <code>__init__</code> 中主要进行的就是参数在类中的注册 以及简单的注册了 <code>fc_cls</code> 和 <code>fc_reg</code> 两个 FC 层</li>
-<li>接下来看 <code>ConvFCBBoxHead.__init__</code></li>
-</ul>
-</li>
-<li>(3). <code>ConvFCBBoxHead.__init__(self, num_shared_convs=0, num_shared_fcs=0, num_cls_convs=0, num_cls_fcs=0, num_reg_convs=0, num_reg_fcs=0, conv_out_channels=256, fc_out_channels=1024, conv_cfg=None, norm_cfg=None, *args, **kwargs)</code>:<ul>
-<li>1). <code>num_shared_convs</code>: 表示 <code>shared_conv</code> 层的数目</li>
-<li>2). <code>num_shared_fcs</code>: 表示 <code>shared_fcs</code> 层的数目</li>
-<li>3). <code>num_cls_convs</code>: 表示 <code>cls_convs</code> 层的数目</li>
-<li>4). <code>num_cls_fcs</code>: 表示 <code>cls_fcs</code> 层数目</li>
-<li>5). <code>num_reg_convs</code>: 表示 <code>reg_convs</code> 层的数目</li>
-<li>6). <code>num_reg_fcs</code>: 表示 <code>reg_fcs</code> 层的数目</li>
-<li>7). <code>conv_out_channels</code>: 表示流程中 <code>conv</code> 层的输出通道数</li>
-<li>8). <code>fc_out_channels</code>: 表示流程中 <code>fc</code> 层的输出维度</li>
-<li>9). <code>conv_cfg</code>: 关于卷积层的配置</li>
-<li>10). <code>norm_cfg</code>: 关于 norm 的配置 (PS: 因为 Faster RCNN 中并没有使用 conv, 无论是 <code>shared_conv</code> 还是分支中的 conv, 所以 norm 也是木有配置的)</li>
-<li>流程: 除了进行参数值类内的注册之外, 还是会通过 <code>_add_conv_fc_branch</code> 进行各个阶段(指的就是 <code>shared_conv</code>, <code>shared_fc</code> 等这一系列的流程) 然后最后会在层后面接上一个 <code>cls_fc_output</code> 一个 <code>reg_fc_output</code> em… 接下来简单分析一下 <code>_add_conv_fc_branch</code> 函数吧</li>
-</ul>
-</li>
-<li>(4). <code>_add_conv_fc_branch(self, num_branch_convs, num_branch_fcs, in_channels, is_shared=False)</code>:<ul>
-<li>1). <code>num_branch_convs</code>: 表示 <code>conv</code> 层的数目</li>
-<li>2). <code>num_branch_fcs</code>: 表示 <code>fc</code> 层的数目</li>
-<li>3). <code>in_channel</code>: 表示输入的维度</li>
-<li>4). <code>is_shared</code>: 表示是否是前面 shared layers 的 flag</li>
-<li>流程: 就是按照参数去决定添加一下各个层次</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>接下来就对 <code>forward</code> 函数进行分析: 没啥好分析的, 就是按照流程各个模块走一遍最后得到 <code>cls_score</code> 以及 <code>bbox_pred</code></li>
-<li>之后会通过 <code>bbox_head.get_target</code> 获取进行损失函数的 GT 信息, 这个就要追溯到 <code>BBoxHead</code> 这个类上了, 有函数定义: <code>get_target(self, sampling_results, gt_bboxes, gt_labels, rcnn_train_cfg)</code>:<ul>
-<li>(1). <code>sampling_results</code>: 上一个大阶段得到的 sample 出来的 proposals 结果</li>
-<li>(2). <code>gt_bboxes</code>: GT BBox 信息 (实际上用不到)</li>
-<li>(3). <code>gt_labels</code>: GT Labels 信息 (实际上用不到, 这两者用不到的实际原因应该是因为在 <code>sampling_result</code> 中已经将这些信息包含了)</li>
-<li>(4). <code>rcnn_train_cfg</code>: config 文件中的 <code>train_cfg.rcnn</code></li>
-<li>具体流程:</li>
-<li>(1). 直接从 <code>sampling_result</code> 中提取出来 <code>pos_proposals, neg_proposals, pos_gt_bboxes, pos_gt_labels</code>, 然后将这些参数直接 feed 给 <code>bbox_target</code> 中</li>
-<li>(2). <code>bbox_target</code> 会通过 <code>multi_apply</code> 调用 <code>bbox_target_single</code> 对每个 stage 的信息进行分别的 <code>target_single</code> 处理 (因为虽然上面的 <code>features</code> 已经是多尺度的信息放在一起了, 但是 <code>sampling_results</code> 还是分尺度的, 所以要用 <code>multi_apply</code>)<ul>
-<li>分析 <code>bbox_target_single</code>: 主要目的就是将 pos 和 neg 的信息整合在一起, <code>label_weights</code> 表示这个标签应该占据的权重, <code>neg_weight</code> 是 1, 如果没有在 config 中具体设置一个 &gt;0 的权重, 那么 <code>pos_weight</code> 也是 1. 同时只有 <code>pos_sample</code> 才会使用 <code>bbox</code> 信息.</li>
-<li>处理之后得到 <code>labels, label_weights, bbox_targets, bbox_weights</code> 然后会返回给 <code>bbox_target</code>, 然后在其中经过汇总拼接将拼接好的多尺度的信息返回</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>我们已经拿到了 optimize target 了, 接下来就要去拿 loss 了, 通过 <code>bbox_head.loss</code> 按照配置文件进行 loss 的计算配置 然后返回 loss</li>
-<li>我们拿到了 loss 之后, 在 <code>two_stage.py</code> 的 <code>forward_train</code> 中返回这些 loss 即可</li>
-</ol>
-<p>PS: 这样我们的这部分代码也就看完了, 整个 TwoStageDetector 就阅读完毕了, 后面如果有需要的话会记录 train.py 相关的内容.</p>
-<hr>
-<h3 id="相关代码"><a href="#相关代码" class="headerlink" title="相关代码"></a>相关代码</h3><p>1.forward_train 中的相关代码部分:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> self.with_bbox:</span><br><span class="line">    rois = bbox2roi([res.bboxes <span class="keyword">for</span> res <span class="keyword">in</span> sampling_results])</span><br><span class="line">    <span class="comment"># <span class="doctag">TODO:</span> a more flexible way to decide which feature maps to use</span></span><br><span class="line">    bbox_feats = self.bbox_roi_extractor(</span><br><span class="line">        x[:self.bbox_roi_extractor.num_inputs], rois)</span><br><span class="line">    <span class="keyword">if</span> self.with_shared_head:</span><br><span class="line">        bbox_feats = self.shared_head(bbox_feats)</span><br><span class="line">    cls_score, bbox_pred = self.bbox_head(bbox_feats)</span><br><span class="line"></span><br><span class="line">    bbox_targets = self.bbox_head.get_target(sampling_results,</span><br><span class="line">                                             gt_bboxes, gt_labels,</span><br><span class="line">                                             self.train_cfg.rcnn)</span><br><span class="line">    loss_bbox = self.bbox_head.loss(cls_score, bbox_pred,</span><br><span class="line">                                    *bbox_targets)</span><br><span class="line">    losses.update(loss_bbox)</span><br></pre></td></tr></table></figure>
-<p>2.RoIAlign部分 C实现代码(em… 后续略过了…)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line">int roi_align_forward_cuda(at::Tensor features, at::Tensor rois,</span><br><span class="line">                           int pooled_height, int pooled_width,</span><br><span class="line">                           float spatial_scale, int sample_num,</span><br><span class="line">                           at::Tensor output) &#123;</span><br><span class="line">  // 这个函数也就简单的检查了一下输入, 然后计算了一下各个维度的长度, 剩下的基本都交给了 ROIAlignForwardLaucher</span><br><span class="line">  CHECK_INPUT(features);</span><br><span class="line">  CHECK_INPUT(rois);</span><br><span class="line">  CHECK_INPUT(output);</span><br><span class="line"></span><br><span class="line">  // Number of ROIs</span><br><span class="line">  int num_rois = rois.size(0);</span><br><span class="line">  int size_rois = rois.size(1);</span><br><span class="line"></span><br><span class="line">  if (size_rois != 5) &#123;</span><br><span class="line">    printf(&quot;wrong roi size\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  int num_channels = features.size(1);</span><br><span class="line">  int data_height = features.size(2);</span><br><span class="line">  int data_width = features.size(3);</span><br><span class="line"></span><br><span class="line">  ROIAlignForwardLaucher(features, rois, spatial_scale, sample_num,</span><br><span class="line">                         num_channels, data_height, data_width, num_rois,</span><br><span class="line">                         pooled_height, pooled_width, output);</span><br><span class="line"></span><br><span class="line">  return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">然后就又要看一下这个核心函数: ROIAlignForwardLaucher</span><br><span class="line"></span><br><span class="line">int ROIAlignForwardLaucher(const at::Tensor features, const at::Tensor rois,</span><br><span class="line">                           const float spatial_scale, const int sample_num,</span><br><span class="line">                           const int channels, const int height,</span><br><span class="line">                           const int width, const int num_rois,</span><br><span class="line">                           const int pooled_height, const int pooled_width,</span><br><span class="line">                           at::Tensor output) &#123;</span><br><span class="line">  const int output_size = num_rois * pooled_height * pooled_width * channels;</span><br><span class="line"></span><br><span class="line">  // AT_DISPATCH_FLOATING_TYPES_AND_HALF这个宏应该是为了支持pf16</span><br><span class="line">　// 第一个参数是指定type</span><br><span class="line">  // 第二个参数是这个操作的名字</span><br><span class="line">　// 第三个参数是一个lambda函数：</span><br><span class="line">　// [&amp;]表明要截取外部作用域中所有变量，并作为引用在函数体中使用，｛｝里面是匿名函数的功能</span><br><span class="line">　// 可以看到核心是调用ROIAlignForward</span><br><span class="line">  AT_DISPATCH_FLOATING_TYPES_AND_HALF(</span><br><span class="line">      features.scalar_type(), &quot;ROIAlignLaucherForward&quot;, ([&amp;] &#123;</span><br><span class="line">        const scalar_t *bottom_data = features.data&lt;scalar_t&gt;();</span><br><span class="line">        const scalar_t *rois_data = rois.data&lt;scalar_t&gt;();</span><br><span class="line">        scalar_t *top_data = output.data&lt;scalar_t&gt;();</span><br><span class="line"></span><br><span class="line">        # GET_BLOCKS(output_size)设定开多少个block计算，不懂得话需要了解一下gpu的结构</span><br><span class="line">　　　　　# 这边很显然对每个output都可以并行计算</span><br><span class="line">        # 每个block开１０２４个线程</span><br><span class="line">        ROIAlignForward&lt;scalar_t&gt;</span><br><span class="line">            &lt;&lt;&lt;GET_BLOCKS(output_size), THREADS_PER_BLOCK&gt;&gt;&gt;(</span><br><span class="line">                output_size, bottom_data, rois_data, scalar_t(spatial_scale),</span><br><span class="line">                sample_num, channels, height, width, pooled_height,</span><br><span class="line">                pooled_width, top_data);</span><br><span class="line">      &#125;));</span><br><span class="line">  THCudaCheck(cudaGetLastError());</span><br><span class="line">  return 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">继续看核心部分代码: ROIAlignForward</span><br><span class="line"></span><br><span class="line">template &lt;typename scalar_t&gt;</span><br><span class="line">// __global__函数告诉编译器，这个函数是在GPU上执行的，不是在CPU上执行</span><br><span class="line">__global__ void ROIAlignForward(const int nthreads, const scalar_t *bottom_data,</span><br><span class="line">                                const scalar_t *bottom_rois,</span><br><span class="line">                                const scalar_t spatial_scale,</span><br><span class="line">                                const int sample_num, const int channels,</span><br><span class="line">                                const int height, const int width,</span><br><span class="line">                                const int pooled_height, const int pooled_width,</span><br><span class="line">                                scalar_t *top_data) &#123;</span><br><span class="line">  CUDA_1D_KERNEL_LOOP(index, nthreads) &#123;</span><br><span class="line">    // (n, c, ph, pw) is an element in the aligned output</span><br><span class="line">    // 在对输出里哪个元素进行计算，即这个元素的在各个维度的位置</span><br><span class="line">    int pw = index % pooled_width;</span><br><span class="line">    int ph = (index / pooled_width) % pooled_height;</span><br><span class="line">    int c = (index / pooled_width / pooled_height) % channels;</span><br><span class="line">    int n = index / pooled_width / pooled_height / channels;</span><br><span class="line"></span><br><span class="line">    // 取出对应的roi，每个是一个５维向量，把向量的每个值取出来，其中第一个值是图片索引</span><br><span class="line">    // PS: 这里的 spatial_scale 传入的是 1/scale_stride, 也就是还原到了原图尺度上进行 roiAlign 操作</span><br><span class="line">    </span><br><span class="line">    const scalar_t *offset_bottom_rois = bottom_rois + n * 5;</span><br><span class="line">    int roi_batch_ind = offset_bottom_rois[0];</span><br><span class="line">    scalar_t roi_start_w = offset_bottom_rois[1] * spatial_scale;</span><br><span class="line">    scalar_t roi_start_h = offset_bottom_rois[2] * spatial_scale;</span><br><span class="line">    scalar_t roi_end_w = (offset_bottom_rois[3] + 1) * spatial_scale;</span><br><span class="line">    scalar_t roi_end_h = (offset_bottom_rois[4] + 1) * spatial_scale;</span><br><span class="line"></span><br><span class="line">    // Force malformed ROIs to be 1x1</span><br><span class="line">    //　roi的尺寸</span><br><span class="line">    scalar_t roi_width = fmaxf((scalar_t)roi_end_w - roi_start_w, 0.);</span><br><span class="line">    scalar_t roi_height = fmaxf((scalar_t)roi_end_h - roi_start_h, 0.);</span><br><span class="line"></span><br><span class="line">    //　譬如分成7x7，用roi的尺寸除以７就是每个格子的尺寸</span><br><span class="line">    scalar_t bin_size_h = roi_height / pooled_height;</span><br><span class="line">    scalar_t bin_size_w = roi_width / pooled_width;</span><br><span class="line"></span><br><span class="line">    //利用上面取出来的roi对应的图片索引取出对应的feature map（双线性插值要用）</span><br><span class="line">    //其实不光具体到feature map，还具体到每一层channel,因为计算的时候对</span><br><span class="line">    //每个output的点是独立计算的，channel之间也是对应的，可以并行的</span><br><span class="line">    const scalar_t *offset_bottom_data =</span><br><span class="line">        bottom_data + (roi_batch_ind * channels + c) * height * width;</span><br><span class="line"></span><br><span class="line">    int sample_num_h = (sample_num &gt; 0)</span><br><span class="line">                           ? sample_num</span><br><span class="line">                           : ceil(roi_height / pooled_height);  // e.g., = 2</span><br><span class="line">    int sample_num_w =</span><br><span class="line">        (sample_num &gt; 0) ? sample_num : ceil(roi_width / pooled_width);</span><br><span class="line"></span><br><span class="line">    // roi_start_h + ph * bin_size_h和roi_start_w + pw * bin_size_w</span><br><span class="line">    // 就是当前待计算的输出像素对应在feature上的位置，肯定是个浮点数，不是整数位置</span><br><span class="line">    //　所以后续就要开始双线性插值了</span><br><span class="line">    //　一般sample_num都是2,对yx方向都循环一次，所以会取到4个采样点,采样点位置计算：</span><br><span class="line">    // +(iy + 0.5) * bin_size_h / 2 (for iy=0, 1)</span><br><span class="line">    //　就相当于画了一个田字，每个口的中心</span><br><span class="line">    scalar_t output_val = 0;</span><br><span class="line">    for (int iy = 0; iy &lt; sample_num_h; iy++) &#123;</span><br><span class="line">      const scalar_t y = roi_start_h + ph * bin_size_h +</span><br><span class="line">                         (scalar_t)(iy + scalar_t(.5f)) * bin_size_h /</span><br><span class="line">                             (scalar_t)(sample_num_h);</span><br><span class="line">      for (int ix = 0; ix &lt; sample_num_w; ix++) &#123;</span><br><span class="line">        const scalar_t x = roi_start_w + pw * bin_size_w +</span><br><span class="line">                           (scalar_t)(ix + scalar_t(.5f)) * bin_size_w /</span><br><span class="line">                               (scalar_t)(sample_num_w);</span><br><span class="line">　　　　　</span><br><span class="line">        // x,y是计算出的采样点的坐标，是个浮点数，利用双线性插值（本质就是加权累加）</span><br><span class="line">        // 算出当前采样点的值</span><br><span class="line">        scalar_t val = bilinear_interpolate&lt;scalar_t&gt;(offset_bottom_data,</span><br><span class="line">                                                      height, width, y, x);</span><br><span class="line">        output_val += val;　//算出每个采样点的结果后累加</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    output_val /= (sample_num_h * sample_num_w);　// 除以４取平均后作为当前输出像素点的结果</span><br><span class="line">    top_data[index] = output_val;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. @once_differentiable: 当操作是不可导的时候, 需要自行定义 backward 函数, 并且使用  @once_differentiable 修饰器声明</span><br><span class="line">2. torch.autograd.Function.apply(): 用来进行 torch.autograd.Function 的参数传入或者说是初始化</span><br><span class="line">3. 在 RoIAlignFunction 中的 ctx, 这里的 ctx 作用类似于 self... 方便在 backward 的时候进行使用.</span><br><span class="line">4. torch.Tensor 可以切片访问的时候进行赋值</span><br><span class="line">eg:</span><br><span class="line">	a = torch.Tensor([1,2,3,4,5])</span><br><span class="line">	a[[1,3,4]] = torch.Tensor([10, 10, 10])</span><br><span class="line">	a -&gt; Tensor([1, 10, 3, 10, 10])</span><br></pre></td></tr></table></figure>
-<hr>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
-<li>发现了一个新问题: 在 RPN 使用的 stage 是 5 个, 但是 <code>RoI_Extractor</code> 中使用的是 4 个 stage… 是故意的吗 -&gt; 好像确实是这个样子的… 就是不会用最后一个阶段的去进行最后 detector 的训练的 而是单纯的去进行 RPN 的训练</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1563,7 +1536,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

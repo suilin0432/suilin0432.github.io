@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.1">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.1">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.1" color="#222">
+  <link rel="alternate" href="/atom.xml" title="Suilin's Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.1">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.1',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Bag of Tricks for Image Classification with Convolutional Neural Networks PS: 调参技巧文章2333 Introduction: 提到了最近的很多的 classification 研究都可以归功于 training procedure refinements(eg: data augmentations 和 optimiz">
+<meta name="keywords" content="Paper Summary">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks">
+<meta property="og:url" content="http://suilin.top/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/index.html">
+<meta property="og:site_name" content="Suilin&#39;s Blog">
+<meta property="og:description" content="Bag of Tricks for Image Classification with Convolutional Neural Networks PS: 调参技巧文章2333 Introduction: 提到了最近的很多的 classification 研究都可以归功于 training procedure refinements(eg: data augmentations 和 optimiz">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/13028997-a888f62bed3b9f1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2020-01-01T16:05:58.587Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks">
+<meta name="twitter:description" content="Bag of Tricks for Image Classification with Convolutional Neural Networks PS: 调参技巧文章2333 Introduction: 提到了最近的很多的 classification 研究都可以归功于 training procedure refinements(eg: data augmentations 和 optimiz">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/13028997-a888f62bed3b9f1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <link rel="canonical" href="http://suilin.top/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks | Suilin's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Suilin's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">菜鸡的博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+        
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>About</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+      
+    
+      
+      
+        
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      
+    
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/Simple-Summary-for-Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            Simple Summary for Bag of Tricks for Image Classification with Convolutional Neural Networks
+            
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-02 00:05:20 / Modified: 00:05:58" itemprop="dateCreated datePublished" datetime="2020-01-02T00:05:20+08:00">2020-01-02</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks"><a href="#Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks" class="headerlink" title="Bag of Tricks for Image Classification with Convolutional Neural Networks"></a>Bag of Tricks for Image Classification with Convolutional Neural Networks</h2><hr>
+<p>PS: 调参技巧文章2333</p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>提到了最近的很多的 classification 研究都可以归功于 training procedure refinements(eg: data augmentations 和 optimization methods) 但是在文献中, 他们通常将这些 refinements 放到 implementation details 或者仅仅在 源代码 中可以看到. -&gt; 本文将会其中的一些 refinements 进行验证以及通过 ablation study 对其对模型最终精度的影响. 并且进行展示将这些 refinements 进行组合之后能够显著的提升 various CNN models. 同时表明了这些在 image classification accuracy 的提升可以带来在其他领域中的(obj detection &amp;&amp; semantic segmentation)更好的 transfer learning performance</li>
+<li>Paper Outline:<ul>
+<li>Section 2: 设置 baseline training procedure</li>
+<li>Section 3: 讨论一些有利于在硬件上高效训练的 tricks</li>
+<li>Section 4: 将 ResNet 系列的三个模型技巧进行融合然后重新提出了一个新的</li>
+<li>Section 5: 提出了 四种额外的 training procedure refinements</li>
+<li>Section 6: 表明了这种性能的提升是有利于 transfer learning 的</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><h4 id="Training-Procedure-baseline过程"><a href="#Training-Procedure-baseline过程" class="headerlink" title="Training Procedure (baseline过程)"></a>Training Procedure (baseline过程)</h4><ol>
+<li>整个流程: <img src="https://upload-images.jianshu.io/upload_images/13028997-a888f62bed3b9f1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></li>
+<li>Baseline Training Procedure:<ul>
+<li>baseline 训练流程是基于 ResNet 的</li>
+<li>image preprossing pipeline(training):<ul>
+<li>(1). 随机选取 image, 然后按照 32-bit 浮点数将 image 编码</li>
+<li>(2). 从 [3/4, 4/3] 的范围随机 sample 一个 aspect ratio, 从 [8%, 100%] 范围随机 sample 一个 area, 用这两个约束从 image 中 crop 一个 长方形区域, 然后把 cropped region resize到 224 * 224 的正方形 image.</li>
+<li>(3). 以 0.5 的概率进行水平 flip</li>
+<li>(4). 均匀分布的在 [0.6, 1.4] 的范围内 sample 一个系数, 去对 hue, saturation, brightness 进行 放缩</li>
+<li>(5). 在正态分布 N(0, 0.1) 中 sample 一个系数去添加 PCA noise</li>
+<li>(6). 对 RGB 图像减去 [123.68, 116.779, 103.939], 然后除以 [58.393, 57.12, 57.375] 去对 RGB 进行正则化处理</li>
+</ul>
+</li>
+<li>在 validation 过程中, 将每个 image 的短边 resize 到 256 pixels 的时候保持 aspect ratio. 然后从中心 crop 出来一个 224 * 224 的区域并且使用与 training 过程相同的 RGB normalization 过程进行处理, 但是并不使用任何的 random augmentation 操作</li>
+<li>conv 和 FC 层都使用 Xavier 算法进行初始化. 但是设置的参数是从 [-a, a] 的均匀分布进行 sample 的 a = sqrt(6/(d_in + d_out)). biases 会被设置为 0. batch normalization layers中, γ vector 初始化为 1 向量, β vector 初始化为 0.</li>
+<li>优化方法使用的是 Nesterov Accelerated Gradient descent.</li>
+<li>模型训练 120 epochs, 在 8 块 NVIDIA V100 GPU 进行 batch size 为 56 的训练. learning rate 被初始化为 0.1 并且在 30th, 60th, 90th epochs 时候除以 10.</li>
+</ul>
+</li>
+<li>Experiment Results: 用这套流程进行训练, 可以发现确实因为 training procedure 的不同会一定程度上影响结果</li>
+</ol>
+<h4 id="Efficient-Training"><a href="#Efficient-Training" class="headerlink" title="Efficient Training:"></a>Efficient Training:</h4><ol>
+<li>提到了 GPU 的引入使得一些 optimal choice 需要考虑到 trade-off -&gt; eg: (1). 低精度计算 (2). large batch training 同时不牺牲最后的精度, 甚至可以提升精度和训练速度</li>
+<li>Large-batch training<ul>
+<li>使用 mini-batch SGD 将多个 samples 放到一个 mini-batch 有效的去提升并行程度同时减少 通信损失. large batch size -&gt; 降低了 training progress(因为收敛变慢了). 很多工作都启发式的提出了解决方案, 本节部分会对四种启发式的有助于 large batch size 的方法进行描述.</li>
+<li>(1). Linear scaling learning rate: 提到了加大 batch size 之后并没有改变梯度的期望, 但是梯度的方差变小了 -&gt; 减小了 gradient 的 noise, 所以认为放大 learning rate 有助于提高这个方差. 同时提到了另外一篇文章表明线性提高 learning rate 同时提高 batch size 基于经验上有利于 ResNet-50 的训练. 实验是将 ResNet 原本的 0.1 learning rate with 256 batch size -&gt; 0.1 * b / 256</li>
+<li>(2). Learning rate warmup: 因为考虑到训练开始所有的参数都是随机出来的, 因此离 final solution 很远. 使用一个很大的 learning rate 可能会导致数值的不稳定. <ul>
+<li>1). 一篇文章[9]使用启发式的 warmup -&gt; 先用一个 small learning rate 在开始直到 training process stable 为止. </li>
+<li>2). [7]中提出了渐进的 warmup strategy, 从 0 开始逐渐的提升 learning rate 到 initial learning rate.</li>
+<li>本文选择使用前 m batches(eg: 5 epochs) 去进行 warm up, initial learning rate 是 η, 所以 warm up 过程中的 learning rate 是 iη/m</li>
+</ul>
+</li>
+<li>(3). (暂时没有很理解)Zero γ: 一个 ResNet 中包含了很多个 residual blocks, 每个 block 都包含一系列的 conv layer. 给定 input x, block(x) 是 block 中最后一层 conv 的 output. residual block 输出是 block(x) + x. 在 residual block 之后会有一个 batch normalization layer. BN layer 首先会对其 input 进行 standardize, 设为 xˆ, 然后进行一个 scale transformation γxˆ+β. γ 和 β 都是可学习的, 并且是使用 1s 和 0s 初始化的. 在 Zero γ 策略下, 对所有 Residual Block 的最后一个 BN layer 的 γ 使用 0s 进行初始化. 也就是所有的 residual block 将会返回其 inputs, 也就是 mimics 包含更少 layer 的 network, 使得网络能够在前期能够容易训练</li>
+<li>(4). No bias decay: 传统的 weight decay 会对所有的 learnable parameters 进行(也就是包括 weights 和 bias). 认为这个等价于使用 L2 正则化… 提到了但是根据[14]指出的, 最好只对 weights 进行 regularization 去避免 overfitting. 本文的 no bias decay 就是基于这个进行提出的. 在 no bias decay 仅仅会对 conv 和 FC 层的参数进行 weightdecay. 其他的参数(biaes, BN 层的 γ 和 β)都不进行weight decay</li>
+<li>提到了 LARS[28] 提出了一个 layer-wise adaptive 的 learning rate方式, 其能在极度大的 batch size(beyond 16k) 上取得很有效的结果. 但是本文会限制为 单机训练, 所以 batch size 不能超过 2000, 但是同样能去的呀一个很好的性能.</li>
+</ul>
+</li>
+<li>Low-precision training:<ul>
+<li>提到了 Neural Network 通常来说在 32-bit 浮点精度上进行训练 -&gt; 所有的 inputs, outputs 都是 32 位浮点数, 但是新的硬件结构通常能够提供高的低精度数据类型(FP16)的效率.</li>
+<li>但是除了带来了性能上的好处之外还会有坏处 -&gt; 精度的减小使得结果超出范围的可能性更大从而中断了训练进程. [19] 中提出使用 FP16 存储所有的参数并且使用 FP16 去计算梯度, 同时使用 FP32 做一份参数的备份用来做 parameter 的更新.</li>
+</ul>
+</li>
+<li>Experiment Results: 相比于 ResNet50 的 256 batchsize 以及使用 FP32, 使用 1024 batch size 与 FP16 减少了 3 倍左右的时间消耗同时在引入所有的上面提到的 4 种策略之后会有额外的 0.5% 的 top-1 准确率的提升.</li>
+</ol>
+<h4 id="Model-Tweaks"><a href="#Model-Tweaks" class="headerlink" title="Model Tweaks"></a>Model Tweaks</h4><p>PS: Model Tweak 的定义: 对现有网络架构进行微小的调整, 比如改变特定 conv 层的 stride. 提到了这样的 tweak 通常不会怎么改变计算复杂度带来的影响, 但是可能会对性能带来很大的影响, 本 section 就对此方面进行了大量的研究.</p>
+<ol>
+<li>ResNet Architecture:<ul>
+<li>简单的描述了一下 ResNet architecture.</li>
+<li>(1). ResNet 的 总体结构: (input) -&gt; Input stem -&gt; Stage 1 -&gt; Stage 2 -&gt; Stage 3 -&gt; Stage 4 -&gt; Output -&gt; (output)</li>
+<li>(2). Input Stem: 一个 7 <em> 7 </em> 64 (stride 2)conv  -&gt; 3 * 3 (stride) max pool. (总体上减小了 长宽 4 倍, 同时增加 channel size 到 64)</li>
+<li>(3). 每个 Stage 阶段中都以一个 down sampling block 开始, 每个 down sampling block 都分两路, 一路包含三个 conv (1 <em> 1, 3 </em> 3, 1 <em> 1), 另一路包含一个 1 </em> 1 conv (PS: 具体细节见这篇论文或者原论文吧…) Residual block 和 这个模块的设置相同, 只是 downsample block 的 stride 为 2 的第一层 conv stride 改为 1 了.</li>
+</ul>
+</li>
+<li>ResNet Tweaks: 首先回顾两个 popular ResNet tweaks – ResNet-B, ResNet-C, 本文会再提出一个新的 ResNet tweak, ResNet-D<ul>
+<li>(1). ResNet-B: 针对的部分: downsampling block 中第一个 conv 是 1 * 1 的 stride 为 2 的操作会忽略掉 feature map 中 3/4 的内容, 所以 ResNet-B 选择交换前两个 conv 的 stride.</li>
+<li>(2). ResNet-C: Inception-v2 提出的, 针对的点是使用大 conv 对计算量消耗的影响太大了, 所以将 input stem 中的 7 <em> 7 conv 替换成了两个 3 </em> 3 conv.</li>
+<li>(3). ResNet-D: 在 ResNet-B 的基础上在 path B(右侧的那个单 conv 的分支) 在 conv 前加上一个 avgpool (2 * 2 stride = 2)</li>
+</ul>
+</li>
+</ol>
+<h4 id="Training-Refinements"><a href="#Training-Refinements" class="headerlink" title="Training Refinements"></a>Training Refinements</h4><p>PS: 本 section 中描述了 4 个 training refinements, 目标旨在进一步提高模型的精度</p>
+<ol>
+<li>Cosine Learning Rate Decay: <ul>
+<li>(1). 提到了 learning rate 的调整对于训练来说是至关重要的. 之前在几种基础的 learning rate warmup 中提到的设置的是 step decay, 每一定的 epoch 之后会将 learning rate 除以 一个数值(eg: [9] 每 30 epoch之后减少rate到 0.1 倍, [26] 每 2 epoch之后减少到 0.94). </li>
+<li>(2). [18]中提出了 cosine 退火策略. 一个简单的版本就是将 learning rate 从 initial value 到 0 的过程中按照 consine fuction 去进行. 设 total batch 是 T(忽略掉 warm up 的 batch), initial learning rate 为 η. 这时候有 在 batch t, learning rate η_t = 1/2*(1+cos(tπ/T))η</li>
+</ul>
+</li>
+<li>Label Smoothing(有时间手推一下…):<ul>
+<li>(1). 分类网络的最后一层通常是一个 FC 层, 其隐层层的大小是和 分类 labels 的数量 K 是相同的. 最后的分数输出是要通过 softmax 的. 最后的分数其实是一个 概率分布 (因为和是 1), 但是我们的 truth label 其实是固定的 正确分类为 1 其他分类为 0 的分布, 对这个进行优化的时候会期望得到一个 正确分数很高而其他分数 这种设置是期望过拟合的, 不太好.</li>
+<li>(2). Label Smoothing 是设置为  q_i = 1-ε if i = truth_label, q_i = ε/(K-1) (其他情况)</li>
+</ul>
+</li>
+<li>Knowledge Distillation:<ul>
+<li>(1). 使用一个 teacher model 去帮助训练当前的 model(i.e. student model). teacher model 是一个预训练的更高精度的模型(具有更好的模型特征), student model 因此可以在不增加模型复杂度的时候提高自己的精度(eg: 使用 ResNet-152 作为 teacher model 去帮助 ResNet-50 进行训练)</li>
+<li>(2). 训练的时候添加 distillation loss 去惩罚两者的 softmax outputs. 在 loss 项上进行了一定的修改 loss = l(p, softmax(z)) + T^2l(softmax(r/T), softmax(z/T))</li>
+</ul>
+</li>
+<li>Mixup Training<ul>
+<li>(1). 是对 image 进行 augmentation 的方法 – mixup.</li>
+<li>(2). 在 mixup 中, 每次都随机 sample 两个 examples (x_i, y_i) &amp;&amp; (x_j, y_j). 然后我们通过一个线性加权去得到新的 example (PS: 这方法… 真的是啥都用…) 线性组合参数权重是从 Beta(α, α) 分布采样出来的</li>
+</ul>
+</li>
+<li>Experiment Results:<ul>
+<li>实验设置 label smoothing 的参数 ε = 0.1, distillation 的参数 T = 20, 使用 pretrained ResNet-152-D model 作为 teacher model, (teacher net 使用 cosine decay, 同时使用 label smoothing.) mixup training 中的采样参数的 Beta 分布中的参数 α = 0.2. 训练的 epoch 从 120 提升到 200(提到 mixed examples 需要更长的训练过程去收敛). 实验结果在 ResNet50, InceptionV3, MobileNet 中都进行了实验, 都有较大的提升.</li>
+</ul>
+</li>
+</ol>
+<h4 id="Transfer-Learning"><a href="#Transfer-Learning" class="headerlink" title="Transfer Learning"></a>Transfer Learning</h4><p>只看 Object Detection 了, 详细的信息请见论文</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/01/Simple-Summary-for-Chapter15-Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition/" rel="next" title="Simple Summary for (Chapter15--Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for (Chapter15--Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bag-of-Tricks-for-Image-Classification-with-Convolutional-Neural-Networks"><span class="nav-number">1.</span> <span class="nav-text">Bag of Tricks for Image Classification with Convolutional Neural Networks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Training-Procedure-baseline过程"><span class="nav-number">1.2.1.</span> <span class="nav-text">Training Procedure (baseline过程)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Efficient-Training"><span class="nav-number">1.2.2.</span> <span class="nav-text">Efficient Training:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Model-Tweaks"><span class="nav-number">1.2.3.</span> <span class="nav-text">Model Tweaks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Training-Refinements"><span class="nav-number">1.2.4.</span> <span class="nav-text">Training Refinements</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transfer-Learning"><span class="nav-number">1.2.5.</span> <span class="nav-text">Transfer Learning</span></a></li></ol></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lin Sui</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/suilin0432" title="GitHub &rarr; https://github.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://gitee.com/suilin0432" title="Gitee &rarr; https://gitee.com/suilin0432" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>Gitee</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin Sui</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">
+      
+    Theme – <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.1"></script><script src="/js/motion.js?v=7.4.1"></script>
+<script src="/js/schemes/muse.js?v=7.4.1"></script>
+<script src="/js/next-boot.js?v=7.4.1"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
