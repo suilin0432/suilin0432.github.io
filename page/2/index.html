@@ -236,6 +236,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/12/Chapter15-Exercise-Simple-Summary-for-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition-VGG/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/12/12/Chapter15-Exercise-Simple-Summary-for-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition-VGG/" class="post-title-link" itemprop="url">(Chapter15--Exercise) Simple Summary for Very Deep Convolutional Networks For Large-Scale Image Recognition(VGG)</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-12-12 21:48:17 / Modified: 21:48:56" itemprop="dateCreated datePublished" datetime="2019-12-12T21:48:17+08:00">2019-12-12</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Chapter15–Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition"><a href="#Chapter15–Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition" class="headerlink" title="(Chapter15–Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition"></a>(Chapter15–Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文的主要贡献: 验证使用 3*3 conv 的网络结构加深达到的效果</li>
+<li>强调了之前的针对 (Krizhevsky的) Conv 网络的改进是 (1). 在第一个 conv 层使用更小的 conv 以及 stride. (2). 使用多尺度的方法进行network的训练以及测试(这里指的是 Overfeat, 和一些其他的当年的作品使用的方法)</li>
+<li>提到了本文想要解决的是ConvNet结构设计的另外一个重要的方面: 深度 -&gt; 将架构中所有的其他参数都固定, 然后仅仅去增加网络的深度, 堆叠更多的 conv layers. 认为是使用了小的 3 * 3 的卷积使这种做法变得可行.</li>
+<li>本文贡献: 提出了一个新的更加准确的SOTA的深度convnet, 具有很好的广泛应用性, 且其提取到的特征使用简单的pipeline也可以得到一个很好的效果. </li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>架构的一些设计:<ul>
+<li>(1). 224*224 RGB input image</li>
+<li>(2). preprocessing -&gt; 简单的减去平均图而已</li>
+<li>(3). 使用small RF conv(3 <em> 3甚至是1 </em> 1的)</li>
+<li>(4). 卷积前后保持尺度不变</li>
+<li>(5). 尺度大小变化通过2 * 2max-pooling来做.</li>
+<li>(6). 后续会使用3个FC层(4096-4096-1000)</li>
+<li>(7). 所有的hidden layers都会使用ReLU进行激活</li>
+</ul>
+</li>
+<li>强调和主流数据集的主流设定不同的是, 本文提出的结构没有在第一个conv层使用大的kernel或者打的stride. </li>
+<li>主张使用多个 3 <em> 3 的小的conv去在代替大的如 5 </em> 5、7 * 7 的conv. 认为好处如下:<ul>
+<li>(1). 多个卷积核后面跟上了多个激活单元, 意味着非线性的增加, 做出的决定是更加有辨别能力的.</li>
+<li>(2). 减少了模型的参数</li>
+</ul>
+</li>
+<li>提到了适量插入 1 <em> 1 conv的目的是为了增加非线性的同时并不改变 Receptive Field. (提到了 1 </em> 1 conv是在 Network in Network中广泛使用的)</li>
+<li>关于训练的一些设计:<ul>
+<li>(1). 使用带动量的mini-batch gradient descent进行训练, 动量为 0.9</li>
+<li>(2). batch-size 调整到256</li>
+<li>(3). 使用 L2 正则去进行权重约束</li>
+<li>(4). 使用dropout regularisation(对前两个FC层)</li>
+<li>learning rate 开始设置为 10^-2, 然后当在validation上的准确率不在增长的时候就减少十倍, 训练370K iteration(74 epochs)之后停止 -&gt; 文章说本文的网络深参数多, 但是能够更快的收敛的原因是因为1). 网络的深度以及小conv kernel的使用带来的隐性约束 2). 特定层的预先初始化 -&gt; 作者先使用一个比较浅的网络去进行训练, 然后提取这个网络的浅层(前4层以及后3层conv) 中间的使用随机初始化进行(PS: 同时训练的时候并不会减少对这些层的学习率) (PS: 作者提到了, 可以不按照这个方法, 而且是使用 Glorot&amp;Bengio 提出的随机初始化方法代替这个方法也可以达到好的效果)</li>
+</ul>
+</li>
+<li>Training image size: <ul>
+<li>PS: 设 S 作为各向同性放缩的最短边长度</li>
+<li>(1). 如果将crop size设置为固定的 224 * 224 的时候, S 是要不小于 224 的, 当 S = 224 的时候, crop将会crop整个image. S &gt;&gt; 224 的时候只会  crop 出来 image 的很小的一个部分, 这个部分将会包含一个小物体或者一个物体的部分.</li>
+<li>(2). 作者考虑两种进行 training scale S的设定: 1). 固定 S -&gt; single-scale training. 2). 设置 S 为多尺度训练, 将训练图片随机放缩为 [S_min, S_max]之间</li>
+</ul>
+</li>
+<li>Testing: 提到了为了不再对每个crop出来的image patch(因为之前前面是FC层)进行重复的的计算然后ensemble, 选择先对整个放缩好的 image 先进行特征的提取(7 <em> 7 conv + 2个1 </em> 1 conv) 得到一个 class score map(通道数是和类别数相等的, 并且是可变的空间分辨率的) -&gt; 为了得到一个固定大小的关于image的class scores, 会先进性spatially averaged. 然后再用FC层去进行处理.<ul>
+<li>但是后续还是会选择 crop 去提高 performance</li>
+</ul>
+</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/25/六-、简单总结mmdetection源码TwoStageDetector-的流程细节-五-解析BBox-head-forward-以及相关-Loss/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1514,110 +1630,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/18/Simple-Summary-for-Deep-Clustering-for-Unsupervised-Learning-of-Visual-Features/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/18/Simple-Summary-for-Deep-Clustering-for-Unsupervised-Learning-of-Visual-Features/" class="post-title-link" itemprop="url">Simple Summary for Deep Clustering for Unsupervised Learning of Visual Features</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-18 10:32:17 / Modified: 10:32:39" itemprop="dateCreated datePublished" datetime="2019-11-18T10:32:17+08:00">2019-11-18</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Deep-Clustering-for-Unsupervised-Learning-of-Visual-Features》"><a href="#简单总结《Deep-Clustering-for-Unsupervised-Learning-of-Visual-Features》" class="headerlink" title="简单总结《Deep Clustering for Unsupervised Learning of Visual Features》"></a>简单总结《Deep Clustering for Unsupervised Learning of Visual Features》</h2><hr>
-<p>PS: Unsupervised 方法(Self-Supervised), 在综述贴中, 描述这篇文章描述的主要是 利用对feature representation的clustering去进行parameter的更新</p>
-<p>PS: 确实本文的方法是无监督的方法, 通过聚类的方式产生了 伪标签去进行训练来得到好的representations, 但是最后的结果是怎么产生的??? 聚类类别明显是很多的啊, 最后是怎么对应到各个类别的呢? 而且怎么用来去做分割已经detection也不是很明白… 是后面要进行有监督的学习进行fine-tune吗? 那使用VGG什么的带来的效果看上去并没有那么好.</p>
-<hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p>PS: 总体流程上个人认为还是整个pipeline, 在feature提取层上取出来对应的提取的特征, 用来进行无监督的分类, 然后给上一个伪标签, 后续进行到分类网络的最后进行使用这个伪标签的训练去反向传播(图并没有画最后面的一部分)</p>
-<ol>
-<li>想要将clustering以一种end2end的方式融合到深度学习网络中, 并且是其能够基于大规模的数据集进行训练. 本文提出的是DeepCluster, 一个联合学习神经网络参数和对得到的features结果进行聚类标签的聚类算法. DeepCluster迭代式的使用标准聚类算法(K-means)对features进行聚类, 并使用subsequent assignments作为监督去进行network的权重的更新. 使用DeepCluster去无监督的对CNN在大数据集上进行训练. 最后可以达到SOTA效果.</li>
-<li>从Fig 1中可以看出的本文的主要做法: 将没有标签的数据进行clustering做分类, 之后形成伪标签, 然后用伪标签去进行训练. </li>
-<li>提到了传统的聚类算法通常是针对具有固定feature的线性模型进行的设计, 这些工作也很少能在学习features的同时很好的工作. </li>
-<li>本文, 作者提出了新颖的聚类算法, 针对大规模的convnets的end2end的训练. 表明了模型能够使用聚类网络获取到有用的通用features. 本文的做法就是: 交替的进行(1). 对图像描述子进行分类 和(2).通过预测cluster assignments进行convnet的权重的更新. 文章说是为了简单才选择使用的Kmeans, 其他聚类算法也是可行的. 认为与self-supervised方法不同的是, clustering只需要很少的domain knowledge, 并且不需要inputs的特定signal.</li>
-<li>本文同样通过修改实验规则证明了框架的robustness(修改了包括convnet网络结构以及数据集), 也强调了不仅仅能捕捉class-level information, 同时也能捕捉instance-level information.</li>
-<li>主要贡献点: (1). 一个新颖的使用如k-means的基础聚类算法的end2end训练的unsupervised方法, 同时仅仅需要很少的额外步骤.  (2). 在很多的unsupervised transfer任务上SOTA的性能. (3). 一个关于unsupervised feature learning的验证标准的讨论.</li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>首先对一些流程、目标与定义进行了公式化的描述</li>
-<li>Unsupervised learning by clustering:<ul>
-<li>首先强调了, 当对提取特征的network参数进行随机初始化的时候, 并不会产生好的features, 但是random features的性能要比瞎猜要好多了. 认为这个好的效果是由于conv本身的结构所带来的对input signal的强先验导致的. 本文的idea就是去利用weak signal去促进convnet的辨别能力.</li>
-<li>本文对convnet的output进行cluster, 然后使用后续的cluster分配的伪标签进行最后损失函数的更新, 这个过程会迭代的进行去进行features的学习然后进行分类</li>
-<li>这里指的convnet应该是没有接上后面进一步辨别网络的部分, 只是用来学习特征的, 文章使用k-means作为基本的聚类算法(但是作者观点是按照以往的工作, 这里使用什么聚类算法都是无所谓的)</li>
-<li>k-means使用的分类标准是几何距离</li>
-<li>引入了一个 d * k (d是feature的维度, k是分类的类别)的centroid matrix C, 通过 $min||(f_{θ}(x_n))-Cy_n||^2_2$ 其中$y_n$的每一个entry都是0/1,且只能有一个1. 对这个问题进行优化来得到最佳的伪标签y_n以及矩阵C(虽然后续C没有使用)</li>
-<li>总体上就是, $min||(f_{θ}(x_n))-Cy_n||^2_2$ 去得到伪标签, 然后去进行分类任务的损失函数的更新进行网络参数的优化.</li>
-<li>但是提到了这么操作很可能会产生平凡解, 需要一定的操作去避免优秀解的退化</li>
-</ul>
-</li>
-<li>Avoiding trivial solutions<ul>
-<li>强调了平凡解(应该指的是所有的点都被分到了一个类别, 或者大部分的点在少数的几个cluster中的时候)的而存在, 不仅仅是对非监督训练neural network来说的, 对于任意联合学习discriminative classifier和labels的方法都存在平凡解的问题. 提到了discriminative clustering即使在线性模型中使用的时候也会出现这个问题. 提到了解决办法通常是: 约束或者惩罚每个cluster中的点的数量, 但是提到了因为涉及到了整个dataset中的计算处理, 不适合用于大规模数据集上的处理办法, 所以提出了一系列其他的想法:</li>
-<li>(1). Empty clusters: 提到了出现所有点在一个类别的可能性之一在于没有限制empty cluster的产生. 提到了一个最常用的方法就是自动的去重新分配empty cluster -&gt; 当一个cluster是空的时候随机选择一个非空cluster并且将这个非空cluster的中心添加一个小的随机扰动之后作为空集的新的中心, 然后重新的去将非空集合按照这两个中心点进行一次聚类</li>
-<li>(2). Trivial parametrization: 提到了当分类时候将大部分的image分配到了少部分的cluster中时, 学习到的parameter θ会对这几个类别非常有辨别能力. 尤其是当极端情况下只有一个类别的时候, 这个时候分类类别将会百分百正确. 这种情况通常在数据类别不平衡的时候出现. 避免这个问题出现的一般策略就是从uniform distribution中进行image的sample, 或者使用伪标签.</li>
-</ul>
-</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1667,7 +1679,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

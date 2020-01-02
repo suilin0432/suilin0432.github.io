@@ -236,6 +236,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/COCO等数据集下载问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2020/01/02/COCO等数据集下载问题/" class="post-title-link" itemprop="url">COCO等数据集下载问题</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-02 16:22:12 / Modified: 17:00:46" itemprop="dateCreated datePublished" datetime="2020-01-02T16:22:12+08:00">2020-01-02</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>无论是在学校服务器、阿里云服务器还是本机下载 MS COCO 数据集, PASCAL VOC 数据集都面临着下载速度很慢(几十kb/s-几百kb/s)的问题… 第一次下载还算忍受了一下这个问题… 然而前两天手残把数据集文件删没了… 同时我又没备份… 尝试着用磁盘恢复工具进行了一下, 没恢复明白所以只能重新下载, 但是真的慢的无法接受, 所以我选择另外找方法…<br>coco官网提到了</p>
+<blockquote>
+<p>Our data is hosted on Google Cloud Platform (GCP). gsutil provides tools for efficiently accessing this data. You do not need a GCP account to use gsutil. Instructions for downloading the data are as follows:</p>
+</blockquote>
+<p>(1) Install gsutil via:curl <a href="https://sdk.cloud.google.com" target="_blank" rel="noopener">https://sdk.cloud.google.com</a> | bash (2) Make local dir:mkdir val2017 (3) Synchronize via:gsutil -m rsync gs://images.cocodataset.org/val2017 val2017<br>The splits are available for download via rsync are: train2014, val2014, test2014, test2015, train2017, val2017, test2017, unlabeled2017. Simply replace ‘val2017’ with the split you wish to download and repeat steps (2)-(3). Finally, you can also download all the annotation zip files via:</p>
+<p>(4) Get annotations:gsutil -m rsync gs://images.cocodataset.org/annotations [localdir]<br>The download is multi-threaded, you can control other options of the download as well (see gsutil rsync). Please do not contact us with help installing gsutil (we note only that you do not need to run gcloud init).</p>
+<p>所以试着去下载了一下 gsutil, em… <code>gsutil via:curl https://sdk.cloud.google.com | bash</code> 是用不了的因为服务器没有翻墙, 所以用 <code>pip install gsutil</code> 下载, 剩下的就按照 COCO 数据集提到的 <code>gsutil -m rsync gs://images.cocodataset.org/val2017 val2017</code> 等进行数据集的下载就好了, 炒鸡快 10+MB/s</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1360,122 +1438,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/12/Chapter15-Exercise-Simple-Summary-for-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition-VGG/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/12/12/Chapter15-Exercise-Simple-Summary-for-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition-VGG/" class="post-title-link" itemprop="url">(Chapter15--Exercise) Simple Summary for Very Deep Convolutional Networks For Large-Scale Image Recognition(VGG)</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-12-12 21:48:17 / Modified: 21:48:56" itemprop="dateCreated datePublished" datetime="2019-12-12T21:48:17+08:00">2019-12-12</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="Chapter15–Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition"><a href="#Chapter15–Exercise-简单总结-VGG-Very-Deep-Convolutional-Networks-For-Large-Scale-Image-Recognition" class="headerlink" title="(Chapter15–Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition"></a>(Chapter15–Exercise) 简单总结(VGG) Very Deep Convolutional Networks For Large-Scale Image Recognition</h2><hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>本文的主要贡献: 验证使用 3*3 conv 的网络结构加深达到的效果</li>
-<li>强调了之前的针对 (Krizhevsky的) Conv 网络的改进是 (1). 在第一个 conv 层使用更小的 conv 以及 stride. (2). 使用多尺度的方法进行network的训练以及测试(这里指的是 Overfeat, 和一些其他的当年的作品使用的方法)</li>
-<li>提到了本文想要解决的是ConvNet结构设计的另外一个重要的方面: 深度 -&gt; 将架构中所有的其他参数都固定, 然后仅仅去增加网络的深度, 堆叠更多的 conv layers. 认为是使用了小的 3 * 3 的卷积使这种做法变得可行.</li>
-<li>本文贡献: 提出了一个新的更加准确的SOTA的深度convnet, 具有很好的广泛应用性, 且其提取到的特征使用简单的pipeline也可以得到一个很好的效果. </li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>架构的一些设计:<ul>
-<li>(1). 224*224 RGB input image</li>
-<li>(2). preprocessing -&gt; 简单的减去平均图而已</li>
-<li>(3). 使用small RF conv(3 <em> 3甚至是1 </em> 1的)</li>
-<li>(4). 卷积前后保持尺度不变</li>
-<li>(5). 尺度大小变化通过2 * 2max-pooling来做.</li>
-<li>(6). 后续会使用3个FC层(4096-4096-1000)</li>
-<li>(7). 所有的hidden layers都会使用ReLU进行激活</li>
-</ul>
-</li>
-<li>强调和主流数据集的主流设定不同的是, 本文提出的结构没有在第一个conv层使用大的kernel或者打的stride. </li>
-<li>主张使用多个 3 <em> 3 的小的conv去在代替大的如 5 </em> 5、7 * 7 的conv. 认为好处如下:<ul>
-<li>(1). 多个卷积核后面跟上了多个激活单元, 意味着非线性的增加, 做出的决定是更加有辨别能力的.</li>
-<li>(2). 减少了模型的参数</li>
-</ul>
-</li>
-<li>提到了适量插入 1 <em> 1 conv的目的是为了增加非线性的同时并不改变 Receptive Field. (提到了 1 </em> 1 conv是在 Network in Network中广泛使用的)</li>
-<li>关于训练的一些设计:<ul>
-<li>(1). 使用带动量的mini-batch gradient descent进行训练, 动量为 0.9</li>
-<li>(2). batch-size 调整到256</li>
-<li>(3). 使用 L2 正则去进行权重约束</li>
-<li>(4). 使用dropout regularisation(对前两个FC层)</li>
-<li>learning rate 开始设置为 10^-2, 然后当在validation上的准确率不在增长的时候就减少十倍, 训练370K iteration(74 epochs)之后停止 -&gt; 文章说本文的网络深参数多, 但是能够更快的收敛的原因是因为1). 网络的深度以及小conv kernel的使用带来的隐性约束 2). 特定层的预先初始化 -&gt; 作者先使用一个比较浅的网络去进行训练, 然后提取这个网络的浅层(前4层以及后3层conv) 中间的使用随机初始化进行(PS: 同时训练的时候并不会减少对这些层的学习率) (PS: 作者提到了, 可以不按照这个方法, 而且是使用 Glorot&amp;Bengio 提出的随机初始化方法代替这个方法也可以达到好的效果)</li>
-</ul>
-</li>
-<li>Training image size: <ul>
-<li>PS: 设 S 作为各向同性放缩的最短边长度</li>
-<li>(1). 如果将crop size设置为固定的 224 * 224 的时候, S 是要不小于 224 的, 当 S = 224 的时候, crop将会crop整个image. S &gt;&gt; 224 的时候只会  crop 出来 image 的很小的一个部分, 这个部分将会包含一个小物体或者一个物体的部分.</li>
-<li>(2). 作者考虑两种进行 training scale S的设定: 1). 固定 S -&gt; single-scale training. 2). 设置 S 为多尺度训练, 将训练图片随机放缩为 [S_min, S_max]之间</li>
-</ul>
-</li>
-<li>Testing: 提到了为了不再对每个crop出来的image patch(因为之前前面是FC层)进行重复的的计算然后ensemble, 选择先对整个放缩好的 image 先进行特征的提取(7 <em> 7 conv + 2个1 </em> 1 conv) 得到一个 class score map(通道数是和类别数相等的, 并且是可变的空间分辨率的) -&gt; 为了得到一个固定大小的关于image的class scores, 会先进性spatially averaged. 然后再用FC层去进行处理.<ul>
-<li>但是后续还是会选择 crop 去提高 performance</li>
-</ul>
-</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1525,7 +1487,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">62</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

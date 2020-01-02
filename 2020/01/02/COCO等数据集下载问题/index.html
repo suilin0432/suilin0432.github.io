@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Semi-Supervised Learning with Ladder Networks》 Introduction: 本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进">
-<meta name="keywords" content="Paper Summary">
+  <meta name="description" content="无论是在学校服务器、阿里云服务器还是本机下载 MS COCO 数据集, PASCAL VOC 数据集都面临着下载速度很慢(几十kb/s-几百kb/s)的问题… 第一次下载还算忍受了一下这个问题… 然而前两天手残把数据集文件删没了… 同时我又没备份… 尝试着用磁盘恢复工具进行了一下, 没恢复明白所以只能重新下载, 但是真的慢的无法接受, 所以我选择另外找方法…coco官网提到了  Our data">
+<meta name="keywords" content="问题">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Semi-Supervised Learning with Ladder Networks">
-<meta property="og:url" content="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/index.html">
+<meta property="og:title" content="COCO等数据集下载问题">
+<meta property="og:url" content="http://suilin.top/2020/01/02/COCO等数据集下载问题/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Semi-Supervised Learning with Ladder Networks》 Introduction: 本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进">
+<meta property="og:description" content="无论是在学校服务器、阿里云服务器还是本机下载 MS COCO 数据集, PASCAL VOC 数据集都面临着下载速度很慢(几十kb/s-几百kb/s)的问题… 第一次下载还算忍受了一下这个问题… 然而前两天手残把数据集文件删没了… 同时我又没备份… 尝试着用磁盘恢复工具进行了一下, 没恢复明白所以只能重新下载, 但是真的慢的无法接受, 所以我选择另外找方法…coco官网提到了  Our data">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-12T07:41:11.307Z">
+<meta property="og:updated_time" content="2020-01-02T09:00:46.953Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Semi-Supervised Learning with Ladder Networks">
-<meta name="twitter:description" content="简单总结《Semi-Supervised Learning with Ladder Networks》 Introduction: 本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进">
-  <link rel="canonical" href="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/">
+<meta name="twitter:title" content="COCO等数据集下载问题">
+<meta name="twitter:description" content="无论是在学校服务器、阿里云服务器还是本机下载 MS COCO 数据集, PASCAL VOC 数据集都面临着下载速度很慢(几十kb/s-几百kb/s)的问题… 第一次下载还算忍受了一下这个问题… 然而前两天手残把数据集文件删没了… 同时我又没备份… 尝试着用磁盘恢复工具进行了一下, 没恢复明白所以只能重新下载, 但是真的慢的无法接受, 所以我选择另外找方法…coco官网提到了  Our data">
+  <link rel="canonical" href="http://suilin.top/2020/01/02/COCO等数据集下载问题/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for Semi-Supervised Learning with Ladder Networks | Suilin's Blog</title>
+  <title>COCO等数据集下载问题 | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/12/Simple-Summary-for-Semi-Supervised-Learning-with-Ladder-Networks/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/02/COCO等数据集下载问题/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for Semi-Supervised Learning with Ladder Networks
+            COCO等数据集下载问题
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-11-12 15:40:56 / Modified: 15:41:11" itemprop="dateCreated datePublished" datetime="2019-11-12T15:40:56+08:00">2019-11-12</time>
+              <time title="Created: 2020-01-02 16:22:12 / Modified: 17:00:46" itemprop="dateCreated datePublished" datetime="2020-01-02T16:22:12+08:00">2020-01-02</time>
             </span>
           
             
@@ -291,32 +291,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结《Semi-Supervised-Learning-with-Ladder-Networks》"><a href="#简单总结《Semi-Supervised-Learning-with-Ladder-Networks》" class="headerlink" title="简单总结《Semi-Supervised Learning with Ladder Networks》"></a>简单总结《Semi-Supervised Learning with Ladder Networks》</h2><hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>本文将supervised learning与unsupervised learning在深度网络中进行结合. 提出的model被训练去同时减小supervised与unsupervised cost function. PS: 本文一个贡献就是对LadderNet进行改进, 从unsupervised变成semi-supervised的network.</li>
-<li>PS: 文章说的permutation invariant指的是排列不变性(个人认为因为是使用神经网络进行拟合的所以只是要求有这个功能, 并不要求有这个完全严格的输出值的限制), 应该是对pixel进行冲排列之后不会造成影响(所以因此不适合对conv进行这样的约束, 因为CNN考虑的是local信息)</li>
-<li>提到了半监督学习中很多工作都进行了supervised和unsupervised的结合, 其中unsupervised任务包括了进行图像的重建或者能够将物体正确的分类.</li>
-<li>提到了确实有同时使用无监督学习和监督学习的工作, 比如用无监督学习去辅助监督学习的工作(使用无监督学习进行预训练, 然后用监督学习进行fine-tune), 但是作者认为通常无监督和监督学习的任务是不同的, 使用无监督学习得到的特征可能并不适合于监督学习.</li>
-<li>本文工作是基于Ladder network的, 提到了Ladder Network的辅助任务是在model的每层去denoise representation. 模型结构是添加了encoder到decoder的skip connection的autoencoder, 同时Ladder Network的learning task和denoising autoencoder类似, 但是其对每层都添加noise, 认为skip connection有助于减轻模型高层次represent details的压力. (PS: 这也就是为什么加noise了, 不然很容易就直接学习到identity关系了). 本文的改进点是 传统的Ladder network只使用了unsupervised学习, 本文进行了和supervised learning的结合</li>
-<li>本文贡献: <ul>
-<li>(1). 能够与监督学习方法兼容: unsupervised部分关注与supervised learning找到线索的相关细节(注意强调了”相关”). 并且可以添加到现有的前馈神经网络中, 文章后续表明了, 可以先用supervised learning得到一个state-of-art结果之后进一步使用非监督学习进行性能进一步提升</li>
-<li>(2). Scalability resulting from local learning(???没翻译明白): 在top层的supervised target之外还有per level 的 local unsupervised target, 认为会使层次更加适合深度网络.</li>
-<li>(3). Computational efficiency: 正常而言需要几倍的训练时间去添加解码器, 但是本文通过更有效的方法只需要一个很小的时间倍数</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>本文首先从因变量模型角度对ladderNet进行解释.<ul>
-<li>(1). 提到了因变量模型是很有吸引力的半监督模型, 因为其可以结合监督学习和非监督学习. 其中唯一的区别就是label是否可以被观察到. 尤其是层次隐变量模型, 岂能通过底层来描述细节, 高层次去关注那些更加抽象的具有不变性质的feature以更好地处理任务.</li>
-<li>(2). 讲述了一下DAEs和DSS两个模型的区别: DAEs: (给定观察量, DAEs从加噪版的观察量学习去重构观察量)x加噪声-&gt;x’-&gt;重构得到x^, 任务目标使 x^与x的MSE loss最小.  DSS: (重构隐变量, 给定观察量) DSS训练一个映射函数f(x)-&gt;z, 来获得因变量z, 然后对z进行归一化之后使用一个降噪函数g(z_norm)-&gt;z^, 得到一个重构量z^, 任务目标是使 z^与z的 (这里强调了一下一定要对z进行归一化, 否则g会学习到恒等函数)</li>
-<li>(3). LadderNet结构: 首先进行x的输入, 然后加噪进行一个映射关系的到第一个隐变量z^1, 然后对z^1加噪得到z^1’….直到z^n’, 然后会之后利用这个一层层的去还原(降噪)z^i, 同时每个z^i(skip connection)和z^i+1’都会共同来去学习还原z^i. 每层都是有损失函数的贡献的(z^i与z^i’的MSEloss) z^i是用另外的一个不加噪编码的分支得到的</li>
-<li>(4). 本文的有监督部分是在加噪过程的最后的那个hidden layer后面利用这个representation去学习针对分类的任务, 对此进行有监督的训练, 无监督的训练指的是laddernet本身(也就是target为 加噪过程的降噪结果得到的还原隐变量和不加噪过程得到的隐变量的MSE loss)</li>
-</ul>
-</li>
-</ol>
-<p>PS: 个人认为本文的思路主要就是为了解决AutoEncoder自监督学习以及有监督分类的任务目的的不同, 自监督的特征会强调保留原有特征信息去用来重构, 但是分类任务通常需要抽象的语义信息, 所以本文对加噪encoder部分的最后进行监听, 希望能够使得encode特征是有用的, 同时又能够利用自学习(非监督学习)很好的约束优化(因为这时候还没有好的初始化方法去使得直接训练网络达到一个很好的效果)</p>
-<p>PS: 具体的分析有点看不懂, 只是大致理解思路而已, 有需要的时候回来看后面</p>
+        <p>无论是在学校服务器、阿里云服务器还是本机下载 MS COCO 数据集, PASCAL VOC 数据集都面临着下载速度很慢(几十kb/s-几百kb/s)的问题… 第一次下载还算忍受了一下这个问题… 然而前两天手残把数据集文件删没了… 同时我又没备份… 尝试着用磁盘恢复工具进行了一下, 没恢复明白所以只能重新下载, 但是真的慢的无法接受, 所以我选择另外找方法…<br>coco官网提到了</p>
+<blockquote>
+<p>Our data is hosted on Google Cloud Platform (GCP). gsutil provides tools for efficiently accessing this data. You do not need a GCP account to use gsutil. Instructions for downloading the data are as follows:</p>
+</blockquote>
+<p>(1) Install gsutil via:curl <a href="https://sdk.cloud.google.com" target="_blank" rel="noopener">https://sdk.cloud.google.com</a> | bash (2) Make local dir:mkdir val2017 (3) Synchronize via:gsutil -m rsync gs://images.cocodataset.org/val2017 val2017<br>The splits are available for download via rsync are: train2014, val2014, test2014, test2015, train2017, val2017, test2017, unlabeled2017. Simply replace ‘val2017’ with the split you wish to download and repeat steps (2)-(3). Finally, you can also download all the annotation zip files via:</p>
+<p>(4) Get annotations:gsutil -m rsync gs://images.cocodataset.org/annotations [localdir]<br>The download is multi-threaded, you can control other options of the download as well (see gsutil rsync). Please do not contact us with help installing gsutil (we note only that you do not need to run gcloud init).</p>
+<p>所以试着去下载了一下 gsutil, em… <code>gsutil via:curl https://sdk.cloud.google.com | bash</code> 是用不了的因为服务器没有翻墙, 所以用 <code>pip install gsutil</code> 下载, 剩下的就按照 COCO 数据集提到的 <code>gsutil -m rsync gs://images.cocodataset.org/val2017 val2017</code> 等进行数据集的下载就好了, 炒鸡快 10+MB/s</p>
 
     </div>
 
@@ -332,7 +313,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/Paper-Summary/" rel="tag"># Paper Summary</a>
+              <a href="/tags/问题/" rel="tag"># 问题</a>
             
           </div>
         
@@ -342,8 +323,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/11/10/Simple-Summary-for-Stacked-Convolutional-Auto-Encoders-for-Hierarchical-Feature-Extraction/" rel="next" title="Simple Summary for Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Stacked Convolutional Auto-Encoders for Hierarchical Feature Extraction
+                <a href="/2020/01/02/Simple-Summary-Chapter15-GoingDeeper-with-Convolution-GoogleNet/" rel="next" title="Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet)">
+                  <i class="fa fa-chevron-left"></i> Simple Summary (Chapter15) GoingDeeper with Convolution (GoogleNet)
                 </a>
               
             </div>
@@ -351,10 +332,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/11/16/Simple-Summary-for-Pixel-Recurrent-Neural-Networks/" rel="prev" title="Simple Summary for Pixel Recurrent Neural Networks">
-                  Simple Summary for Pixel Recurrent Neural Networks <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -400,8 +377,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Semi-Supervised-Learning-with-Ladder-Networks》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Semi-Supervised Learning with Ladder Networks》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method:</span></a></li></ol></li></ol></div>
-        
       </div>
       <!--/noindex-->
 
