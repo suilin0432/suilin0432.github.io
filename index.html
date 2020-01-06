@@ -266,7 +266,7 @@
                 
               
 
-              <time title="Created: 2020-01-06 22:48:59 / Modified: 22:49:34" itemprop="dateCreated datePublished" datetime="2020-01-06T22:48:59+08:00">2020-01-06</time>
+              <time title="Created: 2020-01-06 22:48:59 / Modified: 22:58:33" itemprop="dateCreated datePublished" datetime="2020-01-06T22:48:59+08:00">2020-01-06</time>
             </span>
           
             
@@ -288,7 +288,11 @@
           <p>##《Memorizing Normality to Detect Anomaly: Memory-augmented Deep Autoencoder for Unsupervised Anomaly Detection》</p>
 <hr>
 <p>笔记请见右侧地址: <a href="http://suilin.top:8080/BookExercise/otherPapers/Memorizing%20Normality%20to%20Detect%20Anomaly_%20Memory-augmented%20Deep%20Autoencoder%20for%20Unsupervised%20Anomaly%20Detection.pdf">笔记地址</a></p>
-<p>PS: 同样需要密码(滑稽</p>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol>
+<li>个人认为 shrink 那个操作为什么有效的本质是因为 异常点 会和 normal 数据的 encode 出来的信息有比较大的差异的, 所以一般不会出现那种一个相似度非常高的情况出现吧, 这时候其他的带来的影响还是比较大的</li>
+<li>个人认为更重要的点在于: 找相似度得到的信息我们期望的应该是重构出来的是一个能表达的事物, 但是这个重构出来的事物应该和异常点所表达的不同, 而不应该是异常信息从 memory 检索出来之后重构出来的信息无法表示 或者 异常信息所直接 encode-decoder 出来的信息是没有被很好学习到的(这一点和文章后面实验图所表示的意思是相似的, 但是认为检索过程中的数学形式应该还会有更精妙的方法达到这一目的)</li>
+</ol>
 
         
       
