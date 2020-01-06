@@ -236,6 +236,81 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/19/import-torch-Error1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/11/19/import-torch-Error1/" class="post-title-link" itemprop="url">import torch Error1</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-19 15:11:15 / Modified: 15:14:39" itemprop="dateCreated datePublished" datetime="2019-11-19T15:11:15+08:00">2019-11-19</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>import torch时候出现报错</p>
+<p>torch版本: torch-1.1.0<br>python版本: python-3.6.2</p>
+<p>出现问题:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ImportError: dlopen(/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/torch/_C.cpython-36m-darwin.so, 9): Library not loaded: /usr/local/opt/libomp/lib/libomp.dylib</span><br><span class="line">Referenced from: /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/torch/lib/libshm.dylib</span><br><span class="line">Reason: image not found</span><br></pre></td></tr></table></figure></p>
+<p>解决办法: <a href="https://github.com/pytorch/pytorch/issues/20030" target="_blank" rel="noopener">官方项目issue链接</a><br>具体方法: brew install libomp</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/19/Simple-Summary-for-Representation-Learning-by-Learning-to-Count/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1122,128 +1197,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/06/Simple-Summary-for-FEATURE-INTERTWINER-FOR-OBJECT-DETECTION/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/06/Simple-Summary-for-FEATURE-INTERTWINER-FOR-OBJECT-DETECTION/" class="post-title-link" itemprop="url">Simple Summary for FEATURE INTERTWINER FOR OBJECT DETECTION</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-06 22:00:13 / Modified: 22:00:33" itemprop="dateCreated datePublished" datetime="2019-11-06T22:00:13+08:00">2019-11-06</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《FEATURE-INTERTWINER-FOR-OBJECT-DETECTION》"><a href="#简单总结《FEATURE-INTERTWINER-FOR-OBJECT-DETECTION》" class="headerlink" title="简单总结《FEATURE INTERTWINER FOR OBJECT DETECTION》"></a>简单总结《FEATURE INTERTWINER FOR OBJECT DETECTION》</h2><p>PS: 本文是关于利用less reliable source的data set(本文是小物体数据部分)去辅助reliable的data set(本文是大物体数据部分)去进行训练的, 用了无监督的思想(主要要总结的也就是这个方面的思想)</p>
-<hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>认为一个训练的很好的model应该能够在分类的时候每类别内都有一个一致的分数(应该指的是我们通常需要将物体正确所属类别的分数训练到1, 不正确的抑制到0, 所以作者认为这就代表着同一类别的物体最后要得到的分数是一致的, 因此需要高层次的语义信息的相似(但是实际上会有softmax进行处理, 所以我们并不需要要求分数相似, 只需要保证该层次的对应的语义信息被充分的提取出来就好了啊.)) -&gt; 需要samples之间的高层次语义信息尽可能的相像. 提及到前人工作为了解决这个问题 都是通过重新设计loss或者新的regularization constraints.</li>
-<li>本文从一个新的角度出发, 对每个类别假设有两组feature set: 一组是reliable information, 另外一组是less reliable information. -&gt; 希望可靠信息来源数据能够在训练中指导less reliable set的特征的学习(类似于teacher-student mimick的思想)去使得less reliable information向feature space的更加”紧实”的质心移动. 认为这么做同样会给reliable information set带来好处, 因为同类别的samples变得更加接近, 因此是更加容易去进行分类的. </li>
-<li>本文将这个思想用来进行object detection, 作者认为小物体因为很多细节的丢失所以看做是less reliable set, high resolution的obj被看做是reliable set. 本文的interwiner是设计去减小两个sets之间的divergence的. 认为从可靠数据集去进行有效feature representation的生成是十分重要的, 本文后面引入了optimal transport(OT) theory到网络框架之中. Less Reliable Set中的Samples则在OT metric的辅助之下更好的对齐.</li>
-<li>强调了interwiner是可插拔的, 且效果好的.</li>
-<li>强调了传统的做法就是使用交叉熵, l1/l2 loss, loss项的正则化约束去解决feature representation问题, 来保证最小的intra-class variation以及最大的inter-class variation. 认为这些工作的目标和本文的都一致, 都是想要学习到特征空间中每个类别的更加compact的representation.</li>
-<li>仍然也强调了小物体因为前向信息丢失的问题导致性能的退化, 作者做了一个可视化, 在使用intertwiner和不是用的时候进行对比, 图中效果确实是intertwiner能够使得同类别的representation更加紧凑.</li>
-<li>强调两个重要的改进就是: (1). 使用了buffer去存储class-dependent historical representative. -&gt; 提到了是因为在训练的一个mini-batch中可能并不会对同一个类别有大量的sample, 所以需要在训练的过程中动态的进行更新. (2). optimal transport(OT) divergence的引入, 作为一个复杂的正则化???. OT metric将两个分布的比较从高维度的特征空间映射到低纬度空间, 所以可以消除掉敏感性去更好的进行两个分布相似性的评估(相当于去噪?). 认为OT可以使低可靠性数据集与可靠数据集更好的对准. </li>
-<li>使用feature intertwiner方法的网络作者称之为 InterNet. <a href="https://github.com/hli2020/feature intertwiner" target="_blank" rel="noopener">代码</a></li>
-<li>Related work中关于小物体目标检测的描述: 提到了传统是有两种做法的 (1). 加强context信息的利用, 认为RF的增大是有利于补偿小物体损失的信息的 (2). 多尺度, 认为多尺度是一种将物体不同尺度进行normalization的方法. 提到了本文是一种另外的解决小物体检测的思路, 利用可靠大物体的帮助(其实GAN那篇文章也是利用了这个思想, 但是是从大物体和小物体辨别难度、gap方面入手的)</li>
-<li>Related work中关于loss function设计: 强调了传统的交叉熵是不具备限制类别间的能力的, 所以很多工作都致力于添加类别间的regularization. </li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>Feature Intertwiners for Object Detection:<ul>
-<li>(1). 使用Faster RCNN作为pipeline. </li>
-<li>(2). 首先, 网络仍然根据feature map的空间大小分成一些level, 在每个level l, 会将region proposals 分成两个categories: 1). large-region set(reliable): 比RoI-pooling layer输出的size要大region, 2). small-region set(less reliable). </li>
-<li>(3). 之后feature map P_l 将会fed到RoI layer, 然后传给一个make-up layer. make-up layer的作用是: fuel back在RoI中丢失的信息, 同时补偿small resolution obj instance的必要details. -&gt; 认为经过这个层次的refined high-level semantics对各种因素(pose, lighting, appearance等)会更加的鲁棒, 消除了variation. 强调了这个make-up unit是通过interwiner unit进行学习和优化的, 其收到了大物体set的feature的帮助</li>
-<li>(4). feature interwiner是衡量两个set之间数据分布的divergence的. 对于可靠集合, input直接就是RoI layer的output, 也就是高层次或者高resolution的samples. 对于less reliable set, input则是make-up layer的输出. 两个input都会fed到一个critic module中去提取两个集合进一步的representation, 并且提供给intetwiner evidence. critic包含了两个conv, 将feature transfer到一个更大的channel size但是降低了spatial size到1(就是降维成了一个一维向量). 然后使用一个简单的l2 loss去比较两个set之间的不同.</li>
-<li>(5). 最后的loss就是各个scale上标准detection loss和intertwiner loss的综合.</li>
-<li>(6). 仍然面临着两个问题: 1). 通常在一个mini-batch中并不会出现同一个类别的instance在两个set中分别出现的情况(用之前提到的buffer解决)  2). 如何去进行这两个set的划分</li>
-<li>PS: 其实后面思想可以不用看了, 主要目的就是减小大物体(可靠物体)和小物体(不可靠物体)深层信息表达上的差异性来减少最后错误分类的概率. 靠的就是用loss来减少差异</li>
-</ul>
-</li>
-<li>Class Buffer:<ul>
-<li>(1). 存的是这个类别的large instance的平均feature representation. (并不是所有, 那其实感觉挺依赖于前面的几个??)</li>
-<li>(2). 可以采用不同形式的方法去处理feature representation, 但是实验中表明是mean效果最好</li>
-</ul>
-</li>
-<li>interwiner的一些问题的说明:<ul>
-<li>(1). 谈及使用大物体去对小物体进行学习的指导, 就是teacher-student mimic的思想, 希望小物体和大物体在visual appearance上的variance尽可能的小, 而不受到resolution的影响. </li>
-<li>(2). 提到了buffer是不应该参与到training更新的过程中的</li>
-<li>(3). buffer statistics是从各个尺度上获得的, 强调large和small是相对的, 但是认为level-agnostic buffer通常来说总会接受到strictly large instance的语义特征 -&gt; 认为这就是为什么实验会对所有尺度都有提升的原因. </li>
-</ul>
-</li>
-<li>Choosing best feature map for large objects using optimal transport:<ul>
-<li>选择那一层的特征图作为input source的feature map是十分重要的(就是选teacher的input). </li>
-<li>(a). 选择当前层的feature map: 认为是不合适的, 因为当层被用来在RPN内训练针对于识别小物体的, 用这一层作为input可能会导致一些small instances的noisy details被引入</li>
-<li>(b). 选择更深(小)层次的feature map: 认为这相对于来说是对大物体来说更加合适的尺度, 同时深层次具有更小的resolution和更高的予以层次. 但是对于这些层次中的大物体, 可能在其所在层次上是小物体, 因此其在这些高层次的feature map上可能没有携带足够的信息, 应该在RoI操作中被upsample, 去更新当前尺度的buffer. 同时试验表明了在高层次但是在高层次中是小物体的现象是十分常见的, 所以这么直接做是不合适的.</li>
-<li>(c). 先把深层次的feature map upsample到当前层次的resolution上, 然后使用RoI-pooling去处理这个放大后的feature map. 可以选择的几种设置: 1). 双线性插值  2). 使用神经网络(???deconv吗) 后者试验表明效果要远好于前者</li>
-<li>(d). 使用本文提到的OT: 提到了本文的最优的将一个distribution move到另外一个distribution是符合optimal transport(OT) domain的. 本文将OT unit在P_l与P_m|l(就是放大的深层次feature map)进行之间插入, 其是作为RoI-pooling操作之前的inputs的. PS: 没太看明白… 以后有需要仔细看…</li>
-</ul>
-</li>
-<li></li>
-</ol>
-<hr>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol>
-<li>总觉得说要学习更加compact representation这个描述这么牵强呢…</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1293,7 +1246,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
