@@ -236,6 +236,109 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/19/Simple-Summary-for-Single-Shot-Refinement-Neural-Network-for-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Single-Shot Refinement Neural Network for Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-19 22:38:57 / Modified: 22:39:23" itemprop="dateCreated datePublished" datetime="2019-10-19T22:38:57+08:00">2019-10-19</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Single-Shot-Refinement-Neural-Network-for-Object-Detection》"><a href="#简单总结《Single-Shot-Refinement-Neural-Network-for-Object-Detection》" class="headerlink" title="简单总结《Single-Shot Refinement Neural Network for Object Detection》"></a>简单总结《Single-Shot Refinement Neural Network for Object Detection》</h2><hr>
+<ol>
+<li>文章目的: 想要结合two-stage精确以及one-stage快速两者的优点</li>
+<li>RefineDet中包含了两个内联的module.<ul>
+<li>(1). anchor refinement module(ARM): 1. 去除negative anchors去减少classifier 的 search space  2. 粗略的调整anchors的location与size以为后续的bbox regressor提供更好的初始化</li>
+<li>(2). object detection module(ODM): 和正常的detection module差不多的作用</li>
+</ul>
+</li>
+<li>同时设计了transfer connection block去将anchor refinement module的feature transfer到object detection module中去进行locations, sizes, class labels的预测</li>
+<li>加上了multi-task loss function去保证网络训练的end2end</li>
+<li>认为one-stage性能不是很好的原因之一是: 类别不平衡问题</li>
+<li>谈及two-stage的优点有:<ul>
+<li>(1). 使用类别不可知的sampling的two-stage结构能够处理类别不平衡问题</li>
+<li>(2). 使用两个阶段去cascaded处理box regression问题</li>
+<li>(3). 使用tow-stage的feature去进行obj的描述 (PS: 确实RPN加入将问题变成了 cascaded的先进行二分类+box regression -&gt; detection feature + box regression. 那么也就是说我的想法的实现也可以间接的达到这个效果?)</li>
+</ul>
+</li>
+<li>因为RefineDet的流程是筛除掉不好的anchor以及进行anchor的refine之后进行进一步的refine以及detection, 认为借鉴了two-stage的思想, 所以具有了two-stage的三个优点</li>
+<li>ARM模块: 去掉了原本的classification layers的同时添加了一些辅助结构</li>
+<li>OMD的input是TCB的output, 之后连接prediction layers去进行分类以及refined anchor box的regression</li>
+<li>Transfer Connection Block: <ul>
+<li>(1). 模块输入是: 当层feature map以及更深一层经过得到的TCB模块的输出</li>
+<li>(2). 对当层的进行conv+relu+conv然后和右侧deconv的进行dot sum然后再relu+conv+relu得到的就是输出</li>
+<li>PS: 说是进行feature的迁移, 实际上也是进行context/feature fusion操作(原文也说了)</li>
+</ul>
+</li>
+<li>两阶段级联的box regression就不仔细说了, 很简单的思路以及实现(PS: 因为SSD就是预测的是box的变化参数, 而不是具体位置, 所以是独立出来的, 不要总盯着feature map的channel数看 2333)</li>
+<li>Negative Anchor Filtering: 思想是早期先拒绝掉一些很简单就能辨认出不对的negative anchors去一定程度上解决imbalance问题</li>
+<li>其他细节请见paper吧 有空一定好好看一下loss的设计</li>
+</ol>
+<hr>
+<p>Loss Function的设计<br>Loss由两个部分组成: (1). loss of ARM  (2). loss of ODM<br>loss of ARM: (1). 给每个anchor一个binary class label(是不是一个obj) -&gt; 计算二分类的交叉熵loss, 并且(2). regress anchor的location与其size(这个目的是给出一个更好的anchor) -&gt; 和Fast RCNN 一致的针对regression的L1 Loss<br>loss of ODM: (1). regression loss(和ARM的loss一致) (2). 多分类的softmax Loss</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/19/Simple-Summary-for-Weaving-Multi-scale-Context-for-Single-Shot-Detector/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1138,110 +1241,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/14/Simple-Summary-for-Is-Faster-R-CNN-Doing-Well-for-Pedestrian-Detection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/14/Simple-Summary-for-Is-Faster-R-CNN-Doing-Well-for-Pedestrian-Detection/" class="post-title-link" itemprop="url">Simple Summary for Is Faster R-CNN Doing Well for Pedestrian Detection?</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-14 22:54:34" itemprop="dateCreated datePublished" datetime="2019-10-14T22:54:34+08:00">2019-10-14</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-10-15 17:31:50" itemprop="dateModified" datetime="2019-10-15T17:31:50+08:00">2019-10-15</time>
-              </span>
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结-《Is-Faster-R-CNN-Doing-Well-for-Pedestrian-Detection-》"><a href="#简单总结-《Is-Faster-R-CNN-Doing-Well-for-Pedestrian-Detection-》" class="headerlink" title="简单总结 《Is Faster R-CNN Doing Well for Pedestrian Detection?》"></a>简单总结 <strong><em>《Is Faster R-CNN Doing Well for Pedestrian Detection?》</em></strong></h2><p><strong><em>PS: 使用的数据集: Caltech, INRIA, ETH, and KITTI</em></strong></p>
-<p>PS: 关于hard mining的 cascaded boost forest 就先不看了… 不是关注的重点</p>
-<ol>
-<li>发现RPN检测的性能可以达到一个单独的行人检测器的效果，但是后续的分类器的步骤反而使得性能下降了, 原因认为是:<ul>
-<li>(1). feature map的resolution不够去对小物体进行检测</li>
-<li>(2). 缺少bootstrap机制去对 hard negative examples 进行mining</li>
-</ul>
-</li>
-<li>解决的方法是: 在RPN后面加上一个基于 共享的high-resolution convolutional feature maps的 boosted forests.</li>
-<li>1.(1). 的解决说法是: 从更浅层但是更高分辨率的层pool feature进行feature的pool 并且使用空洞卷积(hole algorithm/`a trous)增加feature map 的size (这里的意思是在保持感受野大小不变的同时不减小feature map 的resolution)</li>
-<li>1.(2). 问题: 行人检测问题中hard background instances(像是人的东西)是造成错误的很大的原因, 在通用物体检测中不太存在这个问题(主要错误原因是类别之间的错误，前景后景的错误其实也挺重要的)  本文使用 Cascaded Boosted Forest方法进行解决，并且不使用手动设置的特征去训练forests而是复用 RON 的深层卷积特征 -&gt; 既通过复用减少了训练时间，同时利用了深度学习的特征</li>
-<li>认为原先使用 conv5_3 层之后的信息会导致小物体的信息分辨率会小于 7*7 (设定的统一的输入到最后分类器特征大小)，会导致信息的没有辨别力. 而使用高层次的信息(也就是重新计算的高分辨率的feature map的信息会更加有辨别力)</li>
-</ol>
-<hr>
-<p>细节:</p>
-<ol>
-<li>因为行人的ratio大概是相等的，不想通用物体一样变化很大，使用一个aspect ratio即可，多个anchor是为了找到不同尺度的物体</li>
-<li>文章并没有用空洞卷积进行RPN的fine-tune，而是单独的用作提取更高resolution的feature map (理解没有错的话是单独又做了一遍feature map的提取, 与RPN的那一条路是分离的两条路)</li>
-</ol>
-<hr>
-<p>想法:</p>
-<ol>
-<li>仔细思考一下是不是 在交通标志检测中也存在 hard negative examples</li>
-<li>利用空洞卷积保证感受野的大小的同时保证较高的分辨率是不是一个可行的行为</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1291,7 +1290,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

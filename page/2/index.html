@@ -236,6 +236,139 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/18/Simple-Summary-for-FoveaBox-Beyond-Anchor-based-Object-Detector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/12/18/Simple-Summary-for-FoveaBox-Beyond-Anchor-based-Object-Detector/" class="post-title-link" itemprop="url">Simple Summary for FoveaBox: Beyond Anchor-based Object Detector</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-12-18 20:55:09 / Modified: 20:55:33" itemprop="dateCreated datePublished" datetime="2019-12-18T20:55:09+08:00">2019-12-18</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《FoveaBox-Beyond-Anchor-based-Object-Detector》"><a href="#简单总结《FoveaBox-Beyond-Anchor-based-Object-Detector》" class="headerlink" title="简单总结《FoveaBox: Beyond Anchor-based Object Detector》"></a>简单总结《FoveaBox: Beyond Anchor-based Object Detector》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>本文–FoveaBox 直接学习物体的存在概率以及 bbox 坐标, 而不依赖于anchor(PS: 说人话就是 anchor-free)</li>
+<li>本文实现使用了:<ul>
+<li>(1). 预测 category-sensitive 语 maps 去判断物体存在的概率分布.</li>
+<li>(2). 使用 category-agnostic bounding box 去对每个可能包含物体的位置预测 bbox.</li>
+</ul>
+</li>
+<li>提到了 FoveaBox 的泛化性比较好, 能够对 bbox shape 分布的改变有很强的鲁棒性和泛化性.</li>
+<li>本文也提及到了 anchor-based 的缺点 -&gt; (1). hyperparameter的增加 (2). 不同 dataset 下 anchor 的设置并不通用 (3). 因为密集采样去将 anchor 尽可能的遍布整个 image, 所以需要技巧去处理 imbalance 问题</li>
+<li>提到了现在的一些文章通过改进 anchor 上的成功的做法:<ul>
+<li>PS: 下面三篇文章都没有看过… 描述应该不是很准确</li>
+<li>PS: 下面改进这方面的思路都是使得anchor更加灵活</li>
+<li>(1). MetaAnhocr: anchor functions 动态的根据任意的 prior boxes 生成.</li>
+<li>(2). Guided-Anchoring method: 联合的预测 1). 可能分布了物体的中心的概率, 2). 不同位置处的 scales/aspect ratios</li>
+<li>(3). Anchor box optimization for object detection: 动态的学习 anchor 的形状</li>
+<li>但是文章认为, 这些 works 还是依赖于枚举所有可能的 scales 以及 aspect ratios.</li>
+</ul>
+</li>
+<li>本文的动机:<ul>
+<li>PS: 又一个说是根据人眼的想法启发的… 人眼的 fovea(好像是虹膜)</li>
+<li>(1). 也是强调 vision field 的中心区域是 最敏锐的 -&gt; FoveaBox 联合预测 1). 位置是物体中心的概率 2). 每个有效位置的 bbox 信息</li>
+<li>PS: 本文设计的是 detection head (基于 feature pyramid)</li>
+</ul>
+</li>
+<li>为了验证本文提出的 anchor-free 方法的有效性, 将数据进行拉伸处理, 同样可以取得一个很好的效果, 大幅度超过了 anchor-based 的方法.</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>总体上的描述: backbone之后会有两个 subnet(或者可以称之为 两个分支), 一个用来预测每个pixel的classification 一个用来进行 bbox prediction. 基本结构和很多文章一样同样使用的是RetinaNet</li>
+<li>Feature Pyramid Network Backbone:<ul>
+<li>(1). 使用 FPN 作为backbone, 也是先简单对 FPN 进行了一下描述</li>
+</ul>
+</li>
+<li>Scale Assignment:<ul>
+<li>(1). goal -&gt; 预测 target obj 的边界.</li>
+<li>(2). 本文同样是按照尺寸去进行 pyramid level 的分配的, <strong><em>但是与之前不同的是, 之前的做法是: 这个范围是不兼容的, 也就是一个 proposal 只能在一个 pyramid level 进行训练. 本文的做法是: 层次之间是有重叠的, 一个object可以在多个 pyramid 中进行训练</em></strong> -&gt; 这个就是 SPAD 提到的多个层次同时训练有时候是有好处的.</li>
+</ul>
+</li>
+<li>Object Fovea(实际上就是 类别的 heatmap):<ul>
+<li>(1). 预测的实际上是四个坐标值, 看上去好像和 FSAF 的距离四条边的距离有一点不同</li>
+<li>(2). 定义的 positive 区域实际上是中心的一部分区域, 其余向外扩充一圈的区域是 忽略掉的, 剩下的部分作为 negative. 因为 positive 相比于 negative 来说总是很少的, 所以使用 focal loss 去进行训练. (这些都是和 FSAF 一样的)</li>
+</ul>
+</li>
+<li>box prediction:<ul>
+<li>(1). 就是进行相当于之前的 bbox regression 阶段</li>
+</ul>
+</li>
+<li>Ablation Study:<ul>
+<li>(1). Various anchor densities and FoveaBox: 使用 RetinaNet 作为 backbone 去不断的调整 anchor scale 以及 aspect ratio 的数目组合, 和 FoveaBox 进行对比. -&gt; anchor 的不断变密集一定程度上是有利于性能的, 但是是会有一个上限的, 且并不能和本文的 anchor-free 方法的性能达到同一个档次.<ul>
+<li>PS: 给出的一个解释是: 1). (个人猜测)可能会加剧 fg/bg 的 imbalance 问题 2). 会造成 fg/bg 的难以回归 3).造成位置定位的模糊性-&gt;文章说不单单要对每个位置生成的 anchor 进行判断是否该位置的anchor是否是好的, 还要对每个文职的不同anchor进行区分, 然而单个 feature pixel 是使用相同的 feature 去进行信息的利用的, 这样的强行区分就会导致ambiguous. (个人认为也应该是因为很多anchor可能都是好的选择, 在这些anchor中间选择可能会带来模糊性而影响性能.)</li>
+</ul>
+</li>
+<li>(2). Analysis of Scale Assignment: 调整文章中设置的用来分配层次的参数的值, 将单个的 instance 可能分配到不止一个层次上的时候 进行了一定的实验, 分配到多个层次上有利于, 但是分配到太多层次上会带来不好的效果. (PS: 结合 SPAD 可以认为确实原来的按照尺度进行分配的策略是有一定问题的… 但是怎么解决…)</li>
+<li>(3). 剩下的部分就自己看吧</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题:"></a>问题:</h3><ol>
+<li>总结一下就是大部分还是anchor-free(anchor-like)比较传统的设计思路, 后续很多的改进也是基于其进行的(比如FSAF), 主要有用的点还是应该算是那个单一instance多层次 assign 的设计.</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/15/Simple-Summary-for-Learning-Rich-Features-at-High-Speed-for-Single-Shot-Object-Detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1647,87 +1780,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/19/pip-install-mmcv-Error/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/19/pip-install-mmcv-Error/" class="post-title-link" itemprop="url">pip install mmcv Error</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-19 21:03:54 / Modified: 21:09:33" itemprop="dateCreated datePublished" datetime="2019-11-19T21:03:54+08:00">2019-11-19</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>进行 <figure class="highlight plain"><figcaption><span>install mmcv``` 的时候出现了错误</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">python版本: python-3.6.2</span><br><span class="line"></span><br><span class="line">出现问题:</span><br></pre></td></tr></table></figure></p>
-<p>Looking in indexes: <a href="http://pypi.douban.com/simple" target="_blank" rel="noopener">http://pypi.douban.com/simple</a><br>Collecting mmcv<br>  Downloading <a href="http://pypi.doubanio.com/packages/26/fa/f032c1e0095b4dfac42feae2f4e8ad77dd3ad83257cb5269814c583ac34c/mmcv-0.2.14.tar.gz" target="_blank" rel="noopener">http://pypi.doubanio.com/packages/26/fa/f032c1e0095b4dfac42feae2f4e8ad77dd3ad83257cb5269814c583ac34c/mmcv-0.2.14.tar.gz</a> (48kB)<br>     |████████████████████████████████| 51kB 1.1MB/s<br>Requirement already satisfied: numpy&gt;=1.11.1 in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (1.16.1)<br>Requirement already satisfied: pyyaml in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (3.12)<br>Requirement already satisfied: six in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (1.11.0)<br>Requirement already satisfied: addict in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (2.2.1)<br>Requirement already satisfied: requests in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (2.18.4)<br>Requirement already satisfied: opencv-python in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (3.4.3.18)<br>Requirement already satisfied: Cython in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from mmcv) (0.29.5)<br>Requirement already satisfied: idna&lt;2.7,&gt;=2.5 in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from requests-&gt;mmcv) (2.6)<br>Requirement already satisfied: chardet&lt;3.1.0,&gt;=3.0.2 in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from requests-&gt;mmcv) (3.0.4)<br>Requirement already satisfied: certifi&gt;=2017.4.17 in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from requests-&gt;mmcv) (2017.11.5)<br>Requirement already satisfied: urllib3&lt;1.23,&gt;=1.21.1 in /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages (from requests-&gt;mmcv) (1.22)<br>Building wheels for collected packages: mmcv<br>  Building wheel for mmcv (setup.py) … error<br>  ERROR: Command errored out with exit status 1:<br>   command: /Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6 -u -c ‘import sys, setuptools, tokenize; sys.argv[0] = ‘“‘“‘/private/tmp/pip-install-sdti49c0/mmcv/setup.py’”‘“‘; <strong>file</strong>=’”‘“‘/private/tmp/pip-install-sdti49c0/mmcv/setup.py’”‘“‘;f=getattr(tokenize, ‘“‘“‘open’”‘“‘, open)(<strong>file</strong>);code=f.read().replace(‘“‘“‘\r\n’”‘“‘, ‘“‘“‘\n’”‘“‘);f.close();exec(compile(code, <strong>file</strong>, ‘“‘“‘exec’”‘“‘))’ bdist_wheel -d /private/tmp/pip-wheel-88mhkvob –python-tag cp36<br>       cwd: /private/tmp/pip-install-sdti49c0/mmcv/<br>  Complete output (101 lines):<br>  running bdist_wheel<br>  running build<br>  running build_py<br>  creating build<br>  creating build/lib.macosx-10.6-intel-3.6<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv<br>  copying mmcv/version.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv<br>  copying mmcv/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv<br>  copying mmcv/opencv_info.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/arraymisc<br>  copying mmcv/arraymisc/quantization.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/arraymisc<br>  copying mmcv/arraymisc/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/arraymisc<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>  copying mmcv/visualization/color.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>  copying mmcv/visualization/optflow.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>  copying mmcv/visualization/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>  copying mmcv/visualization/image.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/video<br>  copying mmcv/video/optflow.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>  copying mmcv/video/io.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>  copying mmcv/video/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>  copying mmcv/video/processing.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/collate.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/scatter_gather.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/_functions.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/data_parallel.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/distributed.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  copying mmcv/parallel/data_container.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>  copying mmcv/fileio/io.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>  copying mmcv/fileio/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>  copying mmcv/fileio/parse.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/parallel_test.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/runner.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/checkpoint.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/priority.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/utils.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  copying mmcv/runner/log_buffer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  copying mmcv/utils/misc.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  copying mmcv/utils/config.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  copying mmcv/utils/timer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  copying mmcv/utils/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  copying mmcv/utils/progressbar.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  copying mmcv/utils/path.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/image<br>  copying mmcv/image/io.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image<br>  copying mmcv/image/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>  copying mmcv/cnn/vgg.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>  copying mmcv/cnn/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>  copying mmcv/cnn/resnet.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>  copying mmcv/cnn/alexnet.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>  copying mmcv/cnn/weight_init.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/video/optflow_warp<br>  copying mmcv/video/optflow_warp/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video/optflow_warp<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>  copying mmcv/fileio/handlers/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>  copying mmcv/fileio/handlers/json_handler.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>  copying mmcv/fileio/handlers/pickle_handler.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>  copying mmcv/fileio/handlers/yaml_handler.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>  copying mmcv/fileio/handlers/base.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/checkpoint.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/memory.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/hook.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/sampler_seed.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/optimizer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/lr_updater.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/closure.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  copying mmcv/runner/hooks/iter_timer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>  copying mmcv/runner/hooks/logger/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>  copying mmcv/runner/hooks/logger/text.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>  copying mmcv/runner/hooks/logger/pavi.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>  copying mmcv/runner/hooks/logger/base.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>  copying mmcv/runner/hooks/logger/tensorboard.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>  creating build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>  copying mmcv/image/transforms/colorspace.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>  copying mmcv/image/transforms/normalize.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>  copying mmcv/image/transforms/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>  copying mmcv/image/transforms/resize.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>  copying mmcv/image/transforms/geometry.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>  running build_ext<br>  cythoning ./mmcv/video/optflow_warp/flow_warp_module.pyx to ./mmcv/video/optflow_warp/flow_warp_module.cpp<br>  /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/Cython/Compiler/Main.py:367: FutureWarning: Cython directive ‘language_level’ not set, using 2 for now (Py2). This will change in a later release! File: /private/tmp/pip-install-sdti49c0/mmcv/mmcv/video/optflow_warp/flow_warp_module.pyx<br>    tree = Parsing.p_module(s, pxd, full_module_name)<br>  building ‘mmcv._ext’ extension<br>  creating build/temp.macosx-10.6-intel-3.6<br>  creating build/temp.macosx-10.6-intel-3.6/mmcv<br>  creating build/temp.macosx-10.6-intel-3.6/mmcv/video<br>  creating build/temp.macosx-10.6-intel-3.6/mmcv/video/optflow_warp<br>  /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -I/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/numpy/core/include -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c ./mmcv/video/optflow_warp/flow_warp.cpp -o build/temp.macosx-10.6-intel-3.6/./mmcv/video/optflow_warp/flow_warp.o -stdlib=libc++<br>  clang: error: invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)<br>  clang: error: invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)</p>
-<h2 id="error-command-‘-usr-bin-clang’-failed-with-exit-status-1"><a href="#error-command-‘-usr-bin-clang’-failed-with-exit-status-1" class="headerlink" title="  error: command ‘/usr/bin/clang’ failed with exit status 1"></a>  error: command ‘/usr/bin/clang’ failed with exit status 1</h2><p>  ERROR: Failed building wheel for mmcv<br>  Running setup.py clean for mmcv<br>Failed to build mmcv<br>Installing collected packages: mmcv<br>    Running setup.py install for mmcv … error<br>    ERROR: Command errored out with exit status 1:<br>     command: /Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6 -u -c ‘import sys, setuptools, tokenize; sys.argv[0] = ‘“‘“‘/private/tmp/pip-install-sdti49c0/mmcv/setup.py’”‘“‘; <strong>file</strong>=’”‘“‘/private/tmp/pip-install-sdti49c0/mmcv/setup.py’”‘“‘;f=getattr(tokenize, ‘“‘“‘open’”‘“‘, open)(<strong>file</strong>);code=f.read().replace(‘“‘“‘\r\n’”‘“‘, ‘“‘“‘\n’”‘“‘);f.close();exec(compile(code, <strong>file</strong>, ‘“‘“‘exec’”‘“‘))’ install –record /private/tmp/pip-record-rbjttew5/install-record.txt –single-version-externally-managed –compile<br>         cwd: /private/tmp/pip-install-sdti49c0/mmcv/<br>    Complete output (99 lines):<br>    running install<br>    running build<br>    running build_py<br>    creating build<br>    creating build/lib.macosx-10.6-intel-3.6<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv<br>    copying mmcv/version.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv<br>    copying mmcv/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv<br>    copying mmcv/opencv_info.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/arraymisc<br>    copying mmcv/arraymisc/quantization.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/arraymisc<br>    copying mmcv/arraymisc/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/arraymisc<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>    copying mmcv/visualization/color.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>    copying mmcv/visualization/optflow.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>    copying mmcv/visualization/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>    copying mmcv/visualization/image.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/visualization<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/video<br>    copying mmcv/video/optflow.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>    copying mmcv/video/io.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>    copying mmcv/video/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>    copying mmcv/video/processing.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/collate.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/scatter_gather.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/_functions.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/data_parallel.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/distributed.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    copying mmcv/parallel/data_container.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/parallel<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>    copying mmcv/fileio/io.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>    copying mmcv/fileio/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>    copying mmcv/fileio/parse.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/parallel_test.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/runner.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/checkpoint.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/priority.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/utils.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    copying mmcv/runner/log_buffer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    copying mmcv/utils/misc.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    copying mmcv/utils/config.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    copying mmcv/utils/timer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    copying mmcv/utils/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    copying mmcv/utils/progressbar.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    copying mmcv/utils/path.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/utils<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/image<br>    copying mmcv/image/io.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image<br>    copying mmcv/image/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>    copying mmcv/cnn/vgg.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>    copying mmcv/cnn/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>    copying mmcv/cnn/resnet.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>    copying mmcv/cnn/alexnet.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>    copying mmcv/cnn/weight_init.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/cnn<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/video/optflow_warp<br>    copying mmcv/video/optflow_warp/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/video/optflow_warp<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>    copying mmcv/fileio/handlers/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>    copying mmcv/fileio/handlers/json_handler.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>    copying mmcv/fileio/handlers/pickle_handler.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>    copying mmcv/fileio/handlers/yaml_handler.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>    copying mmcv/fileio/handlers/base.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/fileio/handlers<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/checkpoint.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/memory.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/hook.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/sampler_seed.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/optimizer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/lr_updater.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/closure.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    copying mmcv/runner/hooks/iter_timer.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>    copying mmcv/runner/hooks/logger/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>    copying mmcv/runner/hooks/logger/text.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>    copying mmcv/runner/hooks/logger/pavi.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>    copying mmcv/runner/hooks/logger/base.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>    copying mmcv/runner/hooks/logger/tensorboard.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/runner/hooks/logger<br>    creating build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>    copying mmcv/image/transforms/colorspace.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>    copying mmcv/image/transforms/normalize.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>    copying mmcv/image/transforms/<strong>init</strong>.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>    copying mmcv/image/transforms/resize.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>    copying mmcv/image/transforms/geometry.py -&gt; build/lib.macosx-10.6-intel-3.6/mmcv/image/transforms<br>    running build_ext<br>    skipping ‘./mmcv/video/optflow_warp/flow_warp_module.cpp’ Cython extension (up-to-date)<br>    building ‘mmcv._ext’ extension<br>    creating build/temp.macosx-10.6-intel-3.6<br>    creating build/temp.macosx-10.6-intel-3.6/mmcv<br>    creating build/temp.macosx-10.6-intel-3.6/mmcv/video<br>    creating build/temp.macosx-10.6-intel-3.6/mmcv/video/optflow_warp<br>    /usr/bin/clang -fno-strict-aliasing -Wsign-compare -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -arch i386 -arch x86_64 -g -I/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/numpy/core/include -I/Library/Frameworks/Python.framework/Versions/3.6/include/python3.6m -c ./mmcv/video/optflow_warp/flow_warp.cpp -o build/temp.macosx-10.6-intel-3.6/./mmcv/video/optflow_warp/flow_warp.o -stdlib=libc++<br>    clang: error: invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)<br>    clang: error: invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)</p>
-<pre><code>error: command &apos;/usr/bin/clang&apos; failed with exit status 1
-----------------------------------------
-</code></pre><p>ERROR: Command errored out with exit status 1: /Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6 -u -c ‘import sys, setuptools, tokenize; sys.argv[0] = ‘“‘“‘/private/tmp/pip-install-sdti49c0/mmcv/setup.py’”‘“‘; <strong>file</strong>=’”‘“‘/private/tmp/pip-install-sdti49c0/mmcv/setup.py’”‘“‘;f=getattr(tokenize, ‘“‘“‘open’”‘“‘, open)(<strong>file</strong>);code=f.read().replace(‘“‘“‘\r\n’”‘“‘, ‘“‘“‘\n’”‘“‘);f.close();exec(compile(code, <strong>file</strong>, ‘“‘“‘exec’”‘“‘))’ install –record /private/tmp/pip-record-rbjttew5/install-record.txt –single-version-externally-managed –compile Check the logs for full command output.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">主要出错报错:</span><br></pre></td></tr></table></figure></p>
-<p>clang: error: invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)<br>clang: error: invalid deployment target for -stdlib=libc++ (requires OS X 10.7 or later)<br>error: command ‘/usr/bin/clang’ failed with exit status 1<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">解决办法: 莫名其妙的就好了... 应该与下面两种操作有关... 只提供一下可能行的操作</span><br><span class="line">1. 命令行输入: ```export MACOSX_DEPLOYMENT_TARGET=10.13.6</span><br></pre></td></tr></table></figure></p>
-<ol start="2">
-<li>命令行输入: <code>/usr/bin/clang -v</code><br>之后重新 <code>pip3 install mmcv</code>即可</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1777,7 +1829,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
