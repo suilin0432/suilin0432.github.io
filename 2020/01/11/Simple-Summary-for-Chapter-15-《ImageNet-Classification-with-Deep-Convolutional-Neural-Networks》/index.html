@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》 一、文章思路  希望能够根据feature/context去对instances进行特定层次的指定以及分配, 而不是按照传统的启发式的认为浅层(小size)就是小物体, 深层(大size)是大物体  二、引用观点与具体细节  陈述当前传统ancho">
+  <meta name="description" content="(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》请见这里">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection">
-<meta property="og:url" content="http://suilin.top/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/index.html">
+<meta property="og:title" content="Simple Summary for (Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》">
+<meta property="og:url" content="http://suilin.top/2020/01/11/Simple-Summary-for-Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》 一、文章思路  希望能够根据feature/context去对instances进行特定层次的指定以及分配, 而不是按照传统的启发式的认为浅层(小size)就是小物体, 深层(大size)是大物体  二、引用观点与具体细节  陈述当前传统ancho">
+<meta property="og:description" content="(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》请见这里">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-23T14:44:09.100Z">
+<meta property="og:updated_time" content="2020-01-11T09:46:50.882Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection">
-<meta name="twitter:description" content="重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》 一、文章思路  希望能够根据feature/context去对instances进行特定层次的指定以及分配, 而不是按照传统的启发式的认为浅层(小size)就是小物体, 深层(大size)是大物体  二、引用观点与具体细节  陈述当前传统ancho">
-  <link rel="canonical" href="http://suilin.top/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/">
+<meta name="twitter:title" content="Simple Summary for (Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》">
+<meta name="twitter:description" content="(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》请见这里">
+  <link rel="canonical" href="http://suilin.top/2020/01/11/Simple-Summary-for-Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection | Suilin's Blog</title>
+  <title>Simple Summary for (Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》 | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/18/Simple-Summary-for-FSAF-Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/11/Simple-Summary-for-Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for FSAF:Feature Selective Anchor-Free Module for Single-Shot Object Detection
+            Simple Summary for (Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》
             
 
           
@@ -272,19 +272,11 @@
                 
               
 
-              <time title="Created: 2019-10-18 19:59:26" itemprop="dateCreated datePublished" datetime="2019-10-18T19:59:26+08:00">2019-10-18</time>
+              <time title="Created: 2020-01-11 17:45:29 / Modified: 17:46:50" itemprop="dateCreated datePublished" datetime="2020-01-11T17:45:29+08:00">2020-01-11</time>
             </span>
           
             
 
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-10-23 22:44:09" itemprop="dateModified" datetime="2019-10-23T22:44:09+08:00">2019-10-23</time>
-              </span>
             
           
 
@@ -299,43 +291,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》"><a href="#重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》" class="headerlink" title="重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》"></a>重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》</h2><hr>
-<p><strong><em>一、文章思路</em></strong></p>
-<ol>
-<li>希望能够根据feature/context去对instances进行特定层次的指定以及分配, 而不是按照传统的启发式的认为浅层(小size)就是小物体, 深层(大size)是大物体</li>
-</ol>
-<p><strong><em>二、引用观点与具体细节</em></strong></p>
-<ol>
-<li>陈述当前传统anchor-based detector的问题<ul>
-<li>(1). 启发式的特征选择(确实很玄学)</li>
-<li>(2). overlap方式的anchor sampling</li>
-</ul>
-</li>
-<li>提到了FSAF模块可以自己工作进行anchor-free的detection, 也可以和anchor-based method结合去达到更好的效果</li>
-<li><a href="http://openaccess.thecvf.com/content_cvpr_2018/papers/Zhu_Seeing_Small_Faces_CVPR_2018_paper.pdf" target="_blank" rel="noopener">[Seeing Small Faces from Robust Anchor’s Perspective]</a><ul>
-<li>(1). <a href="https://suilin0432.github.io/2019/10/17/Simple-Summary-for-Seeing-Small-Faces-from-Robust-Anchor%E2%80%99s-Perspective/" target="_blank" rel="noopener">点击这里见总结</a></li>
-<li>(2). <strong>文章引用主要观点: 改进设计了针对小物体的anchor (文章主要思想是认为小物体不容易与anchor overlap, 所以导致了regression到GT的困难, 基于这个观点进行了一系列tricks的引入, 个人觉得前两个(1. 改变feature stride 2.增加非中心的anchor)比较靠谱)</strong></li>
-</ul>
-</li>
-<li><a href="http://openaccess.thecvf.com/content_CVPR_2019/papers/He_Bounding_Box_Regression_With_Uncertainty_for_Accurate_Object_Detection_CVPR_2019_paper.pdf" target="_blank" rel="noopener">[Bounding box regression with uncertainty for accurate object detection.]</a><ul>
-<li>(1). <a href="https://suilin0432.github.io/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/" target="_blank" rel="noopener">点击这里见总结</a></li>
-<li>(2). <strong>文章引用主要观点: 说将bounding box的分布视为高斯分布去更好的进行定位 (是利用对Loss的改进使得anchor更加准确同时在NMS中引入了一些信息的一篇文章)</strong></li>
-</ul>
-</li>
-<li>Ground-truth 和 loss的设计<ul>
-<li>(1). 对bbox划分了有效区域和忽略区域</li>
-<li>(2). classification输出的是K个map, 每个instance根据bbox划分的有效区, 忽略区, 无效区域产生的贡献不同: 有效区域视为positive, 无效区视为negative, 忽略取则不进行梯度的回传. 同时相近尺度上的忽略区域(这个区域包含了有效区域)也不进行梯度回传</li>
-<li>(3). regression输出是4个MAP, 分别代表四个偏移量(距离中心上、下、左、右的距离), 都是类别无关的 输出时除以一个常数, inference的时候再乘上… </li>
-<li>(4). loss的使用方面: 对分类结果使用focal loss, 对box regression结果使用IoU loss.</li>
-</ul>
-</li>
-<li>Online Feature Selection<ul>
-<li>(1). 根据给出的loss 算最小的那个scale作为训练的scale</li>
-<li>(2). 为什么选取loss 最小的思想是… 认为最小的是当前feature loss的lower bound, 进行feature 参数的调整, 可以降低这个lower bound</li>
-<li>(3). 认为在推理的时候, 我们不用选择feature level, 因为认为适合的层会输出最高的置信度</li>
-</ul>
-</li>
-</ol>
+        <h2 id="Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》"><a href="#Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》" class="headerlink" title="(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》"></a>(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》</h2><p>请见<a href="http://suilin.top:8080/BookExercise/exercises/%28Chapter%2015%29%E3%80%8AImageNet%20Classification%20with%20Deep%20Convolutional%20Neural%20Networks%E3%80%8B.md">这里</a></p>
 
     </div>
 
@@ -361,8 +317,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/18/Simple-Summary-for-Bounding-Box-Regression-with-Uncertainty-for-Accurate-Object-Detection/" rel="next" title="Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Bounding Box Regression with Uncertainty for Accurate Object Detection
+                <a href="/2020/01/09/Simple-Summary-for-Chapter15-《Deep-Residual-Learning-for-Image-Recognition》/" rel="next" title="Simple Summary for (Chapter15)《Deep Residual Learning for Image Recognition》">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for (Chapter15)《Deep Residual Learning for Image Recognition》
                 </a>
               
             </div>
@@ -370,10 +326,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/19/Simple-Summary-for-Context-Aware-Single-Shot-Detector-CSSD-DiCSSD-DeCSSD/" rel="prev" title="Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD)">
-                  Simple Summary for Context-Aware Single-Shot Detector(CSSD, DiCSSD, DeCSSD) <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -419,7 +371,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#重新总结《Feature-Selective-Anchor-Free-Module-for-Single-Shot-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">重新总结《Feature Selective Anchor-Free Module for Single-Shot Object Detection》</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》"><span class="nav-number">1.</span> <span class="nav-text">(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->

@@ -236,6 +236,141 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/21/Simple-Summary-for-Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/12/21/Simple-Summary-for-Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Residual Bi-Fusion Feature Pyramid Network for Accurate Single-shot Object Detection</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-12-21 15:16:04 / Modified: 15:22:52" itemprop="dateCreated datePublished" datetime="2019-12-21T15:16:04+08:00">2019-12-21</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection》"><a href="#简单总结《Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection》" class="headerlink" title="简单总结《Residual Bi-Fusion Feature Pyramid Network for Accurate Single-shot Object Detection》"></a>简单总结《Residual Bi-Fusion Feature Pyramid Network for Accurate Single-shot Object Detection》</h2><hr>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p><img src="https://upload-images.jianshu.io/upload_images/13028997-1329d92198229a0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="部分Introduction"></p>
+<ol start="8">
+<li>本文提出了 ReBiF (Residual BiFusion) Feature Pyramid. -&gt; 同时融合深层次和浅层次的 features -&gt; 高效且鲁棒的 object detection. </li>
+<li>RBF feature pyramid 的构成是简单, 轻量级的, 只用临近的 3 层被用来去 fused 通过 简单的concatenations 和 1*1 conv 去构成 prediction map.</li>
+<li>本文主要贡献总结:<ul>
+<li>(1). 新型的 residual bi-fusion feature pyramid -&gt; 融合浅层和深层的 features 以追求更精准的 one-shot object detection.</li>
+<li>(2). 新的 feautre pyramid 可以简单的被训练和集成到不同的 backbone 中 (因为 residual 的特性)</li>
+<li>(3). 本文的 residual feature pyramid 对不同的 datasets, object sizes, object classes 有着很好的泛化性</li>
+<li>(4). 可以减少 pooling 带来的位移不变性给object detection的影响</li>
+<li>(5). 在 VOC 和 MS COCO 数据集上达到了 SOTA 的结果</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>首先还是对 FPN 进行了一个简单的描述, 然后再次强调其缺陷 -&gt; 因为 pooling 和quantization 的问题, 很难保留准确的位置信息, 为了解决问题, 从 shallow feature map 也获取信息可以有效的避免小物体的漏检.</li>
+<li>提到了目前的 SOTA 的 bi-directional 方法都是从原图或者低层次的 feature layers 去构建新的 feature streams 以精准定位. 但是这么做 计算量以及参数量是很大的. </li>
+<li>本文提出的做法包括<ul>
+<li>(1). CORE(Concatenation and Reorganization) 文章 Fig1. b)所示结构  -&gt;  相邻的三个层次进行 feature map 的 fusion (直观来说就是语义信息(high level)和位置信息(shallow layer)的融合) -&gt; 因为只是相邻三层的 re-using 机制, 所以相比来说能够节省很多的 memory 和 bandwidth.</li>
+<li>(2). 对 (1). 中 CORE 模块的 output 进行进一步的 purified 去生成语义信息更加丰富的 features.  Fig1. c) </li>
+<li>(3). 结合 residual 机制, 前一阶段的 RECORE(应该实际上就是CORE, 只是名字不同的问题) 将会用一个 shortcut 连接到下一个阶段</li>
+</ul>
+</li>
+<li>CORE Module:<ul>
+<li>(1). 提到了想要同时融合 deep 和 shallow 的layer的semantic feautres, 但是又不想引入过多的 dithering operation???(eg: conv) 和 computationally expensive 的 操作(eg: pooing, addiction)并且尽可能的去保留预测的信息, CORE module 使用 concatenation 去进行 features 的 fusion.</li>
+<li>(2). 同时 concatenation 也不仅仅是像原来的方法简单的拼接全部层次的信息, 而是recursively concatenate临近层次的features. -&gt; 可以看结构图知道, 是上下(deeper &amp;&amp; shallower)层 分别 经过 Bottleneck 结构 和 upsample/reorg 操作得到和当前层次相同大小的 feature map, 然后和当前层次的feature map进行拼接</li>
+</ul>
+</li>
+<li>Purification:<ul>
+<li>(1). 将 CORE Module 输出的信息进一步的通过 Purification Module 进行处理, 文章中给出的结构是 Bottleneck -&gt; conv -&gt; Bottleneck -&gt; conv -&gt; Bottleneck</li>
+<li>(2). 值得注意的是, 文章中是第二个 Bottleneck 输出的结果作为下一个阶段的 CORE Module 的输入, 而不是 CORE Module 最后的输出结果进行 fuse 操作.</li>
+</ul>
+</li>
+<li>BiFusion Feature Pyramid:<ul>
+<li>(1). 简单的复述了之前的几个观点而已… 具体结构就是 Figure.1 c) 所示的, 只是说明自己为什么快, 节省了内存和时间</li>
+<li>(2). PS: 没有觉得有什么很新颖的东西, 双边信息融合之前的做法并没有看到过…</li>
+</ul>
+</li>
+<li>Residual Feature Pyramid:<ul>
+<li>PS: 果然 RECORE 就是对 CORE 改了个名字, 应该是因为结合了上个 CORE Module 的输出, 所以叫做 RECORE 了</li>
+<li>(1). 具体细节见 论文中的 Figure5.</li>
+<li>(2). 大概描述就是 前一阶段的 CORE 的输出会用一个 shortcut 直接和下一个阶段的 CORE 进行 dot add.</li>
+</ul>
+</li>
+<li>Improvement on Large and Medium Object Detection:<ul>
+<li>(1). 提到了, YOLO 在小物体的性能上有提升, 但是牺牲了在大物体上的精准程度. 为了避免这种情况, IPIRC 2019 的冠军 选择提高大物体和小物体的检测上 的性能, 但是减少小物体上的性能来提升总体性能.</li>
+<li>(2). 本文为了同时提升小物体和大物体上的性能, 选择在 residual pyramid 结构之后再次通过一个 bottom-up 的 pathway 去进行 进一步的feature fusion (BFM 结构)</li>
+<li>PS: 下面说的都是 BFM 中的做法, 前面的 CORE 或者说 RECORE 好像都还是 concatetation</li>
+<li>(3). 重新强调了 SOTA bidirectional methods 虽然使用 concatenation 方法去进行feature mapfusion, 但是简单的 subsample 与 reshape 不能解决 pool 带来的 shift invariance 的影响. -&gt; 本文建议使用 1 <em> 1 conv 代替 concatenation 操作 (认为 1 </em> 1 conv的参数是学习出来的, 但是 concate 是 hand-crafted 的)</li>
+<li>(4). 具体的 BFM 结构: <ul>
+<li>1). 首先进行 下层(shallow layer 或者说 high resolution layer) 的 reshape 操作, 这里的 reshape 和以往的 reshape 不同, <strong><em>可以理解为: 将 feature map 划分为 2 </em> 2 的 bin 然后取每个 bin 中的特定位置抽取出来的 4 个feature map 进行*</strong></li>
+<li>2). 然后进行和当前层次的 feautre map 进行 concate 然后通过 1 * 1 convolution 进行 “blurring” 得到的就是我们想要的了.</li>
+<li>3). 提到了 BFM 模块对小物体和大物体都能带来性能的提升, 但是相对于大物体来说小物体的提升比较小</li>
+</ul>
+</li>
+</ul>
+</li>
+<li></li>
+</ol>
+<hr>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>那个新的 reshape 还是比较新颖让我这个菜鸡眼前一亮的, 整体的思路来说没有太看过什么 bi-direction 的 feature fusion(除了那个 LRN 的论文…)</li>
+</ol>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/18/Simple-Summary-for-FoveaBox-Beyond-Anchor-based-Object-Detector/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1573,213 +1708,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/21/一-、简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-常用module总结/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/21/一-、简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-常用module总结/" class="post-title-link" itemprop="url">(一)、简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&&常用module总结)</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-21 15:16:42 / Modified: 16:28:59" itemprop="dateCreated datePublished" datetime="2019-11-21T15:16:42+08:00">2019-11-21</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-amp-amp-常用module总结"><a href="#简单总结在阅读mmdetection源码的时候遇到的一些细节与问题-mmdetection总体-amp-amp-常用module总结" class="headerlink" title="简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&amp;&amp;常用module总结)"></a>简单总结在阅读mmdetection源码的时候遇到的一些细节与问题(mmdetection总体&amp;&amp;常用module总结)</h2><p>PS: 将会按着 Faster-RCNN-FPN-Resnet-50 这条路走<br>PS: 具体的Train中函数的细节另外的文档写<br>PS: <strong><em>下面说cfg是一个dict的描述都不是很准确, 其可以看做是一个dict, 但是实际上是Config类的实例, Config类中封装了一个ConfigDict对象, 并且Config对存取操作等进行了重写</em></strong></p>
-<hr>
-<h3 id="一、处理流程"><a href="#一、处理流程" class="headerlink" title="一、处理流程"></a>一、处理流程</h3><h4 id="一-、test-py文件-inference过程"><a href="#一-、test-py文件-inference过程" class="headerlink" title="(一)、test.py文件(inference过程)"></a>(一)、test.py文件(inference过程)</h4><ol>
-<li>进行命令行输入参数的解析</li>
-<li>设置模式参数以及各种flag</li>
-<li>进行数据集的构建 build_dataset</li>
-<li>进行model的构建 build_detector</li>
-<li>提取 checkpoint</li>
-<li>进行测试</li>
-</ol>
-<hr>
-<h3 id="二、源码中模块以及其处理细节"><a href="#二、源码中模块以及其处理细节" class="headerlink" title="二、源码中模块以及其处理细节"></a>二、源码中模块以及其处理细节</h3><h4 id="一-、配置文件模块"><a href="#一-、配置文件模块" class="headerlink" title="(一)、配置文件模块:"></a>(一)、配置文件模块:</h4><p>config.py 中的 Config类:</p>
-<ol>
-<li>其包含静态方法 Config.from_file(filename), 直接从cfg文件中获取config dictionary</li>
-<li>可以用类进行cfg dict的包装, 重写了读取方法去从cfg dict中读取信息</li>
-</ol>
-<h4 id="二-、加载数据集"><a href="#二-、加载数据集" class="headerlink" title="(二)、加载数据集:"></a>(二)、加载数据集:</h4><p>mmdet/datasets/builder.py build_dataset函数:</p>
-<ol>
-<li>传入的参数为: cfg(dict类型), default_args(暂时不知道这个是什么用, 一直传递但是一直没有怎么用过, 可能是为了以后扩展方便???)</li>
-<li>通常来说传入的cfg就是一个数据库配置的参数字典, 但是其还是有其他的选择的, 几种选择如下所示:<ul>
-<li>(1). 传入一个为 dict 类型的 data cfg, 且其中的anno_file只涉及到一个数据集的名字: 会正常的使用 build_from_cfg 函数(来自 utils/registry.py 文件) 去构建数据集</li>
-<li>(2). 传入的是 tuple或者list 类型的时候: 会将其一个个的拆分, 每个使用 build_from_cfg 函数去进行构建, 然后将这些得到的数据集, 使用ConcatDataset类进行封装处理</li>
-<li>(3). 传入的是 dict 类型的data cfg, 但是anno_file涉及到了多个数据集的名字, 会使用 _concat_dataset 函数进行处理来得到最终的数据集</li>
-<li>(4). 传入的是 dict 类型的 data cfg, 但是 cfg 中 type 参数为 RepeatDataset, 会使用 RepeatDataset 进行 cfg times 参数的次数的重复的组合 </li>
-</ul>
-</li>
-</ol>
-<p>mmdet/datasets/loader/build_loader.py build_dataloader函数:</p>
-<ol>
-<li>函数定义: build_dataloader(dataset, imgs_per_gpu, workers_per_gpu, num_gpus=1, dist=True, **kwargs): <ul>
-<li>(1). dataset就是之前用build_dataset构建的Dataset相关信息, 但是只是存储了anno_file等文件的路径作为参数, 并没有真正的将数据加载进来.</li>
-<li>(2). imgs_per_gpu: 每个GPU分配的image数量</li>
-<li>(3). workers_per_gpu: 每个GPU分配的提取图片用的线程</li>
-<li>(4). num_gpus: 使用gpu的数量:</li>
-<li>(5). dist: distribution缩写, 表示是否使用分布式</li>
-<li>(6). **kwargs: 所有的这部分参数后面会传递进入Dataloader中, shuffle指的是是否打乱.</li>
-</ul>
-</li>
-<li>PS: 针对分布式的先不管, 目前就针对单机进行分析</li>
-<li>batch_size =  imgs_per_gpu <em> num_gpus  num_workers = workers_per_gpu </em> num_gpus</li>
-<li>使用的GroupSampler是基于pytorch的Sampler基础上实现的, 用来控制数据后续的sample. PS:其中调用了一个Dataset的参数flag: 看注释说flag是进行图片分组的, 图片aspect ratio &gt; 1的flag为1, 否则flag为0</li>
-<li>GroupSampler初始化的整个流程<ul>
-<li>(1). self.group_size = np.bincount(self.flag) 是对两组(根据aspect ratio划分)的计数</li>
-<li>(2). self.num_samples是两部分count分别除以samples_per_gpu(就是imgs_per_gpu)的向上取整再乘以samples_per_gpu, 只是为了保证数量是可以被整除的</li>
-</ul>
-</li>
-<li>GroupSampler中的重写Sampler的函数:<ul>
-<li>(1). <strong>len</strong>(self): 就是简单的返回self.num_samples</li>
-<li>(2). <strong>iter</strong>(self): 会对两个group进行分别的操作, 因为上面说了会为了保证每个组中的元素是被samples_per_gpu所整除的, 所以在使用的时候对对应的group的index数组进行shuffle之后 会用前面的部分来填补到想要保证的length</li>
-</ul>
-</li>
-<li>PS: GroupSampler相当于只是对图片进行了随机的打乱, 方便后续的sample的随机性</li>
-<li>dataloader使用的就是torch提供的dataloader, 只不过sampler以及collate_fn是框架内实现的.<ul>
-<li>(1). sampler: 这个sampler就是刚才使用的GroupSampler这个东西。</li>
-<li>(2). collate_fn: 这里是为了扩展到并行计算的时候使用的自定义的collate, 暂时略过, em… 是进行数据分配的</li>
-<li>PS: pin_memory这个东西是选是否使用锁页内存, 在高端机器, 高内存剩余的时候选择设置为True即可</li>
-</ul>
-</li>
-<li></li>
-</ol>
-<h4 id="三-、从配置文件中进行模块的构建"><a href="#三-、从配置文件中进行模块的构建" class="headerlink" title="(三)、从配置文件中进行模块的构建"></a>(三)、从配置文件中进行模块的构建</h4><p>mmdet/utils/registry.py文件 中的 build_from_cfg 函数:</p>
-<ol>
-<li>build_from_cfg(cfg, registry, default_args=None): cfg是config dict, registry</li>
-<li>之后还是会向要构建的Module传入cfg作为参数, 所以这个就需要config的参数和不同部分组成模块的统一设置</li>
-<li>PS: 本质意义其实是, 在test开始的时候其实已经引入了很多的类, 包含了各种各样的模型类可以进行调用, 然后使用这个函数去根据conf, 将类进行实例化出来</li>
-</ol>
-<p>mmdet/utils/registry.py文件 中的 Registry 类: </p>
-<ol>
-<li>其包含了两个参数: name以及module_dict. 前者是指定了该Registry类别的, 后者是一个 dict, 里面包含了该Registry中的module信息. 这个 dict 内部是 module_name: class 的形式</li>
-<li>实际上name就是其类别, module_dict 是type: type对应class</li>
-<li>PS: Registry类框架中抽象出来了一些预先设置好的Registry, 然后后续会用Registry中的方法register_module做修饰器, 去使得各个模块一开始就加载进来了, 而不是后续去进行模块的创建.</li>
-<li><strong><em>重点: 刚开始看代码的时候, 发现在使用build_from_cfg函数进行dataset构建的时候, build_from_cfg要求Registry对象中必须要包含 cfg 中 type 名称的对应 class. 但是代码中构建数据集的时候传递的参数是 DATASETS, 其只是简单的设置了一个dataset作为Registry对象的name, 而module_dist中是没有任何赋值的. 所以按理来说是要报错的. 但是框架的处理方法是: 使用@DATASETS.register_module作为修饰器放置在每个数据库类型的Dataset Class上, 同时在package的<strong>init</strong>.py中将这些Class全部引入一遍, 此时 DATASETS 就已经注册了所有的Datasets Class(在 import 那个模块的任意东西的时候就已经导入了) 所以实际上就已经提前的引入好了</em></strong></li>
-</ol>
-<h4 id="四-、模型的加载"><a href="#四-、模型的加载" class="headerlink" title="(四)、模型的加载"></a>(四)、模型的加载</h4><p>mmdet/models/builder.py文件 中的 build_detector函数:</p>
-<ol>
-<li>build_detector(cfg, train_cfg=None, test_cfg=None):<ul>
-<li>(1). cfg: 这个参数传入的是整个cfg文件中的cfg.model参数, 也就是模型相关的所有基本参数</li>
-<li>(2). train_cfg: 这个参数是在训练中需要使用到的的参数, 为cfg文件中的cfg.train_cfg</li>
-<li>(3). test_cfg: 这个参数是在inference中使用的参数, 为cfg文件中的cfg.test_cfg</li>
-</ul>
-</li>
-<li>实际上build_detector只是将dict进行整合之后, 调用了文件中的build(cfg, DETECTORS, dict(train_cfg=train_cfg, test_cfg=test_cfg))<ul>
-<li>(1). cfg: 是model的参数, 即cfg.model</li>
-<li>(2). DETECTORS是抽象出来的一个Registry实例, 同DATASETS, 其在package的<strong>init</strong>.py文件中也会想DETECTORS中进行各种detector的注册</li>
-<li>(3). build函数中其实就是将参数以及registry实例传递给build_from_cfg函数去进行构建, 即build_from_cfg(cfg, registry, default_args) 其中cfg就是实际上的cfg.model, registry就是DETECTORS</li>
-<li>(4). FasterRCNN在这里就是TwoStageDetector的抽象, 什么都没有变更, 所以只需要看TwoStageDetector类的实现就可以了</li>
-</ul>
-</li>
-</ol>
-<h4 id="五-、FasterRCNN模型代码部分"><a href="#五-、FasterRCNN模型代码部分" class="headerlink" title="(五)、FasterRCNN模型代码部分"></a>(五)、FasterRCNN模型代码部分</h4><p>PS: 就是看TwoStageDetector类的实现</p>
-<p>mmdet/models/detectors/two-stage.py 文件中的 TwoStageDetector 类</p>
-<p>PS: mmdetection框架将整个network分成了几个部分: mmdetection的github doc中说大致上分成了四个部分: 1. backbone: 就是网络前面的提取特征的backbone, eg: ResNet 2. neck: 在backbone与head中间的部分, eg: FPN, HRFPN(HRNet提出的), BFP(Libra R-CNN的那个), ASPP 3. head: 针对特定任务的部分, eg: bbox prediction, mask prediction 4. roi extractor: 从feature map中提取feature 的部分, eg: RoI align.</p>
-<ol>
-<li><strong>init</strong>(self, backbone, neck=None, shared_head=None, rpn_head=None, bbox_roi_extractor=None, bbox_head=None, mask_roi_extractor=None, mask_head=None, train_cfg=None, test_cfg=None, pretrained=None):<ul>
-<li>(1). backbone: 网络的backbone部分的config dict</li>
-<li>(2). neck: 网络的neck部分的config dict</li>
-<li>(3). shared_head: shared_head部分的config dict(PS: 在shared_head module里只看到了一个ResLayer…)</li>
-<li>后面同理, 直到mask_head都是网络对应部分你的config dict</li>
-<li>train_cfg, test_cfg仍然是训练时候和测试时候的config dict, pretrained是是否有预训练模型</li>
-</ul>
-</li>
-<li>之后在TwoStageDetector.<strong>init</strong>()中就都是使用 mmdet/detectors/builder.py 中的各个build函数进行各个部分的根据build_from_cfg的构建的(PS: 每个部分仍然是都有自己单独的Registry, 且在其部分module的<strong>init</strong>文件中已经被注册进入). 最后会进行pre_train weight的加载(只在train过程中有可能进行了加载, 在inference中因为test.py中设置了cfg中的model.pretrain=None, 所以是不会进行加载的, 而是在model建立之后才进行checkpoint的加载)</li>
-<li>关于pre_train weight的加载, 除了backbone以及shared_head部分的初始化是使用pre_train文件中的weight了, 其余部分的初始化都是根据各个module中自身定义的初始化函数去进行定义的, 大部分使用的都是pytorch自带的normal_init进行的参数的初始化</li>
-<li>其他函数:<ul>
-<li>(1). init_weights(self, pretrained=None): 就是使用pre_train参数进行model初始化的函数</li>
-<li>(2). extract_feat(self, img): 从backbone+neck中进行feature的提取, 其实就是将input经过backbone以及neck部分的forward而已</li>
-<li>(3). forward_dummy(self, img): 计算网络的flops</li>
-<li>(4). simple_test(self, img, img_meta, proposals=None, rescale=False): 只使用单一尺度的tesst</li>
-<li>(5). aug_test(self, imgs, img_metas, rescale=False): 使用数据增强, multi-scale的test</li>
-<li>PS: 测试过程会在BaseDetector根据img的第一维度长度进行 aug_test还是simple_test的选择.</li>
-<li>(6). forward_train(self, img, img_meta, gt_bboxes, gt_labels, gt_bboxes_ignore=None, gt_masks=None, proposals=None): 训练过程中向前传递的过程, 会返回loss, 具体部分后面分析</li>
-<li>PS: (4). (5). (6). 三个函数实际上是在 BaseDetector抽象类中已经定义并实现了的方法forward根据传入参数是否有return_loss来决定的 (PS: 这个调用又是基于torch中的nn.Module.<strong>call</strong>所导致的)</li>
-</ul>
-</li>
-</ol>
-<p><strong><em>关于TwoStageDetector类中test函数的流程:</em></strong></p>
-<p>PS: 无论 aug_test 还是 simple_test, 两者的流程其实是相似的</p>
-<ol>
-<li>会通过 extract_feat 函数获取到feature map</li>
-<li>使用 rpn 模块相关函数进行 proposal list 的提取</li>
-<li>通过 bbox 相关模块去进行 bbox、label 的获取</li>
-<li>最后返回 bbox 的最终结果</li>
-</ol>
-<p><strong><em>关于TwoStageDetector类中train函数的流程:</em></strong></p>
-<ol>
-<li>会通过 extract_feat 函数获取到feature map</li>
-<li>包含rpn部分的时候, 使用rpn模块进行处理, 得到proposal list结果以及rpn部分的loss</li>
-<li>进行GT与proposal的匹配区分出来正负样本, 然后进行采样</li>
-<li>bbox head部分进行处理并获得classification以及bbox regression部分的loss</li>
-<li>如果有mask部分进行mask部分的处理以及loss</li>
-<li>将最终的loss进行返还.</li>
-</ol>
-<h3 id="三、命令总结"><a href="#三、命令总结" class="headerlink" title="三、命令总结"></a>三、命令总结</h3><h4 id="numpy相关"><a href="#numpy相关" class="headerlink" title="numpy相关:"></a>numpy相关:</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> np.bincount(array): 返回一个两个元素的np.array, 第一个entry是<span class="number">0</span>的数量, 第二个entry 是<span class="number">1</span>的数量</span><br><span class="line"><span class="number">2.</span> np.ceil(array): 向上取整</span><br><span class="line"><span class="number">3.</span> np.where(array==num): 找到array中为num的index, PS: 注意<span class="number">1</span>: 因为np.zeros()等通常得到的array的size是(<span class="number">10</span>, )这类的所以np.where()返回的也是 (array(), )所以要用 np.where(array==num)[<span class="number">0</span>]才能拿到想要的结果. 注意<span class="number">2</span>: 返回值的length是array的dim, 对应的就是各个维度上的index的值</span><br><span class="line"><span class="number">4.</span> np.random.permutation 与 np.random.shuffle的区别: shuffle是原地随机, 并没有返回值, 同时shuffle只对第一维进行随机. permutation是进行一次随机, 有返回值, 但是仍然只对第一维进行随机.</span><br><span class="line"><span class="number">5.</span></span><br></pre></td></tr></table></figure>
-<h4 id="os-sys-等杂项-module相关"><a href="#os-sys-等杂项-module相关" class="headerlink" title="os, sys 等杂项 module相关:"></a>os, sys 等杂项 module相关:</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> os.path.abspath(path): 获取绝对路径. <span class="comment"># PS:注意的是, 其只是简单的将path前面加上一个当前用户路径前缀, 所以当遇到os.path.abspath("~/")的时候输出的后面会跟着~ eg: /Users/mac/~</span></span><br><span class="line"><span class="number">2.</span> os.path.expanduser(path): 将路径中开头(当~前面没有任何字符的时候)第一个~替换成用户路径前缀</span><br><span class="line">3. PS: 将1, 2结合为 -&gt; os.path.abspath(os.path.expanduser(path)) 得到的就是将任意一个路径变换为绝对路径的转换, 1处理不了 ~/ 2处理不了./ 共同处理才能得到最后结果</span><br><span class="line"><span class="number">4.</span> os.path.basename(path): 获取最后一个/后面的字符内容</span><br><span class="line"><span class="number">5.</span> os.path.dirname(path): 获取最后一个/之前的字符内容</span><br><span class="line"><span class="number">6.</span> PS: dirname+<span class="string">'/'</span>+basename = filename</span><br><span class="line"><span class="number">7.</span> importlib.import_module(moduleName): 从PATH中寻找module模块引入</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line"><span class="comment"># 深拷贝浅拷贝问题:</span></span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> a.copy(): 浅拷贝, 对引用中的引用里的值并不会进行拷贝 eg: [<span class="number">1</span>, <span class="number">2</span>, [<span class="number">3</span>, <span class="number">4</span>]] 中 [<span class="number">3</span>, <span class="number">4</span>] 就会在copy后修改之后影响到原对象</span><br><span class="line"><span class="number">2.</span> copy.copy(obj): 浅拷贝和obj.copy没有什么区别.</span><br><span class="line"><span class="number">3.</span> copy.deepcopy(obj): 深拷贝, 引用中的引用中的值也会被拷贝出来, 而不是只拷贝引用中引用的地址</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span> dict.setdefault(key, default=<span class="keyword">None</span>): 就是添加一个默认的值, 有这个key的时候会返回已有的值并且不会设置, 没有的时候设置成default的值.</span><br></pre></td></tr></table></figure>
-<h4 id="装饰器相关"><a href="#装饰器相关" class="headerlink" title="装饰器相关:"></a>装饰器相关:</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> @property: 将方法变为属性调用 </span><br><span class="line">eg:</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">		self._name = name</span><br><span class="line"><span class="meta">	@property</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">name</span><span class="params">(self)</span>:</span></span><br><span class="line">		<span class="keyword">return</span> self._name</span><br><span class="line">t = Test(<span class="string">"test"</span>)</span><br><span class="line">t.name <span class="comment"># 得到的就是test</span></span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 对类添加装饰器:</span><br><span class="line">具体描述: 定义一个函数func, 一个类cls有如下的定义:</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">(obj)</span>:</span></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line"><span class="meta">@func</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">cls</span><span class="params">(object)</span>:</span></span><br><span class="line">	...</span><br><span class="line">这个时候就会在cls被加载的时候(并不用实例化的时候)就会调用func(cls), 进行了处理</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">巧用方法<span class="number">1</span>: mmdetection中进行Registry的各种类型的module的在其中的注册就是利用了这个函数达到了在Registry类的实例中注册各个类的实现:</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Registry</span><span class="params">(object)</span>:</span></span><br><span class="line">	...</span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">register_module</span><span class="params">(self, cls)</span>:</span></span><br><span class="line">		...</span><br><span class="line">		self.module_dict[cls.__name__] = cls</span><br><span class="line">		<span class="keyword">return</span> cls</span><br><span class="line"></span><br><span class="line">DATASETS = Registry(<span class="string">"dataset"</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@DATASETS.register_module</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CocoDataset</span><span class="params">(CustomDataset)</span>:</span></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">这个时候就直接完成了 CocoDataset 类在DATASETS.module_dict的注册, 方便之后的查找使用</span><br><span class="line">***注意!!!: 在作为装饰器的函数中如果不 <span class="keyword">return</span> cls, 那么这个类就不能在外部被使用了(这个也是可以用来隐藏外部的) 即: CocoDataset()会报错, 且type(CocoDataset)为NoneType 但是DATASETS.module_dict[<span class="string">"CocoDataset"</span>]()则不会报错, Type(DATASETS.module_dict[<span class="string">"CocoDataset"</span>])为type</span><br><span class="line"><span class="keyword">return</span> cls那么就可以外部使用了</span><br><span class="line">***注意!!!: 因为在初始化类的时候会调用register_module(CocoDataset), 并且类的名称以后就会变成这个函数执行之后的结果, 所以返回cls的时候就会得到正常的类, 没有返回值的时候就是NoneType</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">巧用方法<span class="number">2</span>: 进行单例模式的实现</span><br><span class="line">按照上面最后一个注意的分析, 我们可以明白, 如果我们在装饰器中返回一个类型, 这个类实际上就变成这个类型</span><br><span class="line">因此, 当在其中返回一个函数的时候, 类实际上就变成了一个函数, 但是这个函数因为是在wrapper范围内的, 仍然可以调用这个类.</span><br><span class="line">eg:</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(cls)</span>:</span></span><br><span class="line">	doSomethingForCls</span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">inner</span><span class="params">(attr, *args, **kwargs)</span>:</span></span><br><span class="line">		doSomething</span><br><span class="line">		<span class="keyword">return</span> somthing</span><br><span class="line">	<span class="keyword">return</span> inner</span><br><span class="line">借助这个方法可以实现单例模式:</span><br><span class="line">eg: </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(cls)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">inner</span><span class="params">(name, *args, **kwargs)</span>:</span></span><br><span class="line">		<span class="keyword">if</span> <span class="keyword">not</span> cls.instance:</span><br><span class="line">			cls.instance = cls(name)</span><br><span class="line">		<span class="keyword">return</span> cls.instance</span><br><span class="line">	<span class="keyword">return</span> inner</span><br><span class="line"></span><br><span class="line"><span class="meta">@wrapper</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(object)</span>:</span></span><br><span class="line">	instance = <span class="keyword">None</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">		self.name = name</span><br><span class="line"></span><br><span class="line">Person 实际上是这个东西 -&gt; &lt;function __main__.wrapper.&lt;locals&gt;.inner&gt;</span><br><span class="line">这样单例模式就已经实现了</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">巧用方法<span class="number">3</span>: 使用装饰器实现类的动态进行属性的赋值</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(**kwargs)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">inner</span><span class="params">(cls)</span>:</span></span><br><span class="line">		<span class="keyword">for</span> key, val <span class="keyword">in</span> kwargs.items():</span><br><span class="line">			setattr(cls, key, val)</span><br><span class="line">		<span class="keyword">return</span> cls</span><br><span class="line">	<span class="keyword">return</span> inner</span><br><span class="line"></span><br><span class="line"><span class="meta">@wrapper(name="hehe", age=23, gender="male")</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">People</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">这个是因为wrapper(...)直接就调用了wrapper的外层, 返回了内部的inner函数</span><br><span class="line">inner函数接受People为参数, 然后在People中添加了**kwargs中的参数, 同时返回了People这个东西</span><br><span class="line"></span><br><span class="line">3. @abstractmethod: 当一个class中有使用这个装饰器进行装饰的方法的时候, 其是不能被实例化的, 只有其子类将这些抽象方法进行实现的时候, 该子类才能进行实例化</span><br></pre></td></tr></table></figure>
-<h4 id="类特殊方法"><a href="#类特殊方法" class="headerlink" title="类特殊方法:"></a>类特殊方法:</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> __repr__(self): 类似于JAVA中的 toString 方法</span><br><span class="line"><span class="number">2.</span></span><br></pre></td></tr></table></figure>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1829,7 +1757,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

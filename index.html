@@ -236,6 +236,78 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/11/Simple-Summary-for-Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2020/01/11/Simple-Summary-for-Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》/" class="post-title-link" itemprop="url">Simple Summary for (Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-11 17:45:29 / Modified: 17:46:50" itemprop="dateCreated datePublished" datetime="2020-01-11T17:45:29+08:00">2020-01-11</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》"><a href="#Chapter-15-《ImageNet-Classification-with-Deep-Convolutional-Neural-Networks》" class="headerlink" title="(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》"></a>(Chapter 15)《ImageNet Classification with Deep Convolutional Neural Networks》</h2><p>请见<a href="http://suilin.top:8080/BookExercise/exercises/%28Chapter%2015%29%E3%80%8AImageNet%20Classification%20with%20Deep%20Convolutional%20Neural%20Networks%E3%80%8B.md">这里</a></p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/01/09/Simple-Summary-for-Chapter15-《Deep-Residual-Learning-for-Image-Recognition》/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1131,141 +1203,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/12/21/Simple-Summary-for-Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/12/21/Simple-Summary-for-Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection/" class="post-title-link" itemprop="url">Simple Summary for Residual Bi-Fusion Feature Pyramid Network for Accurate Single-shot Object Detection</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-12-21 15:16:04 / Modified: 15:22:52" itemprop="dateCreated datePublished" datetime="2019-12-21T15:16:04+08:00">2019-12-21</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection》"><a href="#简单总结《Residual-Bi-Fusion-Feature-Pyramid-Network-for-Accurate-Single-shot-Object-Detection》" class="headerlink" title="简单总结《Residual Bi-Fusion Feature Pyramid Network for Accurate Single-shot Object Detection》"></a>简单总结《Residual Bi-Fusion Feature Pyramid Network for Accurate Single-shot Object Detection》</h2><hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><p><img src="https://upload-images.jianshu.io/upload_images/13028997-1329d92198229a0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="部分Introduction"></p>
-<ol start="8">
-<li>本文提出了 ReBiF (Residual BiFusion) Feature Pyramid. -&gt; 同时融合深层次和浅层次的 features -&gt; 高效且鲁棒的 object detection. </li>
-<li>RBF feature pyramid 的构成是简单, 轻量级的, 只用临近的 3 层被用来去 fused 通过 简单的concatenations 和 1*1 conv 去构成 prediction map.</li>
-<li>本文主要贡献总结:<ul>
-<li>(1). 新型的 residual bi-fusion feature pyramid -&gt; 融合浅层和深层的 features 以追求更精准的 one-shot object detection.</li>
-<li>(2). 新的 feautre pyramid 可以简单的被训练和集成到不同的 backbone 中 (因为 residual 的特性)</li>
-<li>(3). 本文的 residual feature pyramid 对不同的 datasets, object sizes, object classes 有着很好的泛化性</li>
-<li>(4). 可以减少 pooling 带来的位移不变性给object detection的影响</li>
-<li>(5). 在 VOC 和 MS COCO 数据集上达到了 SOTA 的结果</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>首先还是对 FPN 进行了一个简单的描述, 然后再次强调其缺陷 -&gt; 因为 pooling 和quantization 的问题, 很难保留准确的位置信息, 为了解决问题, 从 shallow feature map 也获取信息可以有效的避免小物体的漏检.</li>
-<li>提到了目前的 SOTA 的 bi-directional 方法都是从原图或者低层次的 feature layers 去构建新的 feature streams 以精准定位. 但是这么做 计算量以及参数量是很大的. </li>
-<li>本文提出的做法包括<ul>
-<li>(1). CORE(Concatenation and Reorganization) 文章 Fig1. b)所示结构  -&gt;  相邻的三个层次进行 feature map 的 fusion (直观来说就是语义信息(high level)和位置信息(shallow layer)的融合) -&gt; 因为只是相邻三层的 re-using 机制, 所以相比来说能够节省很多的 memory 和 bandwidth.</li>
-<li>(2). 对 (1). 中 CORE 模块的 output 进行进一步的 purified 去生成语义信息更加丰富的 features.  Fig1. c) </li>
-<li>(3). 结合 residual 机制, 前一阶段的 RECORE(应该实际上就是CORE, 只是名字不同的问题) 将会用一个 shortcut 连接到下一个阶段</li>
-</ul>
-</li>
-<li>CORE Module:<ul>
-<li>(1). 提到了想要同时融合 deep 和 shallow 的layer的semantic feautres, 但是又不想引入过多的 dithering operation???(eg: conv) 和 computationally expensive 的 操作(eg: pooing, addiction)并且尽可能的去保留预测的信息, CORE module 使用 concatenation 去进行 features 的 fusion.</li>
-<li>(2). 同时 concatenation 也不仅仅是像原来的方法简单的拼接全部层次的信息, 而是recursively concatenate临近层次的features. -&gt; 可以看结构图知道, 是上下(deeper &amp;&amp; shallower)层 分别 经过 Bottleneck 结构 和 upsample/reorg 操作得到和当前层次相同大小的 feature map, 然后和当前层次的feature map进行拼接</li>
-</ul>
-</li>
-<li>Purification:<ul>
-<li>(1). 将 CORE Module 输出的信息进一步的通过 Purification Module 进行处理, 文章中给出的结构是 Bottleneck -&gt; conv -&gt; Bottleneck -&gt; conv -&gt; Bottleneck</li>
-<li>(2). 值得注意的是, 文章中是第二个 Bottleneck 输出的结果作为下一个阶段的 CORE Module 的输入, 而不是 CORE Module 最后的输出结果进行 fuse 操作.</li>
-</ul>
-</li>
-<li>BiFusion Feature Pyramid:<ul>
-<li>(1). 简单的复述了之前的几个观点而已… 具体结构就是 Figure.1 c) 所示的, 只是说明自己为什么快, 节省了内存和时间</li>
-<li>(2). PS: 没有觉得有什么很新颖的东西, 双边信息融合之前的做法并没有看到过…</li>
-</ul>
-</li>
-<li>Residual Feature Pyramid:<ul>
-<li>PS: 果然 RECORE 就是对 CORE 改了个名字, 应该是因为结合了上个 CORE Module 的输出, 所以叫做 RECORE 了</li>
-<li>(1). 具体细节见 论文中的 Figure5.</li>
-<li>(2). 大概描述就是 前一阶段的 CORE 的输出会用一个 shortcut 直接和下一个阶段的 CORE 进行 dot add.</li>
-</ul>
-</li>
-<li>Improvement on Large and Medium Object Detection:<ul>
-<li>(1). 提到了, YOLO 在小物体的性能上有提升, 但是牺牲了在大物体上的精准程度. 为了避免这种情况, IPIRC 2019 的冠军 选择提高大物体和小物体的检测上 的性能, 但是减少小物体上的性能来提升总体性能.</li>
-<li>(2). 本文为了同时提升小物体和大物体上的性能, 选择在 residual pyramid 结构之后再次通过一个 bottom-up 的 pathway 去进行 进一步的feature fusion (BFM 结构)</li>
-<li>PS: 下面说的都是 BFM 中的做法, 前面的 CORE 或者说 RECORE 好像都还是 concatetation</li>
-<li>(3). 重新强调了 SOTA bidirectional methods 虽然使用 concatenation 方法去进行feature mapfusion, 但是简单的 subsample 与 reshape 不能解决 pool 带来的 shift invariance 的影响. -&gt; 本文建议使用 1 <em> 1 conv 代替 concatenation 操作 (认为 1 </em> 1 conv的参数是学习出来的, 但是 concate 是 hand-crafted 的)</li>
-<li>(4). 具体的 BFM 结构: <ul>
-<li>1). 首先进行 下层(shallow layer 或者说 high resolution layer) 的 reshape 操作, 这里的 reshape 和以往的 reshape 不同, <strong><em>可以理解为: 将 feature map 划分为 2 </em> 2 的 bin 然后取每个 bin 中的特定位置抽取出来的 4 个feature map 进行*</strong></li>
-<li>2). 然后进行和当前层次的 feautre map 进行 concate 然后通过 1 * 1 convolution 进行 “blurring” 得到的就是我们想要的了.</li>
-<li>3). 提到了 BFM 模块对小物体和大物体都能带来性能的提升, 但是相对于大物体来说小物体的提升比较小</li>
-</ul>
-</li>
-</ul>
-</li>
-<li></li>
-</ol>
-<hr>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
-<li>那个新的 reshape 还是比较新颖让我这个菜鸡眼前一亮的, 整体的思路来说没有太看过什么 bi-direction 的 feature fusion(除了那个 LRN 的论文…)</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1315,7 +1252,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
