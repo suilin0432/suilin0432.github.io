@@ -236,6 +236,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN-Plus-Faster-and-Better/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/10/28/Simple-Summary-for-Grid-R-CNN-Plus-Faster-and-Better/" class="post-title-link" itemprop="url">Simple Summary for Grid R-CNN Plus: Faster and Better</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-10-28 17:03:48 / Modified: 17:04:07" itemprop="dateCreated datePublished" datetime="2019-10-28T17:03:48+08:00">2019-10-28</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结《Grid-R-CNN-Plus-Faster-and-Better》"><a href="#简单总结《Grid-R-CNN-Plus-Faster-and-Better》" class="headerlink" title="简单总结《Grid R-CNN Plus: Faster and Better》"></a>简单总结《Grid R-CNN Plus: Faster and Better》</h2><hr>
+<p>PS: 是对Grid R-CNN的改进, 作者都没有变化, 但是这篇文章把代码开源了, 文章也很短只有4页, 主要讲述改进的方面.<br>PS: 部分描述来源于 <a href="https://zhuanlan.zhihu.com/p/70489673" target="_blank" rel="noopener">知乎这篇文章</a></p>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
+<li>出发点: Grid R-CNN虽然精度高, 但是相比于faster rcnn要慢.</li>
+<li>问题1: Grid R-CNN对所有的grid-points都使用相同的representation region去生成supervision maps(就是N*N个grid point feature map使用同一个完整的feature map去生成heatmap), 认为这是很低效的(eg: top-left grid point不应该在right或者bottom的区域出现) -&gt; Grid R-CNN Plus将会只使用1/4的最可能的区域去进行supervision. -&gt; 从而减小grid branch上的feature map的size, 同时认为能够集中关注区域而带来grid location准确性上的提升.</li>
+<li>同样, 文章对sampling strategy, normalization method, NMS stategy, hyper-parameters进行了一定的分析 -&gt; 使得模型能够和faster rcnn速度相当.</li>
+</ol>
+<hr>
+<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
+<li>Grid Point Specific Representation Region<ul>
+<li>因为只有positive sample(IoU &gt; 0.5)才会被选择送给Grid branch, 所以在supervision map(GT点)上只可能出现在一个有限的区域中, 所以我们不应该使用全部大小的feature map去进行每个grid point的feature map的提取, 这么做是十分没有效率的, 同时也不是很稳定.  -&gt; 56<em>56变为28</em>28 只用可能的区域去进行提取 并且这么做作者视为一个normalization… 因为其原来分布是不normal distribution的 而在局部是normal distribution的</li>
+</ul>
+</li>
+<li>Light Grid Head:<ul>
+<li>由于最后的输出尺度降低了一半，所以也可以同时将grid branch中的其他特征图分辨率也降低，eg:14x14-&gt;7x7。前面的RPN+ROI Align产生一个固定的feature map 14x14，接着使用一个步长为2的3x3卷积核，然后再使用7个步长为1的3x3卷积核从而产生7x7分辨率的特征图。紧接着我们将这个特征分成N组（默认为9）,每一组关联一个grid point，接着使用两个组反卷积将特征图尺度变为28x28，强调了group deconvolution可以加速上采样的过程。另外一个好处是，由于我们对每个grid point的表达进行了归一化，因此他们变得更加closer,导致在特征融合时不需要使用很多的卷积层来覆盖这个间隙。在Plus版本，只使用了一个5x5 depth-wise卷积层来代替原来的3个连续的卷积层。</li>
+</ul>
+</li>
+<li>Image-across Sampling Strategy:<ul>
+<li>提到了因为grid branch只是用了positive proposal去训练, 导致了在不同sample batch中positive samples的数量上的不平衡. (eg: 一些图片上可能有很多个positive samples, 然而其他的可能仅仅有几个positive samples) 这种情况可能会导致grid branch上的feature distribution不稳定.</li>
+<li>因此选用了image-across的sampling策略, positive proposals会几张图片中进行sample, 当一个image中sample出来了少量的positive proposals的时候, 会从其他的包含多的positive proposal的图片进行batch的构成. 因此不再规定在一个图片上sample多少, 而是限制两张图片sample数量</li>
+<li>PS: 个人认为一可以减少单张图片的positive-negative imbalance问题, 同时batch之间的positive也是可以相对保证的</li>
+</ul>
+</li>
+<li>Non-Maximum Suppression Only Once<ul>
+<li>原来的Grid RCNN需要两次NMS，第一次是proposal的生成，只选择Top 125个样本进行边框矫正，第二次是做最后的classification，作者发现，尽管只是一小部分的proposal，进行80类的NMS还是很慢，所以在Plus版本，直接移除了第二个NMS，同时将第一个NMS的IOU阈值设置为0.3，分类阈值设置为0.03，只选择100个proposal进行进一步的分类和回归。</li>
+</ul>
+</li>
+</ol>
+<p>PS: 个人认为值得强调的一点是: 每个grid point的feature map虽然变小了, 但是仍然是使用整个RoI Align的feature map得到的, 只是经过处理后得到的对应grid point的feature map变小了. 这个feature map是对应着缩小范围了的可能的分布的.</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/28/Simple-Summary-for-Grid-R-CNN/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1195,122 +1295,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/10/22/Simple-Summary-for-CornerNet-Detecting-Objects-as-Paired-Keypoints/" class="post-title-link" itemprop="url">Simple Summary for CornerNet: Detecting Objects as Paired Keypoints</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-10-22 09:21:02 / Modified: 09:21:29" itemprop="dateCreated datePublished" datetime="2019-10-22T09:21:02+08:00">2019-10-22</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简单总结《CornerNet-Detecting-Objects-as-Paired-Keypoints》"><a href="#简单总结《CornerNet-Detecting-Objects-as-Paired-Keypoints》" class="headerlink" title="简单总结《CornerNet: Detecting Objects as Paired Keypoints》"></a>简单总结《CornerNet: Detecting Objects as Paired Keypoints》</h2><hr>
-<p>PS: 算是Anchor-free最近火起来的比较早的一篇文章了</p>
-<p>PS: Data Augumentation中的那个PCA处理没有了解过, 可以通过看一下代码进行了解</p>
-<ol>
-<li>不再使用anchor作为物体的bbox, 改为使用一对关键点作为bbox来进行object detection -&gt; 不需要设计一组anchor box</li>
-<li>本位提出了corner pooling这一种新的pooling layer去帮助网络更好的定位角点</li>
-<li>认为使用anchor box有两个副作用:<ul>
-<li>(1). 通常我们需要很多的anchor(几万个甚至更多) -&gt; 因为detector被训练去进行分类: 是否每个anchor box都和GT box有着足够的overlap, 很多的anchor box是用来保证和GT box是有足够的overlap的 -&gt; 因此只有一小部分的anchor是有用的. -&gt; 造成了positive和negative之间的类别不平衡问题</li>
-<li>(2). 使用anchor会引入很多的超参数和设计上的选择(多少个anchor box, 其尺寸, aspect ratios等) 同时不同尺度上的特征图上可能使用不同的一组anchor</li>
-</ul>
-</li>
-<li>本文提出cornernet, 用top-left和bottom-right点代替anchor box<ul>
-<li>(1). 使用单个conv network去进行top-left角点的heatmap预测(区分类别)</li>
-<li>(2). 同样的有bottom-right的heatmap</li>
-<li>(3). 以及对每个检测角点有一个embedding vector -&gt; 用来将属于同一个物体的角点进行匹配</li>
-</ul>
-</li>
-<li>corner pooling:<ul>
-<li>(1). 帮助conv network更好的定位bbox角点的pooling层</li>
-<li>(2). 因为bbox的角点通常都是在obj之外的而不是内部, 所以corner是不能根据local evidence来定位的 -&gt; 所以为了确定top-left角点, 需要水平向右看物体的topmost边界 以及垂直的去看物体的leftmost边界 同理右下角点</li>
-<li>(3). 由(2)的设想引出corner pooling的设计 -&gt; 对每个channel输入两个feature map 在每个pixel的位置处从第一个feature map中maxpool其右侧的feature vector, 从第二个特征图中maxpool其下面feature map, 然后将两个result加在一起(em… 这就要保证左/上的角点的特征值要大吧… 不然全图都是一样的值就失去作用了…)</li>
-<li>详细做法: </li>
-</ul>
-</li>
-<li>陈述认为为什么检测角点要比anchor box或者proposal更好<ul>
-<li>(1). 认为box的中心是更难以定位的, 因为中心依赖于obj的四边, 而角点仅仅依赖于两条边相对来说更加简单同时利用了corner pooling, 引入了一些对角点定义的先验信息</li>
-<li>(2). 相对于anchor boxes来说corner是更加高效的, 不那么密集的, 只需要O(wh)的corner就可以表示O(w^2h^2)的anchor box</li>
-</ul>
-</li>
-<li>选用Hourglass104作为backbone, 后面跟着两个prediction module分别处理左上角点和右下角点. 然后每隔module都会使用corner poolingmodule去对hourglass network得到的信息进行处理, 然后进行heatmap, embedding, offset的predict.</li>
-<li>不额外的进行multi scale的添加, 而是通过对hourglass backbone不同scale的output进行子模块的接入然后进行检测</li>
-<li>对于每个角点只有一个GT positive的位置, 其他的所有位置都是negative的. 在训练过程中, 减少对在正确角点一个指定半径内的negative location的惩罚(因为认为即使点是不正确的, 但是在那个范围内的时候仍然可以和gt bbox有一个很高的overlap)<ul>
-<li>这个半径是根据物体的大小所决定的, 使overlap不小于0.7, 惩罚的加权系数是一个高斯分布</li>
-</ul>
-</li>
-<li>提到了一个观点, 因为会进行down_sample处理, 所以(x, y)位置会被映射到(floor(x/n), floor(y/n)), 当我们再次remap这个位置到原图像的时候会出现精度的丢失, 导致了小物体bbox精读的丢失, 会十分影响小物体预测bbox和GT的IoU<ul>
-<li>为此在remap之前predict一个corner location的微小的调整offset_k = (x_k/n-floor(x_k/n), y_k/n-floor(y_k/n)) </li>
-<li>x_k和y_k是对corner k的x和y的坐标, 对每个corner(其实就是每个点)的offset是类别共享的</li>
-</ul>
-</li>
-<li>Grouping Corners:<ul>
-<li>对每个corner进行embedding的生成, 然后通过距离(相似度)的比较将点进行分组</li>
-</ul>
-</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1360,7 +1344,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">67</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
