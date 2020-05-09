@@ -56,19 +56,19 @@
   };
 </script>
 
-  <meta name="description" content="简单总结《Revisiting Feature Alignment for One-stage Object Detection》 PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&amp;gt; 对准提高了准确率 Introduction: 强调了one-stage">
+  <meta name="description" content="Simple Summary for《SlowFast Networks for Video Recognition》 Abstract 本文提出对视频识别的 SlowFast Network. 模型包含 1). Slow pathway: 在低帧率上进行操作去捕捉空间语义 2). Fast pathway: 在高帧率上进行操作去在高的时间分辨率上捕捉动作信息   Slow pathway 通过减">
 <meta name="keywords" content="Paper Summary">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Simple Summary for Revisiting Feature Alignment for One-stage Object Detection">
-<meta property="og:url" content="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/index.html">
+<meta property="og:title" content="Simple Summary for 《SlowFast Networks for Video Recognition》">
+<meta property="og:url" content="http://suilin.top/2020/05/09/Simple-Summary-for-《SlowFast-Networks-for-Video-Recognition》/index.html">
 <meta property="og:site_name" content="Suilin&#39;s Blog">
-<meta property="og:description" content="简单总结《Revisiting Feature Alignment for One-stage Object Detection》 PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&amp;gt; 对准提高了准确率 Introduction: 强调了one-stage">
+<meta property="og:description" content="Simple Summary for《SlowFast Networks for Video Recognition》 Abstract 本文提出对视频识别的 SlowFast Network. 模型包含 1). Slow pathway: 在低帧率上进行操作去捕捉空间语义 2). Fast pathway: 在高帧率上进行操作去在高的时间分辨率上捕捉动作信息   Slow pathway 通过减">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-24T01:26:54.493Z">
+<meta property="og:updated_time" content="2020-05-09T01:28:55.703Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Simple Summary for Revisiting Feature Alignment for One-stage Object Detection">
-<meta name="twitter:description" content="简单总结《Revisiting Feature Alignment for One-stage Object Detection》 PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&amp;gt; 对准提高了准确率 Introduction: 强调了one-stage">
-  <link rel="canonical" href="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/">
+<meta name="twitter:title" content="Simple Summary for 《SlowFast Networks for Video Recognition》">
+<meta name="twitter:description" content="Simple Summary for《SlowFast Networks for Video Recognition》 Abstract 本文提出对视频识别的 SlowFast Network. 模型包含 1). Slow pathway: 在低帧率上进行操作去捕捉空间语义 2). Fast pathway: 在高帧率上进行操作去在高的时间分辨率上捕捉动作信息   Slow pathway 通过减">
+  <link rel="canonical" href="http://suilin.top/2020/05/09/Simple-Summary-for-《SlowFast-Networks-for-Video-Recognition》/">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   };
 </script>
 
-  <title>Simple Summary for Revisiting Feature Alignment for One-stage Object Detection | Suilin's Blog</title>
+  <title>Simple Summary for 《SlowFast Networks for Video Recognition》 | Suilin's Blog</title>
   
 
 
@@ -241,7 +241,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/10/24/Simple-Summary-for-Revisiting-Feature-Alignment-for-One-stage-Object-Detection/">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2020/05/09/Simple-Summary-for-《SlowFast-Networks-for-Video-Recognition》/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lin Sui">
@@ -255,7 +255,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            Simple Summary for Revisiting Feature Alignment for One-stage Object Detection
+            Simple Summary for 《SlowFast Networks for Video Recognition》
             
 
           
@@ -272,7 +272,7 @@
                 
               
 
-              <time title="Created: 2019-10-24 09:26:22 / Modified: 09:26:54" itemprop="dateCreated datePublished" datetime="2019-10-24T09:26:22+08:00">2019-10-24</time>
+              <time title="Created: 2020-05-09 09:28:04 / Modified: 09:28:55" itemprop="dateCreated datePublished" datetime="2020-05-09T09:28:04+08:00">2020-05-09</time>
             </span>
           
             
@@ -291,52 +291,65 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》"><a href="#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》" class="headerlink" title="简单总结《Revisiting Feature Alignment for One-stage Object Detection》"></a>简单总结《Revisiting Feature Alignment for One-stage Object Detection》</h2><hr>
-<p>PS: 认为是对RefineDet的一个改进, RefineDet是选择使用了先进行anchor的粗略回归然后进行第二次, 但是第二次回归过程中使用的特征仍然是不对准的, 本文将不对准 -&gt; 对准提高了准确率</p>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>强调了one-stage方法中anchor box和convolution feature misalignment(不对准)的问题 (不对准指的是默认的anchor的中心和实际anchor中心通常差距很大, 导致了我们在进行卷积利用信息的时候只利用了物体的部分信息, 很难去将anchor回归到真实的anchor中)</li>
-<li>本文同时表明one-stage方法和two-stage方法之间的差距没有想象的那么大(说明im2col的ROIConv和RoIAlign之间有很大的联系) -&gt; 设计了RoIConv operator去将feature与anchor对准</li>
-<li>提到了Object detection是位置敏感的任务, 需要位置敏感的特征 -&gt; 因此认为将feature与其对应的bbox进行对准是物体检测的重要核心. 认为多个anchor box共享feature机制打破了reference box与feature一对一的关系, 打破了物体检测的位置敏感性</li>
-<li>认为 two-stage 的RoIPooling的对准操作有助于位置敏感性的建立, 但是one-stage中并没有这种操作</li>
-<li>认为one-stage的多尺度特征的利用通过将不同尺度的anchor指定在正确的feature map level上, 部分解决了misalign问题, 但是只解决了由于scale导致的misalignment, 而不能解决aspect ratio所导致的misalignment.(PS: 如果只是aspect ratio带来的misalignment, 那么简单的将aspect ratio拆开不就是一种解决办法吗 -&gt; 尺度提升上带来的roi范围的变化认为可以涵盖这个问题)</li>
-<li>贡献<ul>
-<li>(1). 本文通过对im2col和RoIAlign的深层联系, 提出了一个新型的RoIConv, 使其能够在one-stage detectors中进行准确的特征对准.</li>
-<li>(2). 提出了一个全卷积网络AlignDet, 能够很好的利用RoIConv学习到的anchor</li>
-<li>(3). 使用ResNeXt-101 FPN作为BackBone, 效果很好.</li>
+        <h2 id="Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》"><a href="#Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》" class="headerlink" title="Simple Summary for《SlowFast Networks for Video Recognition》"></a>Simple Summary for《SlowFast Networks for Video Recognition》</h2><hr>
+<h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><ol>
+<li>本文提出对视频识别的 SlowFast Network.</li>
+<li>模型包含<ul>
+<li>1). Slow pathway: 在低帧率上进行操作去捕捉空间语义</li>
+<li>2). Fast pathway: 在高帧率上进行操作去在高的时间分辨率上捕捉动作信息</li>
 </ul>
 </li>
+<li>Slow pathway 通过减少其通道的容量从而变得很轻量级, 同时能够仍然学习到有用的时间信息.</li>
+<li>本模型能够在视频分类和视频检测中都能达到很好的效果. pin-pointed 是我们SlowFast 带来很大性能提升的贡献.</li>
+<li>Introduction 中提到了 aperture problem (孔径问题): eg: 理发店滚筒是水平旋转的, 但是人们会认为其中的边是向上运动的. 文章中说如果缓慢移动是人们更加关注的话, 这个现象就是可以解释的.</li>
+<li>文章认为, 如果不是所有的时空方向都是等价的, 那么就没有理由去将时间和空间同等的对待, 即不应该进行直接的时空卷积. 应该将时间和空间的处理分开.</li>
+<li>空间上的信息通常来说是更慢的. 而动作信息则通常会更快. (主要是指特征的变化)</li>
+<li>Slow pathway 是大channel但是小frame, Fast pathway 是小channel但是大frame的, 文章中说 Fast pathway因此只占据总体的计算量的 20%, 是轻量级的设计.</li>
+<li>后续两条分支会在后面进行融合.</li>
 </ol>
-<hr>
-<h3 id="Pilot-Experiment"><a href="#Pilot-Experiment" class="headerlink" title="Pilot Experiment"></a>Pilot Experiment</h3><p>通过实验表明了multi-scale在one-stage中带来的好处远远大于two-stage中带来的好处, 认为是one-stage缺少类似于RoIPooling之类的特征对准所带来的性能的损失, 强调了虽然multi-scale虽然一定程度上通过限制feature map的尺度减轻了特征对准的问题</p>
 <hr>
 <h3 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h3><ol>
-<li>RoIAlign与Im2Col之间的关联<ul>
-<li>(1). 认为两者操作方式是统一的, 只不过Im2Col是对固定的位置进行, RoIAlign则是针对RoI区域进行, 认为Im2Col是RoIAlign的一个特例</li>
-<li>(2). conv是im2col与fc的结合, 认为one-stage detectors可以隐式的在backbone feature map上进行固定boungding box size的RoIAlign操作</li>
+<li>SlowFast网络可以被描述为一个 single stream architecture 但是是在两个不同的帧率下进行的</li>
+<li>Slow pathway<ul>
+<li>以时间和空间容量协调的方式工作, 关键点是一个大的时间尺度上的步长τ(即在τ个帧中抽取出一帧进行处理, 文章的经验值是取16)</li>
 </ul>
 </li>
-<li>文章以P4层为例认为在其上的一个3<em>3conv对应的roi是48</em>48的能够不错的将32<em>32 – 64</em>64的anchor对齐, 但是对其他尺度的anchor对齐效果并不是很好, one-stage算法利用了FPN的结构, 使得不同尺度上能有不同尺度的roi去和anchor对应, 部分解决了不对准问题, 但是仍然不能解决极端aspect ratio等问题</li>
-<li>RoI Convolution<ul>
-<li>(1). 严重的不对准问题是由于实际的bbox与卷积对应的隐式的RoI区域不对应所导致的, 因此希望能够像deformable convolution似的自适应的将sample location定位到合适的位置</li>
-<li>(2). 不像deformable conv一样去学习整个map上的所有pixel的offset, 而是定义offset为预定义的box与隐含的学习到的RoI的差值</li>
+<li>Fast pathway<ul>
+<li>高帧率: 时间尺度上的步长为 τ/α (α &gt; 1) (PS: α经验值取8)</li>
+<li>高时间尺度上的特征分辨率: 不仅仅时间上采样多, 处理后得到的时间上的特征宽度也大, 不会对提取出来的帧数进行后续的降维操作(PS: slow pathway 好像也并没有降维)</li>
+<li>低特征通道容量: <ul>
+<li>在每一帧的通道上来说, fast pathway的通道数远远小于slow pathway的通道数 -&gt; 因为通常来说计算量与特征通道数的平方成正比, 所以大量减少了特征通道数使得 fast pathway 的计算量在总体上占据很小(占20%左右, 作者将这一点与人的视觉系统里15%-20%的细胞是对快速的动作而不是颜色或者时间敏感相对应).</li>
+<li>low channel -&gt; 表达空间上的语义信息的能力更弱. 但是文章提到了, 实验表明了这样的加强了时间信息损失了空间信息的trade-off是值得的.</li>
+<li>PS: 作者提到了, 从上一点的解释中受到了启发之后, 做了今后一步的多种弱化空间上的容量的举措(包括(1).减少Fast pathway的输入的空间分辨率 (2).移除颜色信息) -&gt; 实验表明这些尝试能够带来更好的准确性 -&gt; 认为轻量级的低空间容量的 Fast pathway 是能够带来好处的</li>
 </ul>
 </li>
-<li>Fully Convolutional AlignDet<ul>
-<li>(1). 在DPM module中上层进行了一个类似refindet的Anchor box的移动, 然后计算物体实际RoI和anchor位置的差值进行RoIconv去提取对齐位置的特征</li>
-<li>PS: 但是这个anchor box实际上是不需要我们进行学习的, 而是依靠数据学习到的, 文章中的网络仅仅每个位置使用了一个anchor(隐式学习好的)</li>
-<li>(2). 提取到对齐位置的特征之后利用这个特征map进行dense detection</li>
-<li>PS: 相当于每个点进行一个RoI的学习, 然后用RoIconv实现类似RoIAlign的操作, 然后每个点都对应着这个点的特征, 利用这个特征去进行dense detection</li>
 </ul>
 </li>
-<li>认为 Guided Anchor 只考虑了anchor的形状没有考虑anchor boxes的位置, 认为学习到的offset只是启发式的对本文offset计算方法的近似, 认为本文方法可以数学上保证严格的feature和对应anchor之间的对准, 而他们的方法是不可能的.</li>
+<li>Lateral connections<ul>
+<li>两条通路的信息最后会被汇总到一起, 所以两条通路的学习是相互受到影响的.</li>
+<li>文章的实现是使用 lateral connections(提到是用来将 以光流为基础的, 双流网络 进行融合的方式) (PS: 提到了在 image object detection 中, lateral connections 也是将不同层次的语义信息和空间信息进行融合的一种很流行的方式???)</li>
+<li>每个阶段中都会在两条通路之间添加一个 lateral connection</li>
+<li>提到了因为时间维度上两者是不统一的, 所以要进行额外的处理去进行匹配.</li>
+<li>文章做法使用的是单向连接, 将 Fast pathway 的特征融向 Slow pathway, 作者提到了使用双向连接进行实验的时候得到的结果是类似的.</li>
+<li>最后两个通路都会经过一个 GBP 处理, 得到的特征向量会被拼接之后作为 FC 分类层的输入</li>
+</ul>
+</li>
+<li>Instantiations:<ul>
+<li><strong>具体详细细节请见论文, 这里只是说一下前面没有理解的部分</strong></li>
+<li>later connections: 在将 Fast pathway 融入到 Slow pathway 前需要将两者的特征进行匹配. (Slow pathway 的 feature shape 是: {T, S^2, C}, Fast pathway 的 feature shape 是: {αT, S^2, βC}), 文章对下面的三种处理方法进行了实验验证<ul>
+<li>1). Time-to-channel: 作者将 {αT, S^2, βC} reshape 并 transpose 为 {T, S^2, αβC}</li>
+<li>2). Time-strided sampling: 简单的每 α 帧采样出来一帧, 等同于从 {αT, S^2, βC} -&gt; {T, S^2, βC}</li>
+<li>3). Time-strided convolution: 使用一个 5 * 1^2 的 2βC 通道且步长为 α 的 3D 卷积进行卷积操作</li>
+<li>PS: lateral connection 的输出会使用 summation 或者 concatenation 的方式融合到 Slow pathway 中.</li>
+<li>PS2: 实验中还是 Time-strided convolution 的效是果更好的</li>
+</ul>
+</li>
+</ul>
+</li>
+<li></li>
 </ol>
 <hr>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
-<li>觉得一定程度上说明了小物体预测不准确很大程度上不是因为对不准造成的, 或者是这么对准之后仍然对不到小物体上这一问题.</li>
-<li>多尺度无论对one-stage还是two-stage来说都有助于小物体的性能的提升, 同时特征, 背景信息的不断深挖也许是对小物体有效的方法</li>
-<li>个人理解: RoIconv对齐的时候, 默认是和当前点3*3范围的”default anchor”进行对齐, 也就是实际上还是隐含了一个默认的初始anchor的, 如果增加这个anchor的数量以及上面学习到的anchor的四个参数的数量的时候会带来什么</li>
-<li>PS: DPM取消掉了明面上的anchor, 认为学习到的四个参数是RoI区域(也就是相当于不refine默认的初始anchor, 而是直接预测anchor位置) 总觉得这个two-stage可以结合探讨出什么东西来</li>
-</ol>
+<h3 id="Question"><a href="#Question" class="headerlink" title="Question"></a>Question</h3><p>PS: 层次选择的一个想法, 不对 roi align 之后的结果进行, 而是选择对特征图进行进一步的 conv 然后在其上按照正常的大小进行选择进行重构.</p>
 
     </div>
 
@@ -362,8 +375,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/22/Simple-Summary-for-Libra-R-CNN-Towards-Balanced-Learning-for-Object-Detection/" rel="next" title="Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection">
-                  <i class="fa fa-chevron-left"></i> Simple Summary for Libra R-CNN: Towards Balanced Learning for Object Detection
+                <a href="/2020/01/19/Simple-Summary-for-Weakly-Supervised-Bilinear-Attention-Network-for-Fine-Grained-Visual-Classification/" rel="next" title="Simple Summary for Weakly Supervised Bilinear Attention Network for Fine-Grained Visual Classification">
+                  <i class="fa fa-chevron-left"></i> Simple Summary for Weakly Supervised Bilinear Attention Network for Fine-Grained Visual Classification
                 </a>
               
             </div>
@@ -371,10 +384,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/10/25/Simple-Summary-for-Feature-Selective-Networks-for-Object-Detection/" rel="prev" title="Simple Summary for Feature Selective Networks for Object Detection">
-                  Simple Summary for Feature Selective Networks for Object Detection <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -420,7 +429,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单总结《Revisiting-Feature-Alignment-for-One-stage-Object-Detection》"><span class="nav-number">1.</span> <span class="nav-text">简单总结《Revisiting Feature Alignment for One-stage Object Detection》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pilot-Experiment"><span class="nav-number">1.2.</span> <span class="nav-text">Pilot Experiment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.3.</span> <span class="nav-text">Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">1.4.</span> <span class="nav-text">问题</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》"><span class="nav-number">1.</span> <span class="nav-text">Simple Summary for《SlowFast Networks for Video Recognition》</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-number">1.1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Method"><span class="nav-number">1.2.</span> <span class="nav-text">Method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Question"><span class="nav-number">1.3.</span> <span class="nav-text">Question</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->

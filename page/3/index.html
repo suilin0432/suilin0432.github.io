@@ -236,6 +236,130 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/22/三-、简单总结mmdetection源码TwoStageDetector的流程细节-二-解析FPN部分/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin Sui">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Suilin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            
+            <a href="/2019/11/22/三-、简单总结mmdetection源码TwoStageDetector的流程细节-二-解析FPN部分/" class="post-title-link" itemprop="url">(三)、简单总结mmdetection源码TwoStageDetector的流程细节(二) -- 解析FPN部分</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-11-22 21:46:02 / Modified: 21:46:22" itemprop="dateCreated datePublished" datetime="2019-11-22T21:46:02+08:00">2019-11-22</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简单总结mmdetection源码TwoStageDetector的流程细节-二-–-解析FPN部分"><a href="#简单总结mmdetection源码TwoStageDetector的流程细节-二-–-解析FPN部分" class="headerlink" title="简单总结mmdetection源码TwoStageDetector的流程细节(二) – 解析FPN部分"></a>简单总结mmdetection源码TwoStageDetector的流程细节(二) – 解析FPN部分</h2><hr>
+<h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><ol>
+<li>首先, 在前两篇总结中, 已经将mmdetection的<code>Dataset相关</code>, <code>DataLoader相关</code>, <code>test.py前半部分流程</code>, <code>数据处理Pipeline相关</code>, <code>build_from_cfg相关</code>, <code>以及Registry</code>, <code>框架将模型划分的部分</code>等总体信息进行了分析, 并且对 <code>TwoStageDetector</code> 的运行整个流程和其父类 <code>BaseDetector</code> 进行了分析, 同时对 <code>forward_train</code> 的输入是怎么来的以及其是如何处理 <code>GT bbox</code> 等对每个img信息的维度不统一问题–<code>DataContainer</code> 进行了梳理, 并找到了在 <code>train.py</code> 使用的mmcv中的runner何时, 如何将 <code>DataContainer</code> 封装去掉取出其中封装的数据去交给 <code>forward_train</code> 进行前向传播.</li>
+<li>所以, 接下来的文章的主要任务就是继续对 <code>forward_train</code> 的后续过程进行分析.</li>
+<li>本文将会对网络的FPN部分进行分析.</li>
+<li>PS: Backbone部分暂时先略过不做分析了, 如果后续会考虑到backbone的时候再分析一下吧…</li>
+</ol>
+<hr>
+<h3 id="二、FPN引入部分分析"><a href="#二、FPN引入部分分析" class="headerlink" title="二、FPN引入部分分析"></a>二、FPN引入部分分析</h3><ol>
+<li>首先, FPN部分在 mmdetection 框架中是被视为 neck 部分的, 在<a href="https://suilin0432.github.io/2019/11/21/%E4%B8%80-%E3%80%81%E7%AE%80%E5%8D%95%E6%80%BB%E7%BB%93%E5%9C%A8%E9%98%85%E8%AF%BBmmdetection%E6%BA%90%E7%A0%81%E7%9A%84%E6%97%B6%E5%80%99%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E7%BB%86%E8%8A%82%E4%B8%8E%E9%97%AE%E9%A2%98-mmdetection%E6%80%BB%E4%BD%93-%E5%B8%B8%E7%94%A8module%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener">第一篇总结文章</a>中已经有所说明, 这里就不再赘述.</li>
+<li>在 <code>TwoStageDetectors</code> 代码中, 训练时候前向传播过程中使用了 FPN 的部分在 <code>forward_train</code> 函数中的 <code>x = self.extract_feat(img)</code> 处, 查看 <code>extract_feat</code> 函数可以发现, 其就是单纯的先把 input feed 给 <code>backbone</code>, 然后如果网络是有 <code>neck</code> 的话就继续将从 <code>backbone</code> 中获取到的 ouput feed 给 <code>neck</code>, 所以, 我们只需要对 <code>neck</code> 部分是怎么进行的进行查看就可以了</li>
+<li>可以看到, <code>neck</code> 是在进行整个 detector 的 <code>build_from_cfg</code> 的时候根据 cfg 传入参数去构建的, 即通过 <code>FasterRCNN类</code> (实际上是其父类 <code>TwoStageDetector</code>) 的 <code>__init__</code> 过程中根据 <code>cfg.model.neck</code> 进行 <code>build_from_cfg</code> 去构建的Neck部分, 同之前的总结, FPN 也是通过一个 <code>Registry对象</code> 进行注册进入的, 即 <code>mmdet.models.registry.py</code> 中的 <code>NECKS</code>, 所以接下来对 <code>mmdet.models.neck.fpn.py</code> 中的 <code>FPN</code> 类进行分析即可</li>
+</ol>
+<hr>
+<h3 id="三、FPN类的分析"><a href="#三、FPN类的分析" class="headerlink" title="三、FPN类的分析"></a>三、FPN类的分析</h3><ol>
+<li>首先看一下 FPN 类的 <code>__init__</code> 函数是怎么进行模块的构建的吧: <code>__init__(self, in_channels, out_channels, num_outs, start_level=0, end_level=-1, add_extra_convs=False, extra_convs_on_inputs=True, relu_before_extra_convs=False, no_norm_on_lateral=False, conv_cfg=None, norm_cfg=None, activation=None):</code><ul>
+<li>(1). in_channels: Backbone输出作为FPN输入的通道数, 看config文件中的设置应该是一个list, 然后看了一下ResNet50的原结构(实际上ResNet50, 101, 152的conv2_x,conv3_x,conv4_x,conv5_x模块中使用堆叠的block是相同的, 只是堆叠的模块的数量不同, 每个conv阶段输出的channel数量因此是相同的), config中设置的是 in_channels 是: [256, 512, 1024, 2048] 就是针对ResNet的 conv2, conv3, conv4, conv5 阶段的输出的channel数目. 也就是FPN论文中所说的 {C2, C3, C4, C5} 层, stride 分别为 {4, 8, 16, 32}</li>
+<li>(2). out_channels: FPN输出的通道数, 由config文件可以看出是一个单一的值, 代表所有的feature层通道数目都是这个值 – config中设置为 256</li>
+<li>(3). num_outs: outstage 的数量. config 文件中标出的是 5. </li>
+<li>PS: Faster-RCNN配置参数中只涉及到了上面的三种参数, 下面的参数好像都使用的默认值</li>
+<li>(4). start_level: 默认值是0.</li>
+<li>(5). end_level: 默认值是-1</li>
+<li>(6). add_extra_convs: 默认值是False. 表示是否使用 C6 层进行detection</li>
+<li>(7). extra_convs_on_inputs: 默认值是True. PS: 没有看到使用</li>
+<li>(8). relu_before_extra_convs: 默认值是False PS: 没有看到使用</li>
+<li>(9). no_norm_on_lateral: 默认值是False. 是否在 <code>lateral_conv</code> 中使用 norm. False 的时候 <code>lateral_conv</code> 构建的时候 norm 就是 None. True 的时候会采用和 <code>norm_cfg</code> 相同的值</li>
+<li>(10). conv_cfg: 默认值是None. 进行 conv 构建的时候的参数, 在 <code>conv_module.py</code> 中可以发现, 这个值好像就是用来选择 conv 的类型的. 默认使用的是 <code>torchnn.Conv2d</code>.</li>
+<li>(11). norm_cfg: 默认值是None. 进行 <code>conv_module</code> 构建中的 norm 层构建的 cfg. 在 <code>norm.py</code> 中可以知道, 这个参数是用来选择 norm 层的类型的. 默认下(None)不会添加 norm 层. </li>
+<li>(12). activation: 默认值是None</li>
+<li>开始进行 <code>__init__</code> 函数的流程分析: </li>
+<li>(1). 首先进行了各种class内值的赋值, 新增了 <code>self.num_ins = len(in_channels)</code> 参数, 其代表了从Backbone中提取阶段的数量. 然后还进行了一个判断: 当 <code>end_level</code> 为 -1 的时候, <code>self.backbone_end_level = self.num_ins</code>, 此时 backbone 结束阶段就是从 backbone 中提取阶段的总数, 否则 backbone 中提取的阶段总数 <code>self.backbone_end_level</code> 等于 <code>end_level</code> 的大小</li>
+<li>(2). 从 <code>start_level</code> 的值开始到 <code>backbone_end_level</code> 的值结束, 进行 <code>lateral_convs</code> 以及 <code>fpn_convs</code> 的构建. 两种 conv 层的区别是: <code>lateral_conv</code> 是 1 <em> 1 尺寸的卷积核, norm 由 <code>no_norm_on_lateral</code> 进行调控, 没有 <code>padding</code>, <code>in_channels</code> 和 <code>out_channels</code> 大小不同, 就是由 <code>__init__</code> 的输入的参数所决定的([256, 512, 1024, 2048], 256). 而 <code>fpn_convs</code> 是 3 </em> 3 尺寸的卷积核, <code>padding</code> 为 1, <code>in_channels</code> 和 <code>out_channels</code> 的大小都是 256.<ul>
+<li>由此可以看出 <code>fpn_convs</code> 是 <code>lateral_convs</code> 处理 backbone 的各个 ouput stage 之后进一步进行处理的 conv 层.</li>
+</ul>
+</li>
+<li>(3). 会根据 <code>add_extra_convs</code> 参数以及 <code>extra_levels = num_outs - self.backbone_end_level + self.start_level</code> 决定是否添加额外的 conv 层. (PS: 代码里写了, 比如: RetinaNet(用了C6层)). 因此虽然按照 Faster-RCNN 的配置来说 <code>extra_levels = 5 - 4 + 0 = 1</code>, 但是 <code>add_extra_convs</code> 的值是 False, 所以并不会额外的添加 conv 层… 哦豁… 然而后面的 <code>forward</code> 可以发现, 虽然没有添加 conv 层, 但是 <code>num_outs</code> 参数还是会决定输出多少个 stage 的 output</li>
+</ul>
+</li>
+<li><code>init_weights</code> 就是进行 <code>self.modules()</code> 得到的所有 Conv 层进行初始化</li>
+<li><code>forward</code> 函数:<ul>
+<li>PS: <code>forward</code> 函数是使用了 <code>@auto_fp16()</code> 装饰器的… 是强制使用 fp16 进行训练的, 整个网络本质上是混合 fp16 以及 fp32 进行训练的. 好像 resnet 部分就没有强制使用 fp16 训练.</li>
+<li>(1). 首先 forward 函数只有一个参数: inputs, 这个 inputs 就是从 backbone 中得到的一组 output. 其channel 数量分别对应着 <code>in_channels</code> 各个 entry 的值的大小.</li>
+<li>(2). 首先使用各个 stage 的 output 用 <code>lateral_conv</code> 进行处理 得到一组输出 <code>laterals</code></li>
+<li>(3). 按照 fpn 的上下层融合的思想 利用后一层的 upsample(这里使用的是nearest) 和当前层次进行进行加法, 对 <code>laterals</code> 进行更新</li>
+<li>(4). 然后使用 <code>fpn_convs</code> 进行得到的 <code>laterals</code> 的 conv 处理, 得到了 <code>outputs</code></li>
+<li>(5). 接下来会进行 extra stage 数据的产生了, 对于 Faster-RCNN 等网络来说, <code>add_extra_convs</code> 是False, 只是会根据 <code>num_outs</code> 参数通过 <code>max_pool</code> 补上后面的 stage 的 output, 但是对于其他的比如 RetinaNet 等网络来说, 有 <code>extra_convs</code> 的话会进一步根据情况进行后续的 通过 conv 得到 stage output.</li>
+<li>(6). 最后会将各个 stage 的 outputs -&gt; <code>outs</code> 用 tuple 封装然后返回.</li>
+</ul>
+</li>
+</ol>
+<p>PS: 到此为止 FPN 类的解析就完全结束了</p>
+<hr>
+<h3 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1. 使用 torch.nn.Module 作为父类之后, 所有在该类中注册的 ModuleList, Module等, 以及本类都会在被注册, 并且可以通过 self.modules() 获取到一个 generator</span><br></pre></td></tr></table></figure>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </article>
+  
+  
+  
+
+    
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/22/二-、简单总结mmdetection源码TwoStageDetector的流程细节-一-TwoStageDetector-forward-train的参数都是怎么来的以及其格式是什么样的-怎么处理的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1242,87 +1366,6 @@
   
 
     
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://suilin.top/2019/11/10/Simple-Summary-for-Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lin Sui">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Suilin's Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            
-            <a href="/2019/11/10/Simple-Summary-for-Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders/" class="post-title-link" itemprop="url">Simple Summary for Extracting and Composing Robust Features with Denoising Autoencoders</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-11-10 16:13:45 / Modified: 16:16:21" itemprop="dateCreated datePublished" datetime="2019-11-10T16:13:45+08:00">2019-11-10</time>
-            </span>
-          
-            
-
-            
-          
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="《Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders》"><a href="#《Extracting-and-Composing-Robust-Features-with-Denoising-Autoencoders》" class="headerlink" title="《Extracting and Composing Robust Features with Denoising Autoencoders》"></a>《Extracting and Composing Robust Features with Denoising Autoencoders》</h2><p>PS: 具体部分见纸质版笔记.<br>PS: DAs<br>PS: 论文地址: <a href="https://llgeek.github.io/material/DAE-ICML.pdf" target="_blank" rel="noopener">https://llgeek.github.io/material/DAE-ICML.pdf</a></p>
-<hr>
-<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction:"></a>Introduction:</h3><ol>
-<li>首先本文说前人工作表明: 通过unspervised learning的方式去将inputs map到一个有用的中间表示上, 从而使的训练深的generative/discriminative models变得相对来说简单一些. 本文则是引入了一种针对unsupervised learning的一种新的训练原则, 其基于的思想是学习到有足够对partial corruption的input pattern具有鲁棒性的representation. </li>
-<li>提到了之前的逐层进行参数初始化的方式是有效的, 能够部分解决deep网络不容易训练的问题, 其中的关键就是如何学习到一个好的中间的representations of input patterns. 本文希望能够将partial destruction的input达到一个鲁棒性的效果作为一个好的representation的评判标准. 对partial destruction input的评判标准是和原图几乎相同的表现. </li>
-</ol>
-<hr>
-<h3 id="Method"><a href="#Method" class="headerlink" title="Method:"></a>Method:</h3><ol>
-<li>为了达到这个目的, 做法就是使用partially destroyed input去进行训练来reconstruct一个clean “repaired” input. 然后除了优化步骤中需要对原始的input进行partially corrupted的input之外其余的训练过程是和原始的auto-encoder一致的, 也是stack block的方式去一层层训练, 然后最后用有监督的数据进行训练.</li>
-</ol>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </article>
-  
-  
-  
-
-    
   </div>
 
   
@@ -1372,7 +1415,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">67</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

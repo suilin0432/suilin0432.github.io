@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://suilin.top/"/>
-  <updated>2020-01-19T07:33:47.725Z</updated>
+  <updated>2020-05-09T01:28:55.703Z</updated>
   <id>http://suilin.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Simple Summary for 《SlowFast Networks for Video Recognition》</title>
+    <link href="http://suilin.top/2020/05/09/Simple-Summary-for-%E3%80%8ASlowFast-Networks-for-Video-Recognition%E3%80%8B/"/>
+    <id>http://suilin.top/2020/05/09/Simple-Summary-for-《SlowFast-Networks-for-Video-Recognition》/</id>
+    <published>2020-05-09T01:28:04.000Z</published>
+    <updated>2020-05-09T01:28:55.703Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》"><a href="#Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》" class="headerlink" title="Simple Summary for《SlowFast Networks for Video Recognition》"></a>Simple Summary for《SlowFast Networks for Video Recognition》</h2><hr><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><ol><li>本文提出对视频识别的 SlowFast Network.</li><li>模型包含<ul><li>1). Slow pathway: 在低帧率上进行操作去捕捉空间语义</li><li>2). Fast pathway: 在高帧率上进行操作去在高的时间分辨率上捕捉动作信息</li></ul></li><li>Slow pathway 通过减少其通道的容量从而变得很轻量级, 同时能够仍然学习到有用的时间信息.</li><li>本模型能够在视频分类和视频检测中都能达到很好的效果. pin-pointed 是我们SlowFast 带来很大性能提升的贡献.</li><li>Introduction 中提到了 aperture problem (孔径问题): eg: 理发店滚筒是水平旋转的, 但是人们会认为其中的边是向上运动的. 文章中说如果缓慢移动是人们更加关注的话, 这个现象就是可以解释的.</li><li>文章认为, 如果不是所有的时空方向都是等价的, 那么就没有理由去将时间和空间同等的对待, 即不应该进行直接的时空卷积. 应该将时间和空间的处理分开.</li><li>空间上的信息通常来说是更慢的. 而动作信息则通常会更快. (主要是指特征的变化)</li><li>Slow pathway 是大channel但是小frame, Fast pathway 是小channel但是大frame的, 文章中说 Fast pathway因此只占据总体的计算量的 20%, 是轻量级的设计.</li><li>后续两条分支会在后面进行融合.</li></ol><hr><h3 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h3><ol><li>SlowFast网络可以被描述为一个 single stream architecture 但是是在两个不同的帧率下进行的</li><li>Slow pathway<ul><li>以时间和空间容量协调的方式工作, 关键点是一个大的时间尺度上的步长τ(即在τ个帧中抽取出一帧进行处理, 文章的经验值是取16)</li></ul></li><li>Fast pathway<ul><li>高帧率: 时间尺度上的步长为 τ/α (α &gt; 1) (PS: α经验值取8)</li><li>高时间尺度上的特征分辨率: 不仅仅时间上采样多, 处理后得到的时间上的特征宽度也大, 不会对提取出来的帧数进行后续的降维操作(PS: slow pathway 好像也并没有降维)</li><li>低特征通道容量: <ul><li>在每一帧的通道上来说, fast pathway的通道数远远小于slow pathway的通道数 -&gt; 因为通常来说计算量与特征通道数的平方成正比, 所以大量减少了特征通道数使得 fast pathway 的计算量在总体上占据很小(占20%左右, 作者将这一点与人的视觉系统里15%-20%的细胞是对快速的动作而不是颜色或者时间敏感相对应).</li><li>low channel -&gt; 表达空间上的语义信息的能力更弱. 但是文章提到了, 实验表明了这样的加强了时间信息损失了空间信息的trade-off是值得的.</li><li>PS: 作者提到了, 从上一点的解释中受到了启发之后, 做了今后一步的多种弱化空间上的容量的举措(包括(1).减少Fast pathway的输入的空间分辨率 (2).移除颜色信息) -&gt; 实验表明这些尝试能够带来更好的准确性 -&gt; 认为轻量级的低空间容量的 Fast pathway 是能够带来好处的</li></ul></li></ul></li><li>Lateral connections<ul><li>两条通路的信息最后会被汇总到一起, 所以两条通路的学习是相互受到影响的.</li><li>文章的实现是使用 lateral connections(提到是用来将 以光流为基础的, 双流网络 进行融合的方式) (PS: 提到了在 image object detection 中, lateral connections 也是将不同层次的语义信息和空间信息进行融合的一种很流行的方式???)</li><li>每个阶段中都会在两条通路之间添加一个 lateral connection</li><li>提到了因为时间维度上两者是不统一的, 所以要进行额外的处理去进行匹配.</li><li>文章做法使用的是单向连接, 将 Fast pathway 的特征融向 Slow pathway, 作者提到了使用双向连接进行实验的时候得到的结果是类似的.</li><li>最后两个通路都会经过一个 GBP 处理, 得到的特征向量会被拼接之后作为 FC 分类层的输入</li></ul></li><li>Instantiations:<ul><li><strong>具体详细细节请见论文, 这里只是说一下前面没有理解的部分</strong></li><li>later connections: 在将 Fast pathway 融入到 Slow pathway 前需要将两者的特征进行匹配. (Slow pathway 的 feature shape 是: {T, S^2, C}, Fast pathway 的 feature shape 是: {αT, S^2, βC}), 文章对下面的三种处理方法进行了实验验证<ul><li>1). Time-to-channel: 作者将 {αT, S^2, βC} reshape 并 transpose 为 {T, S^2, αβC}</li><li>2). Time-strided sampling: 简单的每 α 帧采样出来一帧, 等同于从 {αT, S^2, βC} -&gt; {T, S^2, βC}</li><li>3). Time-strided convolution: 使用一个 5 * 1^2 的 2βC 通道且步长为 α 的 3D 卷积进行卷积操作</li><li>PS: lateral connection 的输出会使用 summation 或者 concatenation 的方式融合到 Slow pathway 中.</li><li>PS2: 实验中还是 Time-strided convolution 的效是果更好的</li></ul></li></ul></li><li></li></ol><hr><h3 id="Question"><a href="#Question" class="headerlink" title="Question"></a>Question</h3><p>PS: 层次选择的一个想法, 不对 roi align 之后的结果进行, 而是选择对特征图进行进一步的 conv 然后在其上按照正常的大小进行选择进行重构.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》&quot;&gt;&lt;a href=&quot;#Simple-Summary-for《SlowFast-Networks-for-Video-Recognition》&quot; 
+      
+    
+    </summary>
+    
+    
+    
+      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
+    
+  </entry>
   
   <entry>
     <title>Simple Summary for Weakly Supervised Bilinear Attention Network for Fine-Grained Visual Classification</title>
@@ -231,30 +255,6 @@
     
     
       <category term="Codes" scheme="http://suilin.top/tags/Codes/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Simple Summary for Scale Match for Tiny Person Detection</title>
-    <link href="http://suilin.top/2019/12/29/Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection/"/>
-    <id>http://suilin.top/2019/12/29/Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection/</id>
-    <published>2019-12-29T11:48:58.000Z</published>
-    <updated>2019-12-29T11:52:46.409Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection"><a href="#Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection" class="headerlink" title="Simple Summary for Scale Match for Tiny Person Detection"></a>Simple Summary for Scale Match for Tiny Person Detection</h2><p>PS: 这篇文章做的纸上的笔记</p><p><img src="https://upload-images.jianshu.io/upload_images/13028997-65a552d0359ac748.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P1-P2"></p><p><img src="https://upload-images.jianshu.io/upload_images/13028997-26b3d723467b7a11.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P3-P4"></p><p><img src="https://upload-images.jianshu.io/upload_images/13028997-2b1b16fdda61a29a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P5-P6"></p><p><img src="https://upload-images.jianshu.io/upload_images/13028997-640cf0dfc173b981.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P7-P8"></p><hr><h3 id="简单总结一下"><a href="#简单总结一下" class="headerlink" title="简单总结一下:"></a>简单总结一下:</h3><p>文章数据集的构建比较好, 文章本身的方法其实是针对于预训练描述的, 很多文章已经应用过类似的方法进行了使用, 也强调了训练过程与预训练中的物体尺度的不匹配这个问题(比如 finding tiny face, SNIP系列 等文章). 提出的方法只是有一定的创新性.</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h2 id=&quot;Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection&quot;&gt;&lt;a href=&quot;#Simple-Summary-for-Scale-Match-for-Tiny-Person-Detection&quot; class=
-      
-    
-    </summary>
-    
-    
-    
-      <category term="Paper Summary" scheme="http://suilin.top/tags/Paper-Summary/"/>
     
   </entry>
   
